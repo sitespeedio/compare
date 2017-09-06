@@ -1,5 +1,5 @@
 # Compare HAR files
-Make it easier to find regressions by comparing your [HAR](http://www.softwareishard.com/blog/har-12-spec/) files. Test it out https://compare.sitespeed.io
+Make it easier to find regressions by comparing your [HAR](http://www.softwareishard.com/blog/har-12-spec/) files. Test it out https://compare.sitespeed.io or look at the video: https://youtu.be/dCThwpglIeE
 
 ![Logo](https://raw.githubusercontent.com/sitespeedio/compare/master/img/compare.png)
 
