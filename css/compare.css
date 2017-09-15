@@ -245,6 +245,7 @@ a {
 .message {
   text-align: center;
   padding: 20px;
+  color: red;
 }
 
 .header-links {
