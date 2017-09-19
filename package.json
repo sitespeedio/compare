@@ -1,17 +1,17 @@
 {
   "name": "@sitespeed.io/compare",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Compare HAR files.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sitespeedio/compare.git"
   },
   "keywords": [
-   "har",
-   "compare",
-   "waterfall",
-   "webperf"
- ],
+    "har",
+    "compare",
+    "waterfall",
+    "webperf"
+  ],
   "author": {
     "name": "Peter Hedenskog",
     "url": "https://www.peterhedenskog.com"
