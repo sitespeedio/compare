@@ -1,5 +1,5 @@
 /* global Chartist, Template7, Zlib, perfCascade, FileDrop */
-/* exported help, toggleRow, formatDate, regenerate, loadFilesFromURL, createDropZone  */
+/* exported help, toggleRow, formatDate, regenerate, loadFilesFromURL, createDropZone, switchHAR  */
 
 // Hide the upload functionality
 function hideUpload() {
@@ -167,6 +167,29 @@ function formatBytes(bytes) {
   }
 
   return Math.round(bytes / 1000) + ' kb';
+}
+
+function switchHAR() {
+  const e = document.getElementById('run1Option');
+  const run = e.options[e.selectedIndex].value;
+  const e2 = document.getElementById('run2Option');
+  const run2 = e2.options[e2.selectedIndex].value;
+
+  const har2 = window.har1;
+  const har1 = window.har2;
+  // hack to remove the old HARs, make this cleaner
+  showUpload();
+
+  generate(
+    {
+      har: har1,
+      run: run
+    },
+    {
+      har: har2,
+      run: run2
+    }
+  );
 }
 
 function generateVisualProgress(visualProgress1, visualProgress2, id) {
