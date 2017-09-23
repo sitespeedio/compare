@@ -169,29 +169,6 @@ function formatBytes(bytes) {
   return Math.round(bytes / 1000) + ' kb';
 }
 
-function switchHAR() {
-  const e = document.getElementById('run1Option');
-  const run = e.options[e.selectedIndex].value;
-  const e2 = document.getElementById('run2Option');
-  const run2 = e2.options[e2.selectedIndex].value;
-
-  const har2 = window.har1;
-  const har1 = window.har2;
-  // hack to remove the old HARs, make this cleaner
-  showUpload();
-
-  generate(
-    {
-      har: har1,
-      run: run
-    },
-    {
-      har: har2,
-      run: run2
-    }
-  );
-}
-
 function generateVisualProgress(visualProgress1, visualProgress2, id) {
   let maxTime = 0;
   const series = [visualProgress1, visualProgress2].map(progressList => {
@@ -285,14 +262,14 @@ function generateVisualProgress(visualProgress1, visualProgress2, id) {
   );
 }
 
-function regenerate() {
+function regenerate(switchHar) {
   const e = document.getElementById('run1Option');
   const run = e.options[e.selectedIndex].value;
   const e2 = document.getElementById('run2Option');
   const run2 = e2.options[e2.selectedIndex].value;
 
-  const har1 = window.har1;
-  const har2 = window.har2;
+  const har1 = switchHar ? window.har2 : window.har1;
+  const har2 = switchHar ? window.har1 : window.har2;
   // hack to remove the old HARs, make this cleaner
   showUpload();
 
