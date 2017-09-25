@@ -401,6 +401,12 @@
     </header>
     <div class="grid grid-pad">
       <div class="col-1-1">
+        <fieldset id="zone" class="dropzone">
+          <p>Drop two HAR files here or click to upload. You can add .har and .har.gz files.</p>
+        </fieldset>
+        <p class="smallish">
+        Or add the URL to your HAR files and press compare:
+        </p>
         <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
         <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
         <p class="smallish"><a href="#" onclick="help();">Need help?</a></p>
@@ -409,11 +415,7 @@
           find the HAR. If you need more help, look at the <a href="https://www.youtube.com/watch?v=dCThwpglIeE">introduction video</a> or please create an <a href="https://github.com/sitespeedio/compare/issues/new">issue</a> at Github.
         </div>
         <button type="button" class="submit" onclick="loadFilesFromURL();">Compare</button>
-
         <div id="message" class="message"></div>
-        <fieldset id="zone" class="dropzone">
-          <p>Or drop two HAR files here or click to upload. You can add .har and .har.gz files.</p>
-        </fieldset>
       </div>
     </div>
   </div>
