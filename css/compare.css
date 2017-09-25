@@ -59,6 +59,7 @@ a {
 
 .grid-result {
   padding-top: 0px;
+  overflow-y: auto;
 }
 
 .smallish {
@@ -195,13 +196,11 @@ a {
   background: #e1f6fd;
   padding: 20px;
   position: relative;
-  overflow: hidden;
 }
 .header-result {
   background: #e1f6fd;
   padding: 10px;
   position: relative;
-  overflow: hidden;
 }
 .submit {
   margin: 20px auto 20px;
