@@ -5,7 +5,7 @@ body {
   padding: 0;
   background: #fff;
   font-family: Tahoma, Verdana, sans-serif;
-  font-size: 19px;
+  font-size: 1.2em;
   line-height: 1.618em;
   word-wrap: break-word;
   background-color: #fff;
@@ -358,5 +358,26 @@ input[type=range]:focus::-ms-fill-upper {
     margin-top: 0;
     padding-top: 20px;
     margin-bottom: 0;
+  }
+}
+
+@media (min-width: 1550px) {
+  .grid {
+    max-width: 1400px;
+    font-size: 1.2em;
+  }
+}
+
+@media (min-width: 1900px) {
+  .grid {
+    max-width: 1800px;
+    font-size: 1.4em;
+  }
+}
+
+@media (min-width: 2400px) {
+  .grid {
+    max-width: 2300px;
+    font-size: 1.6em;
   }
 }
