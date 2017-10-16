@@ -1,5 +1,5 @@
 /* global Chartist, Template7, Zlib, perfCascade, FileDrop */
-/* exported help, toggleRow, formatDate, regenerate, loadFilesFromURL, createDropZone, switchHAR  */
+/* exported help, toggleRow, formatDate, regenerate, loadFilesFromURL, createDropZone, switchHAR, getParam */
 
 // Hide the upload functionality
 function hideUpload() {
@@ -654,6 +654,15 @@ function createDropZone(id) {
         });
     }
   });
+}
+
+function getParam(name) {
+  if (
+    (name = new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)').exec(
+      location.search
+    ))
+  )
+    return decodeURIComponent(name[1]);
 }
 
 helpUs();

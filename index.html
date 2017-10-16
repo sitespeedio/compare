@@ -377,8 +377,19 @@
   <script>
   document.addEventListener('DOMContentLoaded', function() {
   createDropZone('zone');
+  const harParam1 = getParam('har1');
+  const harParam2 = getParam('har2');
+  if (harParam1 != undefined) {
+    const input1 = document.getElementById('harurl');
+    input1.value = harParam1;
+  }
+  if (harParam2 != undefined) {
+    const input2 = document.getElementById('harurl2');
+    input2.value = harParam2;
+  }
 });
 </script>
+
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/compare-144.png">
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/ico/compare-114.png">
   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/ico/compare-72.png">
