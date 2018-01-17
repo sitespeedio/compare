@@ -1,5 +1,10 @@
 # CHANGELOG - compare
 
+## 0.1.2 2018-01-17
+
+### Fixed
+* Upgraded to PageXray 2.0.4
+
 ## 0.1.1 2017-12-28
 
 ### Fixed
