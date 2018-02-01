@@ -215,15 +215,33 @@
             </td>
             <td>
               <ul>
-                {{#each p1.cpu}}
-                <li>{{@key}} : {{this}}</li>
+                {{#each p1.cpu.categories}}
+                <li>{{@key}} : {{this.toFixed(1)}}</li>
                 {{/each}}
               </ul>
             </td>
             <td>
               <ul>
-                {{#each p2.cpu}}
-                <li>{{@key}} : {{this}}</li>
+                {{#each p2.cpu.categories}}
+                <li>{{@key}} : {{this.toFixed(1)}}</li>
+                {{/each}}
+              </ul>
+            </td>
+          </tr>
+          <tr class="userShowable cpuExtraInfo">
+            <td class="tabletext">
+            </td>
+            <td>
+              <ul>
+                {{#each p1.cpu.events}}
+                <li>{{@key}} : {{this.toFixed(1)}}</li>
+                {{/each}}
+              </ul>
+            </td>
+            <td>
+              <ul>
+                {{#each p2.cpu.events}}
+                <li>{{@key}} : {{this.toFixed(1)}}</li>
                 {{/each}}
               </ul>
             </td>
