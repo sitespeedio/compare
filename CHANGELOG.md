@@ -1,5 +1,10 @@
 # CHANGELOG - compare
 
+## 0.2.0 2018-02-01
+
+### Added
+* Upgraded to PageXray 2.1.0 and added more CPU metrics
+
 ## 0.1.2 2018-01-17
 
 ### Fixed
