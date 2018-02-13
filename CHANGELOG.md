@@ -1,5 +1,11 @@
 # CHANGELOG - compare
 
+## 0.2.1 2018-02-03
+
+### Fixed 
+* Upgraded to PerfCascade 2.2.2 that makes HAR files from WebPageTest Linux render
+* Log errors to the console
+
 ## 0.2.0 2018-02-01
 
 ### Added
