@@ -604,6 +604,9 @@ function loadFilesFromURL() {
         )
       )
       .catch(e => {
+        /* eslint-disable no-console */
+        console.error(e);
+        /* eslint-disable no-console */
         errorMessage(e.message);
         showUpload();
       });
@@ -649,6 +652,9 @@ function createDropZone(id) {
           )
         )
         .catch(e => {
+          /* eslint-disable no-console */
+          console.error(e);
+          /* eslint-disable no-console */
           errorMessage(e.message);
           showUpload();
         });
