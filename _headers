@@ -1,3 +1,8 @@
+/*
+	X-Content-Type-Options: nosniff
+	x-frame-options: SAMEORIGIN
+	X-XSS-Protection: 1; mode=block
+        
 /*.js
 	Cache-Control: public, max-age=360000
 /*.css
