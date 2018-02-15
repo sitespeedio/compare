@@ -2,7 +2,6 @@
 	X-Content-Type-Options: nosniff
 	x-frame-options: SAMEORIGIN
 	X-XSS-Protection: 1; mode=block
-        Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src *; img-src 'self'; style-src 'self';
         Referrer-Policy: strict-origin
 
 /*.js
