@@ -3,6 +3,7 @@
 ## UNRELESED
 ### Added
 * Automatically load the HAR files if both files are given in the URL . Thanks [Ivru](https://github.com/Ivru) for the PR [#15](https://github.com/sitespeedio/compare/pull/15).
+* Updated to PageXray 2.2.1
 
 ## 0.2.1 2018-02-03
 
