@@ -634,10 +634,8 @@ function createDropZone(id) {
     }
 
     if (files.length > 2) {
-      errorMessage('You can only compare two HAR files at a time!');
-    } else if (files.length !== 2) {
-      errorMessage('You must add two HAR files that you will compare!');
-    } else {
+      errorMessage('You can only compare max two HAR files at a time!');
+    } else if (files.length === 2) {
       Promise.all([readHar(files[0]), readHar(files[1])])
         .then(([har1, har2]) =>
           generate(
@@ -651,6 +649,27 @@ function createDropZone(id) {
             }
           )
         )
+        .catch(e => {
+          /* eslint-disable no-console */
+          console.error(e);
+          /* eslint-disable no-console */
+          errorMessage(e.message);
+          showUpload();
+        });
+    } else {
+      readHar(files[0])
+        .then(har => {
+          generate(
+            {
+              har: har,
+              run: 0
+            },
+            {
+              har: har,
+              run: har.log.pages.length > 1 ? 1 : 0
+            }
+          );
+        })
         .catch(e => {
           /* eslint-disable no-console */
           console.error(e);
