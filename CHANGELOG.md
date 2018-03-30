@@ -1,8 +1,9 @@
 # CHANGELOG - compare
 
-## UNRELESED
+## 0.3.0 2018-03-30
 ### Added
 * Automatically load the HAR files if both files are given in the URL . Thanks [Ivru](https://github.com/Ivru) for the PR [#15](https://github.com/sitespeedio/compare/pull/15).
+* You can automatically load one HAR file by adding ?har1=URL&compare=1 as the full URL.
 * Updated to PageXray 2.2.1
 * You can now drag and drop one HAR file with multiple pages and compare the pages with each others [#16](https://github.com/sitespeedio/compare/issues/16).
 
