@@ -407,6 +407,8 @@
   }
   if (harParam1 != undefined && harParam2 != undefined) {
     loadFilesFromURL();
+  } else if ((harParam1 != undefined || harParam2 != undefined) && getParam('compare')) {
+    loadFilesFromURL();
   }
 });
 </script>
