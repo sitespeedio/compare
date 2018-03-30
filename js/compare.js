@@ -610,6 +610,29 @@ function loadFilesFromURL() {
         errorMessage(e.message);
         showUpload();
       });
+  } else if (URL.startsWith('http') || URL2.startsWith('http')) {
+    const theOne = URL.startsWith('http') ? URL : URL2;
+    const harUrl = getHarURL(theOne);
+    fetchHar(harUrl.har)
+      .then(har => {
+        generate(
+          {
+            har: har,
+            run: 0
+          },
+          {
+            har: har,
+            run: har.log.pages.length > 1 ? 1 : 0
+          }
+        );
+      })
+      .catch(e => {
+        /* eslint-disable no-console */
+        console.error(e);
+        /* eslint-disable no-console */
+        errorMessage(e.message);
+        showUpload();
+      });
   } else {
     errorMessage(
       'You need to add two URLs to be able to compare or drag/drop the HAR files.'
