@@ -308,7 +308,7 @@ function generate(config1, config2) {
       showAlignmentHelpers: false,
       showIndicatorIcons: false,
       showMimeTypeIcon: true,
-      leftColumnWith: 30,
+      leftColumnWidth: 30,
       selectedPage: selectedPage,
       legendHolder: legendHolderEl,
       fixedLengthMs: Math.max(time, time2)
