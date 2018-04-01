@@ -36,7 +36,7 @@ function getLastTiming(har, run) {
       doneTime = Math.max(doneTime, startRelative + entry.time);
     });
 
-  // Take care of the case when a timig is later than latest response
+  // Take care of the case when a timing is later than latest response
   Object.keys(har.log.pages[run].pageTimings).forEach(key => {
     if (har.log.pages[run].pageTimings[key] > doneTime) {
       doneTime = har.log.pages[run].pageTimings[key];
@@ -46,22 +46,25 @@ function getLastTiming(har, run) {
   return doneTime;
 }
 
-// Show the upload functionality
-function showUpload() {
+function removeAndHide() {
   function removeChildren(parentId) {
     const parent = document.getElementById(parentId);
     while (parent.childNodes.length > 0) {
       parent.removeChild(parent.firstChild);
     }
   }
-
   removeChildren('har1');
   removeChildren('har2');
   removeChildren('pageXrayContent');
   removeChildren('thirdPartyContent');
   removeChildren('visualProgressContent');
-  show('choosehars');
   hide('result');
+}
+
+// Show the upload functionality
+function showUpload() {
+  removeAndHide();
+  show('choosehars');
 }
 
 function help() {
@@ -264,19 +267,20 @@ function generateVisualProgress(visualProgress1, visualProgress2, id) {
 
 function regenerate(switchHar) {
   const e = document.getElementById('run1Option');
-  const run = e.options[e.selectedIndex].value;
   const e2 = document.getElementById('run2Option');
-  const run2 = e2.options[e2.selectedIndex].value;
+  const runIndex = e ? e.options[e.selectedIndex].value : 0;
+  const runIndex2 = e2 ? e2.options[e2.selectedIndex].value : 0;
 
   const har1 = switchHar ? window.har2 : window.har1;
   const har2 = switchHar ? window.har1 : window.har2;
-  // hack to remove the old HARs, make this cleaner
-  showUpload();
+  const run1 = switchHar ? runIndex2 : runIndex;
+  const run2 = switchHar ? runIndex : runIndex2;
+  removeAndHide();
 
   generate(
     {
       har: har1,
-      run: run
+      run: run1
     },
     {
       har: har2,
@@ -319,12 +323,9 @@ function generate(config1, config2) {
   }
 
   // we store the HAR to easy get it when we switch runs
-  if (config1.har.log.pages.length > 1) {
-    storeHAR('har1', config1.har);
-  }
-  if (config2.har.log.pages.length > 1) {
-    storeHAR('har2', config2.har);
-  }
+
+  storeHAR('har1', config1.har);
+  storeHAR('har2', config2.har);
 
   hideUpload();
   document.getElementById('range').value = 0;
@@ -433,6 +434,9 @@ function generate(config1, config2) {
     },
     'domainsContent'
   );
+
+  createDropZone('har1drop');
+  createDropZone('har2drop');
 }
 
 function getAllDomains(firstPage, secondPage) {
@@ -652,7 +656,6 @@ function createDropZone(id) {
         );
 
       if (isFileGzipped(file.name)) return readGZipFile(file);
-
       return readJsonFile(file);
     }
 
@@ -682,16 +685,47 @@ function createDropZone(id) {
     } else {
       readHar(files[0])
         .then(har => {
-          generate(
-            {
-              har: har,
-              run: 0
-            },
-            {
-              har: har,
-              run: har.log.pages.length > 1 ? 1 : 0
-            }
-          );
+          if (id === 'zone') {
+            removeAndHide();
+            generate(
+              {
+                har: har,
+                run: 0
+              },
+              {
+                har: har,
+                run: har.log.pages.length > 1 ? 1 : 0
+              }
+            );
+          } else if (id.indexOf('har1') > -1) {
+            const e2 = document.getElementById('run2Option');
+            const run2 = e2 ? e2.options[e2.selectedIndex].value : 0;
+            removeAndHide();
+            generate(
+              {
+                har: har,
+                run: 0
+              },
+              {
+                har: window.har2,
+                run: run2
+              }
+            );
+          } else {
+            const e = document.getElementById('run1Option');
+            const run = e.options[e.selectedIndex].value;
+            removeAndHide();
+            generate(
+              {
+                har: window.har1,
+                run: run
+              },
+              {
+                har: har,
+                run: 0
+              }
+            );
+          }
         })
         .catch(e => {
           /* eslint-disable no-console */

@@ -74,9 +74,17 @@
       <table>
         <thead>
           <tr>
-            <th class="tabletext">Metric</th>
-            <th><button onclick="regenerate(true);" class="submit submit-smaller">Switch</button> HAR 1</th>
-            <th> HAR 2</th>
+            <th class="tabletext header-min">Metric <button onclick="regenerate(true);" class="submit submit-smaller">Switch</button></th>
+            <th class="header-url">HAR 1 
+              <button class="submit submit-smaller d-file" id="har1drop"">
+                <span>Change</span>
+              </button>
+            </th>    
+            <th class="header-url"> HAR 2  
+              <button class="submit submit-smaller d-file" id="har2drop"">
+                <span>Change</span>
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>

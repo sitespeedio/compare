@@ -97,6 +97,10 @@ a {
   vertical-align: top;
 }
 
+.header-min {
+  width: 170px
+}
+
 .dropzone {
   border: 3px dashed #0095d2;
   border-radius: 16px;
@@ -222,7 +226,6 @@ a {
   display: inline;
   font-size: 11px;
   vertical-align: middle;
-  height: 22px;
   padding: 0 8px;
   font-weight: 200;
   line-height: 20px;
@@ -265,7 +268,6 @@ input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 8.4px;
   cursor: pointer;
-  animate: 0.2s;
   box-shadow: 1px 1px 1px #0073b0, 0px 0px 1px #0073b0;
   background: #0095d2;
   border-radius: 1.3px;
@@ -282,14 +284,10 @@ input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   margin-top: -14px;
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #0095d2s;
-}
 input[type=range]::-moz-range-track {
   width: 100%;
   height: 8.4px;
   cursor: pointer;
-  animate: 0.2s;
   box-shadow: 1px 1px 1px #0073b0, 0px 0px 1px #0073b0;
   background: #0095d2;
   border-radius: 1.3px;
@@ -308,7 +306,6 @@ input[type=range]::-ms-track {
   width: 100%;
   height: 8.4px;
   cursor: pointer;
-  animate: 0.2s;
   background: transparent;
   border-color: transparent;
   border-width: 16px 0;
