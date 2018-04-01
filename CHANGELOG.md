@@ -2,7 +2,7 @@
 
 ## UNRELEASED
 ### Added
-* Upgraded to PerfCascade 2.3.1
+* Upgraded to PerfCascade 2.4.1
 
 ## 0.3.0 2018-03-30
 ### Added
