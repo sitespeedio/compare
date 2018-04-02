@@ -1,6 +1,6 @@
 # CHANGELOG - compare
 
-## UNRELEASED
+## 0.4.0 2018-04-02
 ### Added
 * Upgraded to PerfCascade 2.4.1
 * You can change/upload HAR files when you already compare two HARs.
