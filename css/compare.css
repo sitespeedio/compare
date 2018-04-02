@@ -57,6 +57,20 @@ a {
   color: #0073b0;
 }
 
+table .pageXrayTable {
+  table-layout: fixed;
+}
+.tableXrayMetric {
+  width: 20%;
+}
+.tableXrayHarMetric {
+  width: 40%;
+}
+
+.tableXrayHar2Metric {
+  width: 40%;
+}
+
 .grid-result {
   padding-top: 0px;
   overflow-y: auto;
@@ -95,10 +109,6 @@ a {
   text-align: left;
   padding: 4px;
   vertical-align: top;
-}
-
-.header-min {
-  width: 170px
 }
 
 .dropzone {
