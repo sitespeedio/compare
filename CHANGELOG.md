@@ -5,6 +5,10 @@
 * Upgraded to PerfCascade 2.4.1
 * You can change/upload HAR files when you already compare two HARs.
 
+### Fixed
+* The layout in the PageXray table was dependent of the length of the URL. That could make some pages look really bad. 
+
+
 ## 0.3.0 2018-03-30
 ### Added
 * Automatically load the HAR files if both files are given in the URL . Thanks [Ivru](https://github.com/Ivru) for the PR [#15](https://github.com/sitespeedio/compare/pull/15).
