@@ -3,6 +3,7 @@
 ## UNRELEASED
 ### Added
 * Upgraded to PerfCascade 2.4.1
+* You can change/upload HAR files when you already compare two HARs.
 
 ## 0.3.0 2018-03-30
 ### Added
