@@ -4,6 +4,7 @@
 // Hide the upload functionality
 function hideUpload() {
   hide('choosehars');
+  hide('loading');
   show('result');
 }
 
@@ -59,6 +60,7 @@ function removeAndHide() {
   removeChildren('thirdPartyContent');
   removeChildren('visualProgressContent');
   hide('result');
+  hide('loading');
 }
 
 // Show the upload functionality
