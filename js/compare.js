@@ -4,6 +4,7 @@
 // Hide the upload functionality
 function hideUpload() {
   hide('choosehars');
+  hide('loading');
   show('result');
 }
 
@@ -59,6 +60,7 @@ function removeAndHide() {
   removeChildren('thirdPartyContent');
   removeChildren('visualProgressContent');
   hide('result');
+  hide('loading');
 }
 
 // Show the upload functionality
@@ -588,6 +590,8 @@ function loadFilesFromURL() {
   const URL2 = document.getElementById('harurl2').value;
 
   if (URL.startsWith('http') && URL2.startsWith('http')) {
+    hide('choosehars');
+    show('loading');
     const har1 = getHarURL(URL);
     const har2 = getHarURL(URL2);
 
@@ -617,6 +621,8 @@ function loadFilesFromURL() {
   } else if (URL.startsWith('http') || URL2.startsWith('http')) {
     const theOne = URL.startsWith('http') ? URL : URL2;
     const harUrl = getHarURL(theOne);
+    hide('choosehars');
+    show('loading');
     fetchHar(harUrl.har)
       .then(har => {
         generate(
@@ -662,6 +668,8 @@ function createDropZone(id) {
     if (files.length > 2) {
       errorMessage('You can only compare max two HAR files at a time!');
     } else if (files.length === 2) {
+      hide('choosehars');
+      show('loading');
       Promise.all([readHar(files[0]), readHar(files[1])])
         .then(([har1, har2]) =>
           generate(
@@ -683,6 +691,10 @@ function createDropZone(id) {
           showUpload();
         });
     } else {
+      if (id === 'zone') {
+        show('loading');
+        hide('choosehars');
+      }
       readHar(files[0])
         .then(har => {
           if (id === 'zone') {

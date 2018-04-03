@@ -140,6 +140,10 @@ table .pageXrayTable {
   display: none;
 }
 
+.loading {
+  display: none;
+}
+
 .userShowable {
   display: none;
   background-color: #f5f5f5;

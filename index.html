@@ -38,9 +38,11 @@
   <link href="css/dependencies/chartist.min.css" media="all" rel="stylesheet" />
   <link href="css/dependencies/chartist-plugin-tooltip.css" media="all" rel="stylesheet" />
   <link href="css/chartistExtras.css" media="all" rel="stylesheet" />
+  <link href="css/dependencies/loader.css" media="all" rel="stylesheet" />
   <!-- endbuild -->
-
+  
   <script type="text/javascript">
+
   window.fd = {
   logging: false
 };
@@ -495,6 +497,25 @@
       </div>
     </div>
   </div>
+  <div id="loading" class="loading result">
+      <header class="header">
+          <div class="wip">ALPHA</div>
+          <div class="grid grid-pad">
+            <div class="col-1-1">
+              <div class="logo">
+                <a href="https://compare.sitespeed.io/"><img src="img/compare.png" width="77" class="img-logo"></a>
+              </div>
+              <h1 class="title">Compare</h1>
+              <p class="subtitle">Understand regressions by comparing your HAR files.</p>
+            </div>
+          </div>
+        </header>
+      <div class="grid grid-pad">
+          <div class="col-1-1">
+              <div class="loader">Loading...</div>
+          </div>
+        </div>
+  </div>
   <footer>
     <div class="grid grid-pad">
       <div class="col-1-1">
@@ -505,6 +526,22 @@
       </div>
     </div>
   </footer>
+  <script>
+    function getParam(name) {
+    if (
+      (name = new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)').exec(
+        location.search
+      ))
+    )
+      return decodeURIComponent(name[1]);
+  }
+  if (getParam('compare')) {
+    const el = document.getElementById('choosehars');
+    el.style.display = 'none';
+    const el2 = document.getElementById('loading');
+    el2.style.display = 'block';
+  }
+  </script>
 </body>
 
 </html>
