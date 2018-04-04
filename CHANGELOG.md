@@ -1,5 +1,10 @@
 # CHANGELOG - compare
 
+## 0.4.1 2018-04-04
+### Fixed
+* Major code refactoring to make it easier to do changes in the future.
+* Uploading files failed on Firefox. 
+
 ## 0.4.0 2018-04-02
 ### Added
 * Upgraded to PerfCascade 2.4.1
