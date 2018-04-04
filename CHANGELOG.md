@@ -1,5 +1,9 @@
 # CHANGELOG - compare
 
+## UNRELEASED
+### Added
+* CPU metrics are now showed automatically.
+
 ## 0.4.1 2018-04-04
 ### Fixed
 * Major code refactoring to make it easier to do changes in the future.
