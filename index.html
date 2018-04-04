@@ -218,27 +218,41 @@
               <a href="{{p2.meta.result}}" target="_blank" rel="noopener noreferrer">Result page</a>
             </td>
           </tr>
-          {{/if}} {{/if}} {{#if p1.cpu}} {{#if p2.cpu}}
+          {{/if}} {{/if}} {{#if p1.cpu.categories}} {{#if p2.cpu.categories}}
           <tr>
-            <td class="tabletext" span="3">CPU <button onclick="toggleRow(this, 'cpuExtraInfo', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td class="tabletext">CPU Painting:
+            </td>
+            <td>{{p1.cpu.categories.Painting.toFixed(1)}}
+            </td>
+            <td>{{p2.cpu.categories.Painting.toFixed(1)}}
+            </td>
           </tr>
-          <tr class="userShowable cpuExtraInfo">
-            <td class="tabletext">
+          <tr>
+            <td class="tabletext">CPU Loading:
             </td>
-            <td>
-              <ul>
-                {{#each p1.cpu.categories}}
-                <li>{{@key}} : {{this.toFixed(1)}}</li>
-                {{/each}}
-              </ul>
+            <td>{{p1.cpu.categories.Loading.toFixed(1)}}
             </td>
-            <td>
-              <ul>
-                {{#each p2.cpu.categories}}
-                <li>{{@key}} : {{this.toFixed(1)}}</li>
-                {{/each}}
-              </ul>
+            <td>{{p2.cpu.categories.Loading.toFixed(1)}}
             </td>
+          </tr>
+          <tr>
+            <td class="tabletext">CPU Layout:
+            </td>
+            <td>{{p1.cpu.categories.Layout.toFixed(1)}}
+            </td>
+            <td>{{p2.cpu.categories.Layout.toFixed(1)}}
+            </td>
+          </tr>
+          <tr>
+            <td class="tabletext">CPU Scripting:
+            </td>
+            <td>{{p1.cpu.categories.Scripting.toFixed(1)}}
+            </td>
+            <td>{{p2.cpu.categories.Scripting.toFixed(1)}}
+            </td>
+          </tr>
+          <tr>
+            <td class="tabletext" colspan="3">CPU Events <button onclick="toggleRow(this, 'cpuExtraInfo', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
           </tr>
           <tr class="userShowable cpuExtraInfo">
             <td class="tabletext">
