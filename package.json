@@ -1,6 +1,6 @@
 {
   "name": "@sitespeed.io/compare",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Compare HAR files.",
   "repository": {
     "type": "git",
