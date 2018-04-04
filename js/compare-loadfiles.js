@@ -1,5 +1,5 @@
-/* global Zlib */
-/* exported readHar, fetchHar, getHarURL*/
+/* global Zlib, errorMessage, generate, showUpload */
+/* exported readHar, fetchHar, getHarURL, loadFilesFromURL*/
 
 /**
  * Help functions to read HAR files from file
@@ -168,4 +168,82 @@ function readHar(file) {
 
   if (isFileGzipped(file.name)) return readGZipFile(file);
   return readJsonFile(file);
+}
+
+function loadFilesFromURL() {
+  function fetchHar(url) {
+    return fetch(url).then(response => {
+      if (!response.ok)
+        throw new Error(
+          'Failed to fetch har from ' + url + '. Error: ' + response.statusText
+        );
+
+      if (isFileZipped(url))
+        throw new Error('Zip compressed HARs are not supported: ' + url);
+
+      if (isFileGzipped(url))
+        return response.arrayBuffer().then(gzipArrayBufferToJSON);
+
+      return response.json();
+    });
+  }
+
+  const URL = document.getElementById('harurl').value;
+  const URL2 = document.getElementById('harurl2').value;
+
+  if (URL.startsWith('http') && URL2.startsWith('http')) {
+    const har1 = getHarURL(URL);
+    const har2 = getHarURL(URL2);
+
+    const harPromise = fetchHar(har1.har);
+    const harPromise2 = fetchHar(har2.har);
+
+    Promise.all([harPromise, harPromise2])
+      .then(([h1, h2]) =>
+        generate(
+          {
+            har: h1,
+            run: har1.run
+          },
+          {
+            har: h2,
+            run: har2.run
+          }
+        )
+      )
+      .catch(e => {
+        /* eslint-disable no-console */
+        console.error(e);
+        /* eslint-disable no-console */
+        errorMessage(e.message);
+        showUpload();
+      });
+  } else if (URL.startsWith('http') || URL2.startsWith('http')) {
+    const theOne = URL.startsWith('http') ? URL : URL2;
+    const harUrl = getHarURL(theOne);
+    fetchHar(harUrl.har)
+      .then(har => {
+        generate(
+          {
+            har: har,
+            run: 0
+          },
+          {
+            har: har,
+            run: har.log.pages.length > 1 ? 1 : 0
+          }
+        );
+      })
+      .catch(e => {
+        /* eslint-disable no-console */
+        console.error(e);
+        /* eslint-disable no-console */
+        errorMessage(e.message);
+        showUpload();
+      });
+  } else {
+    errorMessage(
+      'You need to add two URLs to be able to compare or drag/drop the HAR files.'
+    );
+  }
 }
