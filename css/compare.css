@@ -353,10 +353,38 @@ input[type=range]:focus::-ms-fill-upper {
   background: #0095d2;
 }
 
-.fastly {
-  vertical-align: middle;
-  height: 32px;
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
 }
+.inputfile + label {
+  display: inline;
+  font-size: 11px;
+  vertical-align: middle;
+  padding: 6px 12px;
+  font-weight: 200;
+  line-height: 20px;
+  margin: 0;
+  margin: 20px auto 20px;
+  background-color: #0095d2;
+  color: #fff;
+  cursor: pointer;
+  border-color: #0095d2;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+
+.inputfile + label:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
+}
+
 @media (max-width: 600px) {
   .img-logo {
     width: 100%;

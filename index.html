@@ -40,13 +40,13 @@
   <link href="css/chartistExtras.css" media="all" rel="stylesheet" />
   <link href="css/dependencies/loader.css" media="all" rel="stylesheet" />
   <!-- endbuild -->
-  
+
   <script type="text/javascript">
 
-  window.fd = {
-  logging: false
-};
-</script>
+    window.fd = {
+      logging: false
+    };
+  </script>
 
   <!-- build:js js/combined.js -->
   <script src="js/dependencies/template7.min.js" defer></script>
@@ -57,6 +57,10 @@
   <script src="js/dependencies/chartist.min.js" defer></script>
   <script src="js/dependencies/chartist-plugin-axistitle.min.js" defer></script>
   <script src="js/dependencies/chartist-plugin-tooltip.min.js" defer></script>
+  <script src="js/compare-upload.js" defer></script>
+  <script src="js/compare-har.js" defer></script>
+  <script src="js/compare-loadfiles.js" defer></script>
+  <script src="js/compare-ux.js" defer></script>
   <script src="js/compare.js" defer></script>
   <!-- endbuild -->
 
@@ -77,15 +81,13 @@
         <thead>
           <tr>
             <th class="tabletext tableXrayMetric">Metric <button onclick="regenerate(true);" class="submit submit-smaller">Switch</button></th>
-            <th class="tableXrayHarMetric">HAR 1 
-              <button class="submit submit-smaller d-file" id="har1drop"">
-                <span>Change</span>
-              </button>
-            </th>    
-            <th class="tableXrayHar2Metric"> HAR 2  
-              <button class="submit submit-smaller d-file" id="har2drop"">
-                <span>Change</span>
-              </button>
+            <th class="tableXrayHarMetric">HAR 1
+              <input type="file" id="har1upload" class="inputfile"/>
+              <label for="har1upload">Upload</label>
+            </th>
+            <th class="tableXrayHar2Metric"> HAR 2
+              <input type="file" id="har2upload" class="inputfile"/>
+              <label for="har2upload">Upload</label>
             </th>
           </tr>
         </thead>
@@ -403,25 +405,25 @@
 -->
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  createDropZone('zone');
-  const harParam1 = getParam('har1');
-  const harParam2 = getParam('har2');
-  if (harParam1 != undefined) {
-    const input1 = document.getElementById('harurl');
-    input1.value = harParam1;
-  }
-  if (harParam2 != undefined) {
-    const input2 = document.getElementById('harurl2');
-    input2.value = harParam2;
-  }
-  if (harParam1 != undefined && harParam2 != undefined) {
-    loadFilesFromURL();
-  } else if ((harParam1 != undefined || harParam2 != undefined) && getParam('compare')) {
-    loadFilesFromURL();
-  }
-});
-</script>
+    document.addEventListener('DOMContentLoaded', function () {
+      createMainDropZone('zone');
+      const harParam1 = getParam('har1');
+      const harParam2 = getParam('har2');
+      if (harParam1 != undefined) {
+        const input1 = document.getElementById('harurl');
+        input1.value = harParam1;
+      }
+      if (harParam2 != undefined) {
+        const input2 = document.getElementById('harurl2');
+        input2.value = harParam2;
+      }
+      if (harParam1 != undefined && harParam2 != undefined) {
+        loadFilesFromURL();
+      } else if ((harParam1 != undefined || harParam2 != undefined) && getParam('compare')) {
+        loadFilesFromURL();
+      }
+    });
+  </script>
 
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/compare-144.png">
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/ico/compare-114.png">
@@ -432,11 +434,13 @@
 <body>
   <div id="choosehars">
     <header class="header">
-      <div class="wip">ALPHA</div>
+      <div class="wip">BETA</div>
       <div class="grid grid-pad">
         <div class="col-1-1">
           <div class="logo">
-            <a href="https://compare.sitespeed.io/"><img src="img/compare.png" width="77" class="img-logo"></a>
+            <a href="https://compare.sitespeed.io/">
+              <img src="img/compare.png" width="77" class="img-logo">
+            </a>
           </div>
           <h1 class="title">Compare</h1>
           <p class="subtitle">Understand regressions by comparing your HAR files.</p>
@@ -449,14 +453,19 @@
           <p>Drop HAR files here (max two) or click to upload. You can add .har and .har.gz files.</p>
         </fieldset>
         <p class="smallish">
-        Or add the URL to your HAR files and press compare:
+          Or add the URL to your HAR files and press compare:
         </p>
         <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
         <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
-        <p class="smallish"><a href="#" onclick="help();">Need help?</a></p>
+        <p class="smallish">
+          <a href="#" onclick="show('help');">Need help?</a>
+        </p>
         <div class="help" id="help">
-          HAR stands for <a href="http://www.softwareishard.com/blog/har-12-spec/">HTTP Archive</a> and describes how a browser download different assets. You can add a URL to a HAR file or the URL to a specific sitespeed.io run and we will automagically
-          find the HAR. If you need more help, look at the <a href="https://www.youtube.com/watch?v=dCThwpglIeE">introduction video</a> or please create an <a href="https://github.com/sitespeedio/compare/issues/new">issue</a> at Github.
+          HAR stands for
+          <a href="http://www.softwareishard.com/blog/har-12-spec/">HTTP Archive</a> and describes how a browser download different assets. You can add a URL to a HAR file or the
+          URL to a specific sitespeed.io run and we will automagically find the HAR. If you need more help, look at the
+          <a href="https://www.youtube.com/watch?v=dCThwpglIeE">introduction video</a> or please create an
+          <a href="https://github.com/sitespeedio/compare/issues/new">issue</a> at Github.
         </div>
         <button type="button" class="submit" onclick="loadFilesFromURL();">Compare</button>
         <div id="message" class="message"></div>
@@ -469,7 +478,9 @@
       <div class="grid grid-pad grid-result">
         <div class="col-1-1">
           <div class="logo">
-            <a href="https://compare.sitespeed.io/"><img src="img/compare.png" width="34" class="img-logo"></a>
+            <a href="https://compare.sitespeed.io/">
+              <img src="img/compare.png" width="34" class="img-logo">
+            </a>
           </div>
           <div id="resultHeaderContent">
           </div>
@@ -481,7 +492,8 @@
         <div id="pageXrayContent">
         </div>
         <h3 id="waterfallHeader">Waterfall</h3>
-        <div class="rangeWrapper">HAR1&nbsp;<input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;HAR2</div>
+        <div class="rangeWrapper">HAR1&nbsp;
+          <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;HAR2</div>
         <div id="waterfallLegendHolder"></div>
         <div class="harwrapper">
           <div id="har1" class="har1"></div>
@@ -498,49 +510,56 @@
     </div>
   </div>
   <div id="loading" class="loading result">
-      <header class="header">
-          <div class="wip">ALPHA</div>
-          <div class="grid grid-pad">
-            <div class="col-1-1">
-              <div class="logo">
-                <a href="https://compare.sitespeed.io/"><img src="img/compare.png" width="77" class="img-logo"></a>
-              </div>
-              <h1 class="title">Compare</h1>
-              <p class="subtitle">Understand regressions by comparing your HAR files.</p>
-            </div>
-          </div>
-        </header>
+    <header class="header">
+      <div class="wip">ALPHA</div>
       <div class="grid grid-pad">
-          <div class="col-1-1">
-              <div class="loader">Loading...</div>
+        <div class="col-1-1">
+          <div class="logo">
+            <a href="https://compare.sitespeed.io/">
+              <img src="img/compare.png" width="77" class="img-logo">
+            </a>
           </div>
+          <h1 class="title">Compare</h1>
+          <p class="subtitle">Understand regressions by comparing your HAR files.</p>
         </div>
+      </div>
+    </header>
+    <div class="grid grid-pad">
+      <div class="col-1-1">
+        <div class="loader">Loading...</div>
+      </div>
+    </div>
   </div>
   <footer>
     <div class="grid grid-pad">
       <div class="col-1-1">
-        &copy; <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> 2018 - Built using <a href="https://github.com/micmro/PerfCascade">PerfCascade</a> and <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and <a href="https://github.com/sitespeedio/compare/blob/master/CREDIT.md">other great Open Source tools</a>.
-        <br/> Code licensed <a href="https://github.com/sitespeedio/compare/blob/master/LICENSE">MIT</a>. 
-        <a href="https://github.com/sitespeedio/compare/blob/master/CHANGELOG.md">Changelog</a>.
-        Help us <a href="https://github.com/sitespeedio/compare">make it better!</a>
+        &copy;
+        <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> 2018 - Built using
+        <a href="https://github.com/micmro/PerfCascade">PerfCascade</a> and
+        <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and
+        <a href="https://github.com/sitespeedio/compare/blob/master/CREDIT.md">other great Open Source tools</a>.
+        <br/> Code licensed
+        <a href="https://github.com/sitespeedio/compare/blob/master/LICENSE">MIT</a>.
+        <a href="https://github.com/sitespeedio/compare/blob/master/CHANGELOG.md">Changelog</a>. Help us
+        <a href="https://github.com/sitespeedio/compare">make it better!</a>
       </div>
     </div>
   </footer>
   <script>
     function getParam(name) {
-    if (
-      (name = new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)').exec(
-        location.search
-      ))
-    )
-      return decodeURIComponent(name[1]);
-  }
-  if (getParam('compare')) {
-    const el = document.getElementById('choosehars');
-    el.style.display = 'none';
-    const el2 = document.getElementById('loading');
-    el2.style.display = 'block';
-  }
+      if (
+        (name = new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)').exec(
+          location.search
+        ))
+      )
+        return decodeURIComponent(name[1]);
+    }
+    if (getParam('compare') || getParam('har1') && getParam('har2')) {
+      const el = document.getElementById('choosehars');
+      el.style.display = 'none';
+      const el2 = document.getElementById('loading');
+      el2.style.display = 'block';
+    }
   </script>
 </body>
 
