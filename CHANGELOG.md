@@ -1,8 +1,9 @@
 # CHANGELOG - compare
 
-## UNRELEASED
+## 0.5.0 2018-04-05
 ### Added
 * CPU metrics are now showed automatically.
+* Styled the PageXray info table to make it easier to read.
 
 ## 0.4.1 2018-04-04
 ### Fixed
