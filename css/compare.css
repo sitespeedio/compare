@@ -31,6 +31,23 @@ thead tr th {
   border-spacing: 5px 5px;
 }
 
+.pageXrayTable tr:hover td {
+  background:#0073b0;
+  color:#FFFFFF;
+}
+
+.pageXrayTable tr:hover td a {
+  color:#FFFFFF;
+}
+
+.pageXrayTable tr:nth-child(odd) td {
+  background:#F3F3F3;
+}
+
+.pageXrayTable tr:nth-child(odd):hover td {
+  background:#0073b0;
+}
+
 footer {
   text-align: center;
   font-size: 0.8em;
