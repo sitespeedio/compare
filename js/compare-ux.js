@@ -1,4 +1,4 @@
-/* global Chartist, Template7, getLastTiming, perfCascade, createUpload, getAllDomains */
+/* global Chartist, Template7, getLastTiming, perfCascade, createUpload, getAllDomains getURLsDiff*/
 /* exported showUpload, formatDate, generate, toggleRow, regenerate*/
 
 // Hide the upload functionality
@@ -341,6 +341,21 @@ function generate(config1, config2) {
     },
     'domainsContent'
   );
+
+  const urlDiff = getURLsDiff(
+    config1.har,
+    config1.run,
+    config2.har,
+    config2.run
+  );
+
+  // We only log this information for now
+  /* eslint-disable no-console */
+  console.log('Requests in HAR1 but not in HAR2:');
+  console.log(urlDiff.diff1);
+  console.log('Requests in HAR2 but not in HAR1:');
+  console.log(urlDiff.diff2);
+  /* eslint-enable no-console */
 
   createUpload('har1upload');
   createUpload('har2upload');
