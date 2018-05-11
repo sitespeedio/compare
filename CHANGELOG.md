@@ -1,5 +1,8 @@
 # CHANGELOG - compare
 
+## UNRELEADED
+* Layout -> Rendering in latest Browsertime.
+
 ## 0.5.0 2018-04-05
 ### Added
 * CPU metrics are now showed automatically.
