@@ -1,7 +1,9 @@
 # CHANGELOG - compare
 
-## UNRELEADED
+## 0.5.1 2018-06-01
+### Fixed
 * Layout -> Rendering in latest Browsertime.
+* Upgraded to PerfCascade 2.5.2 fixiing Edge tab bug
 
 ## 0.5.0 2018-04-05
 ### Added
