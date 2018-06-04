@@ -1,5 +1,10 @@
 # CHANGELOG - compare
 
+## UNRELEASED
+### Added
+* Sort CPU events by name to make it easier to spot regressions
+* Upgraded to latest release of template7
+
 ## 0.5.1 2018-06-01
 ### Fixed
 * Layout -> Rendering in latest Browsertime.
