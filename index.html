@@ -219,38 +219,37 @@
             </td>
           </tr>
           {{/if}} {{/if}}
-          {{#if p1.cpu}} {{#if p2.cpu}}
-            {{#if p1.cpu.categories}} {{#if p2.cpu.categories}}
+            {{#if cpuCategories1}} {{#if cpuCategories2}}
             <tr>
               <td class="tabletext">CPU Painting:
               </td>
-              <td>{{p1.cpu.categories.Painting.toFixed(1)}}
+              <td>{{cpuCategories1.Painting.toFixed(1)}}
               </td>
-              <td>{{p2.cpu.categories.Painting.toFixed(1)}}
+              <td>{{cpuCategories2.Painting.toFixed(1)}}
               </td>
             </tr>
             <tr>
               <td class="tabletext">CPU Loading:
               </td>
-              <td>{{p1.cpu.categories.Loading.toFixed(1)}}
+              <td>{{cpuCategories1.Loading.toFixed(1)}}
               </td>
-              <td>{{p2.cpu.categories.Loading.toFixed(1)}}
+              <td>{{cpuCategories2.Loading.toFixed(1)}}
               </td>
             </tr>
             <tr>
               <td class="tabletext">CPU Rendering:
               </td>
-              <td>{{p1.cpu.categories.Rendering.toFixed(1)}}
+              <td>{{cpuCategories1.Rendering.toFixed(1)}}
               </td>
-              <td>{{p2.cpu.categories.Rendering.toFixed(1)}}
+              <td>{{cpuCategories2.Rendering.toFixed(1)}}
               </td>
             </tr>
             <tr>
               <td class="tabletext">CPU Scripting:
               </td>
-              <td>{{p1.cpu.categories.Scripting.toFixed(1)}}
+              <td>{{cpuCategories1.Scripting.toFixed(1)}}
               </td>
-              <td>{{p2.cpu.categories.Scripting.toFixed(1)}}
+              <td>{{cpuCategories2.Scripting.toFixed(1)}}
               </td>
             </tr>
             <tr>
@@ -261,21 +260,20 @@
               </td>
               <td>
                 <ul>
-                  {{#each p1.cpu.events}}
-                  <li>{{@key}} : {{this.toFixed(1)}}</li>
+                  {{#each cpuEvents1}}
+                      <li>{{name}} : {{value.toFixed(1)}}</li> 
                   {{/each}}
                 </ul>
               </td>
               <td>
                 <ul>
-                  {{#each p2.cpu.events}}
-                  <li>{{@key}} : {{this.toFixed(1)}}</li>
+                  {{#each cpuEvents2}}
+                      <li>{{name}} : {{value.toFixed(1)}}</li>
                   {{/each}}
                 </ul>
               </td>
             </tr>
             {{/if}} {{/if}}
-          {{/if}} {{/if}}
         </tbody>
       </table>
     </div>

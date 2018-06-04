@@ -30,6 +30,20 @@ function showUpload() {
   show('choosehars');
 }
 
+function objectPropertiesToArray(object) {
+  const array = [];
+  for (let key in object) {
+    if (object.hasOwnProperty(key)) {
+      array.push({ name: key, value: object[key] });
+    }
+  }
+  return array.sort(function(a, b) {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
+}
+
 // Put a error message on the screen
 function errorMessage(myMessage) {
   const message = document.getElementById('message');
@@ -279,7 +293,15 @@ function generate(config1, config2) {
       p1: pageXray1,
       p2: pageXray2,
       runs1: runs1,
-      runs2: runs2
+      runs2: runs2,
+      cpuCategories1: pageXray1.cpu ? pageXray1.cpu.categories : undefined,
+      cpuCategories2: pageXray2.cpu ? pageXray2.cpu.categories : undefined,
+      cpuEvents1: pageXray1.cpu
+        ? objectPropertiesToArray(pageXray1.cpu.events)
+        : undefined,
+      cpuEvents2: pageXray2.cpu
+        ? objectPropertiesToArray(pageXray2.cpu.events)
+        : undefined
     },
     'pageXrayContent'
   );
