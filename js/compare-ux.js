@@ -1,5 +1,5 @@
 /* global Chartist, Template7, getLastTiming, perfCascade, createUpload, getAllDomains */
-/* exported showUpload, formatDate, generate, toggleRow, regenerate*/
+/* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime*/
 
 // Hide the upload functionality
 function hideUpload() {
@@ -66,6 +66,10 @@ function hide(id) {
 
 function formatDate(dateString) {
   return new Date(dateString).toLocaleString();
+}
+
+function formatTime(ms) {
+  return ms + ' ms';
 }
 
 function formatBytes(bytes) {
