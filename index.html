@@ -174,21 +174,21 @@
             <td> {{#if p1.visualMetrics}} {{p1.visualMetrics.FirstVisualChange}} {{/if}}</td>
             <td> {{#if p2.visualMetrics}} {{p2.visualMetrics.FirstVisualChange}} {{/if}}</td>
           </tr>
-          {{#if p1.visualMetrics.LargestImage} {{#if p2.visualMetrics.LargestImage}}}
+          {{#if p1.visualMetrics.LargestImage}} {{#if p2.visualMetrics.LargestImage}}
           <tr>
-            <td class="tabletext">LargestImage</td>
+            <td class="tabletext">Largest Image</td>
             <td> {{p1.visualMetrics.LargestImage}}</td>
             <td> {{p2.visualMetrics.LargestImage}}</td>
           </tr>
           {{/if}} {{/if}}
-          {{#if p1.visualMetrics.Logo {{#if p2.visualMetrics.Logo}}}
+          {{#if p1.visualMetrics.Logo}} {{#if p2.visualMetrics.Logo}}
           <tr>
             <td class="tabletext">Logo</td>
             <td>{{p1.visualMetrics.Logo}}</td>
             <td>{{p2.visualMetrics.Logo}}</td>
           </tr>
           {{/if}} {{/if}}
-          {{#if p1.visualMetrics.Heading} {{#if p2.visualMetrics.Heading}}
+          {{#if p1.visualMetrics.Heading}} {{#if p2.visualMetrics.Heading}}
           <tr>
             <td class="tabletext">Heading</td>
             <td> {{p1.visualMetrics.Heading}}</td>
@@ -202,10 +202,10 @@
           </tr>
           <tr>
             <td class="tabletext">Last Visual Change</td>
-            <td> {{#if p1.visualMetrics}} {{p1.visualMetrics.LastVisualChange}} {{/if}}</td>
-            <td> {{#if p2.visualMetrics}} {{p2.visualMetrics.LastVisualChange}} {{/if}}</td>
+            <td> {{#if p1.visualMetrics}} {{p1.visualMetrics.LastVisualChange}}{{/if}}</td>
+            <td> {{#if p2.visualMetrics}} {{p2.visualMetrics.LastVisualChange}}{{/if}}</td>
           </tr>
-          {{#if p1.visualMetrics.VisualReadiness} {{#if p2.visualMetrics.VisualReadiness}}}
+          {{#if p1.visualMetrics.VisualReadiness}} {{#if p2.visualMetrics.VisualReadiness}}
           <tr>
             <td class="tabletext">Visual Readiness</td>
             <td>{{p1.visualMetrics.VisualReadiness}}</td>
@@ -289,7 +289,7 @@
               <td>
                 <ul>
                   {{#each cpuEvents1}}
-                      <li>{{name}} : {{value.toFixed(1)}}</li> 
+                      <li>{{name}} : {{value.toFixed(1)}}</li>
                   {{/each}}
                 </ul>
               </td>
