@@ -5,6 +5,7 @@
 * Sort CPU events by name to make it easier to spot regressions
 * Upgraded to latest release of template7
 * Added more Visual Metrics.
+* Upgrad to PageXray 2.4.0
 
 ## 0.5.1 2018-06-01
 ### Fixed
