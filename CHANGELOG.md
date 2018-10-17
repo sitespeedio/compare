@@ -1,6 +1,6 @@
 # CHANGELOG - compare
 
-## UNRELEASED
+## 0.6.0 2018-10-17
 ### Added
 * Sort CPU events by name to make it easier to spot regressions
 * Upgraded to latest release of template7
