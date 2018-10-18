@@ -81,11 +81,11 @@
         <thead>
           <tr>
             <th class="tabletext tableXrayMetric">Metric <button onclick="regenerate(true);" class="submit submit-smaller">Switch</button></th>
-            <th class="tableXrayHarMetric">HAR 1
+            <th class="tableXrayHarMetric">{{label1}}
               <input type="file" id="har1upload" class="inputfile"/>
               <label for="har1upload">Upload</label>
             </th>
-            <th class="tableXrayHar2Metric"> HAR 2
+            <th class="tableXrayHar2Metric"> {{label2}}
               <input type="file" id="har2upload" class="inputfile"/>
               <label for="har2upload">Upload</label>
             </th>
@@ -408,6 +408,11 @@
     </div>
   </script>
 
+  <script id="waterfallTemplate" type="text/template7">
+  <div class="rangeWrapper">{{label1}}&nbsp;
+    <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{label2}}</div>
+  </script>
+
   <script id="domainsTemplate" type="text/template7">
     <h3 id="domainsHeader">Domains</h3>
     <div class="col-1-1">
@@ -415,10 +420,10 @@
         <thead>
           <tr>
             <th class="tabletext">Domain</th>
-            <th class="no-break">HAR 1 Request</th>
-            <th class="no-break">HAR 2 Request</th>
-            <th class="no-break">HAR 1 Size</th>
-            <th class="no-break">HAR 2 Size</th>
+            <th class="no-break">{{label1}} Request</th>
+            <th class="no-break">{{label2}} Request</th>
+            <th class="no-break">{{label1}} Size</th>
+            <th class="no-break">{{label2}} Size</th>
           </tr>
         </thead>
         <tbody>
@@ -450,28 +455,25 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       createMainDropZone('zone');
-      const harParam1 = getParam('har1');
-      const harParam2 = getParam('har2');
-      const gistParam = getParam('gist');
-      if (harParam1 != undefined) {
-        const input1 = document.getElementById('harurl');
-        input1.value = harParam1;
-      }
-      if (harParam2 != undefined) {
-        const input2 = document.getElementById('harurl2');
-        input2.value = harParam2;
-      }
 
-      if (gistParam != undefined) {
-        const gist = document.getElementById('gist');
-        gist.value = gistParam;
+      function getAndSet(paramName, elementId) {
+        const paramValue = getParam(paramName);
+        if (paramValue) {
+          const el= document.getElementById(elementId);
+          el.value = paramValue;
+        }
       }
-
-      if (harParam1 != undefined && harParam2 != undefined) {
+      getAndSet('har1','harurl');
+      getAndSet('har2','harurl2');
+      getAndSet('gist','gist');
+      getAndSet('label1','harlabel');
+      getAndSet('label2','harlabel2');
+    
+      if (getParam('har1') != undefined && getParam('har2') != undefined) {
         loadFilesFromURL();
-      } else if ((harParam1 != undefined || harParam2 != undefined) && getParam('compare')) {
+      } else if ((getParam('har1') != undefined || getParam('har2') != undefined) && getParam('compare')) {
         loadFilesFromURL();
-      } else if (gistParam !== undefined) {
+      } else if (getParam('gist') !== undefined) {
         loadFilesFromGist();
       }
     });
@@ -510,6 +512,8 @@
         <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
         <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
         <input type="hidden" id="gist">
+        <input type="hidden" id="harlabel" value="HAR1">
+        <input type="hidden" id="harlabel2" value="HAR2">
         <p class="smallish">
           <a href="#" onclick="show('help');">Need help?</a>
         </p>
@@ -541,11 +545,13 @@
     </header>
     <div class="grid grid-pad grid-result">
       <div class="col-1-1">
+        <div id="comment" class="comment">
+        </div>
         <div id="pageXrayContent">
         </div>
         <h3 id="waterfallHeader">Waterfall</h3>
-        <div class="rangeWrapper">HAR1&nbsp;
-          <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;HAR2</div>
+        <div id="waterfallContent">
+        </div>
         <div id="waterfallLegendHolder"></div>
         <div class="harwrapper">
           <div id="har1" class="har1"></div>

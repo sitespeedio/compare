@@ -18,6 +18,7 @@ function removeAndHide() {
   removeChildren('har1');
   removeChildren('har2');
   removeChildren('pageXrayContent');
+  removeChildren('comment');
   removeChildren('thirdPartyContent');
   removeChildren('visualProgressContent');
   hide('result');
@@ -182,16 +183,20 @@ function regenerate(switchHar) {
   const har2 = switchHar ? window.har1 : window.har2;
   const run1 = switchHar ? runIndex2 : runIndex;
   const run2 = switchHar ? runIndex : runIndex2;
+  const label1 = switchHar ? window.label2 : window.label1;
+  const label2 = switchHar ? window.label1 : window.label2;
   removeAndHide();
 
   generate(
     {
       har: har1,
-      run: run1
+      run: run1,
+      label: label1
     },
     {
       har: har2,
-      run: run2
+      run: run2,
+      label: label2
     }
   );
 }
@@ -200,8 +205,8 @@ function generate(config1, config2) {
   const time = getLastTiming(config1.har, config1.run);
   const time2 = getLastTiming(config2.har, config2.run);
 
-  function storeHAR(name, har) {
-    window[name] = har;
+  function store(name, value) {
+    window[name] = value;
   }
 
   function parseTemplate(templateId, data, divId) {
@@ -237,12 +242,12 @@ function generate(config1, config2) {
 
   // we store the HAR to easy get it when we switch runs
 
-  storeHAR('har1', config1.har);
-  storeHAR('har2', config2.har);
+  store('har1', config1.har);
+  store('har2', config2.har);
+  store('label1', config1.label);
+  store('label2', config2.label);
 
   hideUpload();
-  document.getElementById('range').value = 0;
-  changeOpacity(0, 'har1', 'har2');
 
   // remove error messages
   errorMessage('');
@@ -292,10 +297,24 @@ function generate(config1, config2) {
   );
 
   parseTemplate(
+    'waterfallTemplate',
+    {
+      label1: config1.label,
+      label2: config2.label
+    },
+    'waterfallContent'
+  );
+
+  document.getElementById('range').value = 0;
+  changeOpacity(0, 'har1', 'har2');
+
+  parseTemplate(
     'pageXrayTemplate',
     {
       p1: pageXray1,
       p2: pageXray2,
+      label1: config1.label,
+      label2: config2.label,
       runs1: runs1,
       runs2: runs2,
       cpuCategories1: pageXray1.cpu ? pageXray1.cpu.categories : undefined,
@@ -363,7 +382,9 @@ function generate(config1, config2) {
   parseTemplate(
     'domainsTemplate',
     {
-      domains: allDomains
+      domains: allDomains,
+      label1: config1.label,
+      label2: config2.label
     },
     'domainsContent'
   );

@@ -194,7 +194,7 @@ function loadFilesFromGist() {
       try {
         content = JSON.parse(gist.files[key].content);
       } catch (e) {
-        throw new Error('Malformed gist.');
+        throw new Error('Malformed gist.' + e);
       }
       if (
         content &&
@@ -207,6 +207,16 @@ function loadFilesFromGist() {
         input1.value = content.har1.url;
         const input2 = document.getElementById('harurl2');
         input2.value = content.har2.url;
+        const label = document.getElementById('harlabel');
+        const label2 = document.getElementById('harlabel2');
+        label.value = content.har1.label;
+        label2.value = content.har2.label;
+
+        if (content.comment) {
+          const comment = document.getElementById('comment');
+          comment.innerHTML = content.comment;
+        }
+
         return loadFilesFromURL();
       } else {
         throw new Error('Malformed gist.');
@@ -241,6 +251,8 @@ function loadFilesFromURL() {
 
   const URL = document.getElementById('harurl').value;
   const URL2 = document.getElementById('harurl2').value;
+  const label = document.getElementById('harlabel').value;
+  const label2 = document.getElementById('harlabel2').value;
 
   if (URL.startsWith('http') && URL2.startsWith('http')) {
     const har1 = getHarURL(URL);
@@ -254,11 +266,13 @@ function loadFilesFromURL() {
         generate(
           {
             har: h1,
-            run: har1.run
+            run: har1.run,
+            label: label
           },
           {
             har: h2,
-            run: har2.run
+            run: har2.run,
+            label: label2
           }
         )
       )
@@ -277,11 +291,13 @@ function loadFilesFromURL() {
         generate(
           {
             har: har,
-            run: 0
+            run: 0,
+            label: label
           },
           {
             har: har,
-            run: har.log.pages.length > 1 ? 1 : 0
+            run: har.log.pages.length > 1 ? 1 : 0,
+            label: label2
           }
         );
       })
