@@ -171,28 +171,28 @@
           {{#js_compare "this.p1.visualMetric || this.p2.visualMetrics"}}
           <tr>
             <td class="tabletext">First Visual Change</td>
-<td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
-<td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
+            <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
+            <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
           </tr>
           {{#if p1.visualMetrics.LargestImage}} {{#if p2.visualMetrics.LargestImage}}
           <tr>
             <td class="tabletext">Largest Image</td>
-<td> {{js "formatTime(this.p1.visualMetrics.LargestImage)"}}</td>
-<td> {{js "formatTime(this.p2.visualMetrics.LargestImage)"}}</td>
+            <td> {{js "formatTime(this.p1.visualMetrics.LargestImage)"}}</td>
+            <td> {{js "formatTime(this.p2.visualMetrics.LargestImage)"}}</td>
           </tr>
           {{/if}} {{/if}}
           {{#if p1.visualMetrics.Logo}} {{#if p2.visualMetrics.Logo}}
           <tr>
             <td class="tabletext">Logo</td>
-<td>{{js "formatTime(this.p1.visualMetrics.Logo)"}}</td>
-<td>{{js "formatTime(this.p2.visualMetrics.Logo)"}}</td>
+            <td>{{js "formatTime(this.p1.visualMetrics.Logo)"}}</td>
+            <td>{{js "formatTime(this.p2.visualMetrics.Logo)"}}</td>
           </tr>
           {{/if}} {{/if}}
           {{#if p1.visualMetrics.Heading}} {{#if p2.visualMetrics.Heading}}
           <tr>
             <td class="tabletext">Heading</td>
-<td> {{js "formatTime(this.p1.visualMetrics.Heading)"}}</td>
-<td> {{js "formatTime(this.p2.visualMetrics.Heading)"}}</td>
+            <td> {{js "formatTime(this.p1.visualMetrics.Heading)"}}</td>
+            <td> {{js "formatTime(this.p2.visualMetrics.Heading)"}}</td>
           </tr>
           {{/if}} {{/if}}
           <tr>
@@ -202,14 +202,14 @@
           </tr>
           <tr>
             <td class="tabletext">Last Visual Change</td>
-<td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.LastVisualChange)"}} {{/if}}</td>
-<td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.LastVisualChange)"}} {{/if}}</td>
+            <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.LastVisualChange)"}} {{/if}}</td>
+            <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.LastVisualChange)"}} {{/if}}</td>
           </tr>
           {{#if p1.visualMetrics.VisualReadiness}} {{#if p2.visualMetrics.VisualReadiness}}
           <tr>
             <td class="tabletext">Visual Readiness</td>
-<td>{{js "formatTime(this.p1.visualMetrics.VisualReadiness)"}}</td>
-<td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
+            <td>{{js "formatTime(this.p1.visualMetrics.VisualReadiness)"}}</td>
+            <td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
           </tr>
           {{/if}} {{/if}}
           {{/js_compare}} {{#if p1.meta.screenshot}} {{#if p2.meta.screenshot}}
@@ -452,6 +452,7 @@
       createMainDropZone('zone');
       const harParam1 = getParam('har1');
       const harParam2 = getParam('har2');
+      const gistParam = getParam('gist');
       if (harParam1 != undefined) {
         const input1 = document.getElementById('harurl');
         input1.value = harParam1;
@@ -460,10 +461,18 @@
         const input2 = document.getElementById('harurl2');
         input2.value = harParam2;
       }
+
+      if (gistParam != undefined) {
+        const gist = document.getElementById('gist');
+        gist.value = gistParam;
+      }
+
       if (harParam1 != undefined && harParam2 != undefined) {
         loadFilesFromURL();
       } else if ((harParam1 != undefined || harParam2 != undefined) && getParam('compare')) {
         loadFilesFromURL();
+      } else if (gistParam !== undefined) {
+        loadFilesFromGist();
       }
     });
   </script>
@@ -500,6 +509,7 @@
         </p>
         <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
         <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
+        <input type="hidden" id="gist">
         <p class="smallish">
           <a href="#" onclick="show('help');">Need help?</a>
         </p>
@@ -596,7 +606,7 @@
       )
         return decodeURIComponent(name[1]);
     }
-    if (getParam('compare') || getParam('har1') && getParam('har2')) {
+    if (getParam('compare') || getParam('har1') && getParam('har2') || getParam('gist'))  {
       const el = document.getElementById('choosehars');
       el.style.display = 'none';
       const el2 = document.getElementById('loading');
