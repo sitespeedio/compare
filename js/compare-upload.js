@@ -83,14 +83,19 @@ function createUpload(id) {
           const har2 = changeHar1 ? window.har2 : har;
           const run1 = changeHar1 ? 0 : run;
           const run2 = changeHar1 ? run : 0;
+          const label1 = changeHar1 ? 'HAR1' : window.label1;
+          const label2 = changeHar1 ? window.label2 : 'HAR2';
+
           generate(
             {
               har: har1,
-              run: run1
+              run: run1,
+              label: label1
             },
             {
               har: har2,
-              run: run2
+              run: run2,
+              label: label2
             }
           );
         })

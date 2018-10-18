@@ -166,6 +166,11 @@ table .pageXrayTable {
   background-color: #f5f5f5;
 }
 
+.comment {
+  text-align: center;
+  margin: 40px auto 0;
+}
+
 .no-break {
   word-break: keep-all;
 }
