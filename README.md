@@ -38,6 +38,23 @@ If you host your sitespeed.io result pages, you can copy/paste the URL to a page
 
 You can also compare two HAR files on the fly that are available on the internet. Add the parameters **?har1=FULL_URL1&har2=FULL_URL2&compare=1** and the two HAR files will be compared.
 
+You can also use host your URLs on a [Github gist](https://gist.github.com/) with the following format:
+
+```json
+{
+  "har1": {
+    "url": "https://www.url.com/browsertime1.har"
+  },
+  "har2": {
+    "url": "https://www.url.com/browsertime2.har"
+  }
+}
+```
+
+And then use it with: https://compare.sitespeed.io?gist=GIST_ID
+
+Thank you [Matt Hobbs](https://github.com/Nooshu) for sharing the gist idea!
+
 ## How to contribute a.k.a what are we looking for?
 Send us a PR/create an issue. If you have big change coming up, please discuss it with us in an issue first.
 

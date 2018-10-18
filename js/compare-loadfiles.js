@@ -1,5 +1,5 @@
 /* global Zlib, errorMessage, generate, showUpload */
-/* exported readHar, fetchHar, getHarURL, loadFilesFromURL*/
+/* exported readHar, fetchHar, getHarURL, loadFilesFromURL, loadFilesFromGist*/
 
 /**
  * Help functions to read HAR files from file
@@ -168,6 +168,57 @@ function readHar(file) {
 
   if (isFileGzipped(file.name)) return readGZipFile(file);
   return readJsonFile(file);
+}
+
+function loadFilesFromGist() {
+  const id = document.getElementById('gist').value;
+  const url = 'https://api.github.com/gists/' + id;
+
+  function fetchGist(url) {
+    return fetch(url).then(response => {
+      if (!response.ok) {
+        throw new Error(
+          'Failed to fetch gist from ' + url + '. Error: ' + response.statusText
+        );
+      } else {
+        return response.json();
+      }
+    });
+  }
+
+  fetchGist(url)
+    .then(gist => {
+      // We only support one file at the moment
+      const key = Object.keys(gist.files)[0];
+      let content;
+      try {
+        content = JSON.parse(gist.files[key].content);
+      } catch (e) {
+        throw new Error('Malformed gist.');
+      }
+      if (
+        content &&
+        content.har1 &&
+        content.har1.url &&
+        content.har2 &&
+        content.har2.url
+      ) {
+        const input1 = document.getElementById('harurl');
+        input1.value = content.har1.url;
+        const input2 = document.getElementById('harurl2');
+        input2.value = content.har2.url;
+        return loadFilesFromURL();
+      } else {
+        throw new Error('Malformed gist.');
+      }
+    })
+    .catch(e => {
+      /* eslint-disable no-console */
+      console.error(e);
+      /* eslint-disable no-console */
+      errorMessage(e.message);
+      showUpload();
+    });
 }
 
 function loadFilesFromURL() {
