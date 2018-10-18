@@ -1,5 +1,9 @@
 # CHANGELOG - compare
 
+## UNRELEASED
+### Added
+* Added support for using Github gists see [#34](https://github.com/sitespeedio/compare/issues/34).
+
 ## 0.6.0 2018-10-17
 ### Added
 * Sort CPU events by name to make it easier to spot regressions
