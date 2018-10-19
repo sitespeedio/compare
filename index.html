@@ -468,7 +468,7 @@
       getAndSet('gist','gist');
       getAndSet('label1','harlabel');
       getAndSet('label2','harlabel2');
-    
+
       if (getParam('har1') != undefined && getParam('har2') != undefined) {
         loadFilesFromURL();
       } else if ((getParam('har1') != undefined || getParam('har2') != undefined) && getParam('compare')) {
@@ -477,6 +477,31 @@
         loadFilesFromGist();
       }
     });
+
+    document.addEventListener("paste", function(e) {
+        const paste = e.clipboardData.getData('Text');
+        // Is it a HAR or a gist?
+        try {
+        const har = JSON.parse(paste);
+        generate(
+        {
+          har: har,
+          run: 0,
+          label: 'HAR1'
+        },
+        {
+          har: har,
+          run: har.log.pages.length > 1 ? 1 : 0,
+          label: 'HAR2'
+        }
+      );
+      } catch (e) {
+        // Guess it's a gist
+        const gist = document.getElementById('gist');
+        gist.value = paste;
+        loadFilesFromGist();
+      }
+      });
   </script>
 
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/compare-144.png">
