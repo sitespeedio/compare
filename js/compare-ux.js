@@ -355,7 +355,9 @@ function generate(config1, config2) {
       'visualProgressTemplate',
       {
         p1: pageXray1,
-        p2: pageXray2
+        p2: pageXray2,
+        label1: config1.label,
+        label2: config2.label
       },
       'visualProgressContent'
     );
