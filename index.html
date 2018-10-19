@@ -57,11 +57,15 @@
   <script src="js/dependencies/chartist.min.js" defer></script>
   <script src="js/dependencies/chartist-plugin-axistitle.min.js" defer></script>
   <script src="js/dependencies/chartist-plugin-tooltip.min.js" defer></script>
-  <script src="js/compare-upload.js" defer></script>
-  <script src="js/compare-har.js" defer></script>
-  <script src="js/compare-loadfiles.js" defer></script>
-  <script src="js/compare-ux.js" defer></script>
-  <script src="js/compare.js" defer></script>
+  <script src="js/compare/upload.js" defer></script>
+  <script src="js/compare/har.js" defer></script>
+  <script src="js/compare/gzip.js" defer></script>
+  <script src="js/compare/ux.js" defer></script>
+  <script src="js/compare/load.js" defer></script>
+  <script src="js/compare/generate.js" defer></script>
+  <script src="js/compare/generateVisualProgress.js" defer></script>
+  <script src="js/compare/template7.js" defer></script>
+  <script src="js/compare/compare.js" defer></script>
   <!-- endbuild -->
 
   <script id="visualProgressTemplate" type="text/template7">
@@ -69,8 +73,8 @@
     <div id="visualProgress" class="ct-chart ct-major-tenth"></div>
     <div id="visualProgressLegendHolder">
       <ul class="resource-legend">
-        <li class="legend-url1" title="{{p1.url}}">{{label1}}</li>
-        <li class="legend-url2" title="{{p2.url}}">{{label2}}</li>
+        <li class="legend-url1" title="{{p1.url}}">{{config.har1.label}}</li>
+        <li class="legend-url2" title="{{p2.url}}">{{config.har2.label}}</li>
       </ul>
     </div>
   </script>
@@ -81,11 +85,11 @@
         <thead>
           <tr>
             <th class="tabletext tableXrayMetric">Metric <button onclick="regenerate(true);" class="submit submit-smaller">Switch</button></th>
-            <th class="tableXrayHarMetric">{{label1}}
+              <th class="tableXrayHarMetric">{{config.har1.label}}
               <input type="file" id="har1upload" class="inputfile"/>
               <label for="har1upload">Upload</label>
             </th>
-            <th class="tableXrayHar2Metric"> {{label2}}
+              <th class="tableXrayHar2Metric"> {{config.har2.label}}
               <input type="file" id="har2upload" class="inputfile"/>
               <label for="har2upload">Upload</label>
             </th>
@@ -409,8 +413,8 @@
   </script>
 
   <script id="waterfallTemplate" type="text/template7">
-  <div class="rangeWrapper">{{label1}}&nbsp;
-    <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{label2}}</div>
+    <div class="rangeWrapper">{{config.har1.label}}&nbsp;
+    <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{config.har2.label}}</div>
   </script>
 
   <script id="domainsTemplate" type="text/template7">
@@ -420,10 +424,10 @@
         <thead>
           <tr>
             <th class="tabletext">Domain</th>
-            <th class="no-break">{{label1}} Request</th>
-            <th class="no-break">{{label2}} Request</th>
-            <th class="no-break">{{label1}} Size</th>
-            <th class="no-break">{{label2}} Size</th>
+            <th class="no-break">{{config.har1.label}} Request</th>
+            <th class="no-break">{{config.har2.label}} Request</th>
+            <th class="no-break">{{config.har1.label}} Size</th>
+            <th class="no-break">{{config.har2.label}} Size</th>
           </tr>
         </thead>
         <tbody>
@@ -465,16 +469,15 @@
       }
       getAndSet('har1','harurl');
       getAndSet('har2','harurl2');
-      getAndSet('gist','gist');
-      getAndSet('label1','harlabel');
-      getAndSet('label2','harlabel2');
-
       if (getParam('har1') != undefined && getParam('har2') != undefined) {
-        loadFilesFromURL();
+        showLoading();
+        loadFilesFromURL({har1: {url: getParam('har1')}, har2: {url: getParam('har2')} });
       } else if ((getParam('har1') != undefined || getParam('har2') != undefined) && getParam('compare')) {
-        loadFilesFromURL();
+        showLoading();
+        loadFilesFromURL({har1: {url: getParam('har1') || getParam('har2')}});
       } else if (getParam('gist') !== undefined) {
-        loadFilesFromGist();
+        showLoading();
+        loadFilesFromGist(getParam('gist'));
       }
     });
 
@@ -483,23 +486,27 @@
         // Is it a HAR or a gist?
         try {
         const har = JSON.parse(paste);
+        showLoading();
         generate(
-        {
-          har: har,
-          run: 0,
-          label: 'HAR1'
-        },
-        {
-          har: har,
-          run: har.log.pages.length > 1 ? 1 : 0,
-          label: 'HAR2'
+          {
+          har1: {
+            har: har,
+            run: 0,
+            label: 'HAR1'
+          },
+          har2: {
+            har: har,
+            run: har.log.pages.length > 1 ? 1 : 0,
+            label: 'HAR2'
+          }
         }
       );
       } catch (e) {
         // Guess it's a gist
-        const gist = document.getElementById('gist');
-        gist.value = paste;
-        loadFilesFromGist();
+        if (!paste.startsWith('http')) {
+          showLoading();
+          loadFilesFromGist(paste);
+        }
       }
       });
   </script>
@@ -536,9 +543,6 @@
         </p>
         <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
         <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
-        <input type="hidden" id="gist">
-        <input type="hidden" id="harlabel" value="HAR1">
-        <input type="hidden" id="harlabel2" value="HAR2">
         <p class="smallish">Or <a href="https://github.com/sitespeedio/compare#github-gist">use a  Github gist</a>.</p>
         <p class="smallish">
           <a href="#" onclick="show('help');">Need help?</a>
@@ -549,7 +553,7 @@
           <a href="https://www.youtube.com/watch?v=dCThwpglIeE">introduction video</a> or please create an
           <a href="https://github.com/sitespeedio/compare/issues/new">issue</a> at Github.
         </div>
-        <button type="button" class="submit" onclick="loadFilesFromURL();">Compare</button>
+<button type="button" class="submit" onclick="loadFilesFromURL({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});">Compare</button>
         <div id="message" class="message"></div>
       </div>
     </div>
@@ -589,7 +593,7 @@
         </div>
         <div id="domainsContent">
         </div>
-        <button type="button" onclick="showUpload();" class="submit">Upload again</button>
+<button type="button" onclick="errorMessage('');showUpload();" class="submit">Upload again</button>
       </div>
     </div>
   </div>
@@ -639,10 +643,7 @@
         return decodeURIComponent(name[1]);
     }
     if (getParam('compare') || getParam('har1') && getParam('har2') || getParam('gist'))  {
-      const el = document.getElementById('choosehars');
-      el.style.display = 'none';
-      const el2 = document.getElementById('loading');
-      el2.style.display = 'block';
+      showLoading();
     }
   </script>
 </body>
