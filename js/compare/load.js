@@ -1,5 +1,5 @@
 /* global isFileGzipped, isFileZipped, gzipArrayBufferToJSON, readGZipFile, errorMessage, generate, showUpload */
-/* exported readHar, fetchHar, getHarURL, loadFilesFromURL, loadFilesFromGist*/
+/* exported readHar, fetchHar, getHarURL, loadFilesFromURL, loadFilesFromGist, loadFilesFromConfig*/
 
 /**
  * Help functions to read HAR/JSON files from file
@@ -108,6 +108,40 @@ function loadJson(url) {
   });
 }
 
+function readConfig(config) {
+  if (
+    config &&
+    config.har1 &&
+    config.har1.url &&
+    config.har2 &&
+    config.har2.url
+  ) {
+    return loadFilesFromURL(config);
+  } else {
+    throw new Error('Malformed config file.');
+  }
+}
+
+function loadFilesFromConfig(url) {
+  loadJson(url)
+    .then(unparsedConfig => {
+      let content;
+      try {
+        content = JSON.parse(unparsedConfig);
+      } catch (e) {
+        throw new Error('Malformed config file.' + e);
+      }
+      return readConfig(content);
+    })
+    .catch(e => {
+      /* eslint-disable no-console */
+      console.error(e);
+      /* eslint-disable no-console */
+      errorMessage(e.message);
+      showUpload();
+    });
+}
+
 function loadFilesFromGist(id) {
   const url = 'https://api.github.com/gists/' + id;
 
@@ -121,17 +155,7 @@ function loadFilesFromGist(id) {
       } catch (e) {
         throw new Error('Malformed gist.' + e);
       }
-      if (
-        content &&
-        content.har1 &&
-        content.har1.url &&
-        content.har2 &&
-        content.har2.url
-      ) {
-        return loadFilesFromURL(content);
-      } else {
-        throw new Error('Malformed gist.');
-      }
+      return readConfig(content);
     })
     .catch(e => {
       /* eslint-disable no-console */

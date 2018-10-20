@@ -478,6 +478,9 @@
       } else if (getParam('gist') !== undefined) {
         showLoading();
         loadFilesFromGist(getParam('gist'));
+      } else if (getParam('config') !==undefined) {
+        showLoading();
+        loadFilesFromConfig(getParam('config'));
       }
     });
 
@@ -487,20 +490,24 @@
         try {
         const har = JSON.parse(paste);
         showLoading();
-        generate(
-          {
-          har1: {
-            har: har,
-            run: 0,
-            label: 'HAR1'
-          },
-          har2: {
-            har: har,
-            run: har.log.pages.length > 1 ? 1 : 0,
-            label: 'HAR2'
-          }
+        if (har.log) {
+          generate(
+            {
+            har1: {
+              har: har,
+              run: 0,
+              label: 'HAR1'
+            },
+            har2: {
+              har: har,
+              run: har.log.pages.length > 1 ? 1 : 0,
+              label: 'HAR2'
+            }
+          })
         }
-      );
+        else {
+          readConfig(har);
+        }
       } catch (e) {
         // Guess it's a gist
         if (!paste.startsWith('http')) {
