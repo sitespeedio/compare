@@ -3,6 +3,11 @@
 ## UNRELEASED
 ### Added
 * Added support for using Github gists see [#34](https://github.com/sitespeedio/compare/issues/34).
+* Added support for using a config file to configure which HARs to test.
+* Added support for copy/paste directly you HAR, configuration file or a gist URL or id.
+
+### Changed
+* New internal structure and use the new configuration object all the way.
 
 ## 0.6.0 2018-10-17
 ### Added
