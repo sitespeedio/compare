@@ -474,7 +474,7 @@
         loadFilesFromURL({har1: {url: getParam('har1')}, har2: {url: getParam('har2')} });
       } else if ((getParam('har1') != undefined || getParam('har2') != undefined) && getParam('compare')) {
         showLoading();
-        loadFilesFromURL({har1: {url: getParam('har1') || getParam('har2')}});
+        loadFilesFromURL({har1: {url: getParam('har1') || getParam('har2')}, har2:{}});
       } else if (getParam('gist') !== undefined) {
         showLoading();
         loadFilesFromGist(getParam('gist'));
