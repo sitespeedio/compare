@@ -32,15 +32,14 @@ If you also run with **--firstParty** (adding a regex that show which assets tha
 ![First Party vs Third Party!](https://raw.githubusercontent.com/sitespeedio/compare/master/docs/img/firstparty.png)
 
 ## How to use it
-You can either upload two HAR files (drag/drop) or give the URL to two URLs hosted online.
+You can either upload two HAR files (drag/drop) or give the URL to two URLs hosted online. If your HAR got multiple pages/runs, you can use just one HAR file.
+
+Or you can just copy/paste your HAR file into the start page of compare.sitespeed.io](https://compare.sitespeed.io).
 
 If you host your sitespeed.io result pages, you can copy/paste the URL to a page or to a specific run and Compare will automagically find the URL to the HAR file.
 
-### Compare on the fly
-You can also compare two HAR files on the fly that are available on the internet. Add the parameters **?har1=FULL_URL1&har2=FULL_URL2&compare=1** and the two HAR files will be compared.
-
-### Github gist
-You can also use host your URLs on a [Github gist](https://gist.github.com/) with the following format:
+### Configuration
+You can use a configuration JSON to choose which HAR files that will be tested. 
 
 ```json
 {
@@ -51,18 +50,29 @@ You can also use host your URLs on a [Github gist](https://gist.github.com/) wit
   "har2": {
     "url": "https://www.url.com/browsertime2.har",
     "label": "After change"
-  },
-  "comment": "Checkout the problem on with the 1st request after the change, it doesn't look good!"
+  }
 }
 ```
-Labels and the comment are optional.
+Labels are optional.
 
-And then use it with: https://compare.sitespeed.io?gist=GIST_ID
+And then you can use your configuration file in different ways. You can copy/paste the configuration into the start page of [compare.sitespeed.io](https://compare.sitespeed.io).
+
+Or you can use it like this: https://compare.sitespeed.io/?config=https://URL_TO_THE_CONFIG_FILE
+
+### Github gist
+You can also use host your configuration file on a [Github gist](https://gist.github.com/) and use the gist id https://compare.sitespeed.io?gist=GIST_ID to get the configuration file.
 
 You can checkout out our example:
 [https://gist.github.com/soulgalore/94e4d997a78e03b32b939fcea63eae8e](https://gist.github.com/soulgalore/94e4d997a78e03b32b939fcea63eae8e)
 
+You can also copy/paste gist id (or the full URL to the gist) into [compare.sitespeed.io](https://compare.sitespeed.io).
+
 Thank you [Matt Hobbs](https://github.com/Nooshu) for sharing the gist idea!
+
+### Compare on the fly
+You can also compare two HAR files on the fly without using a configuration file.
+
+Add the parameters **?har1=FULL_URL1&har2=FULL_URL2&compare=1** and the two HAR files will be compared.
 
 ## How to contribute a.k.a what are we looking for?
 Send us a PR/create an issue. If you have big change coming up, please discuss it with us in an issue first.
@@ -72,6 +82,11 @@ Deploying your own version is easy:
 1. Clone the repo: `git clone git@github.com:sitespeedio/compare.git`
 2. Build: `cd compare && npm run build`
 3. Copy everything in *build/* to your server
+
+## Privacy 
+We take your privacy really serious: We do not use any tracking software at all (no Google Analytics or any other tracking software) in [compare.sitespeed.io](https://compare.sitespeed.io). The page do no call home. 
+
+And you can deploy your own version of [compare.sitespeed.io](https://compare.sitespeed.io) if you want to be 100% in control.
 
 ### Be kind
 If you deploy your own version: please keep the original logo and the link to the project. We have spent a lot of our free time to work on this!
