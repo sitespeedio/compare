@@ -34,13 +34,14 @@
     "eslint": "~4.5.0",
     "eslint-config-prettier": "~2.3.0",
     "eslint-plugin-prettier": "~2.1.2",
-    "gulp": "~3.9.1",
+    "gulp": "^4.0.0",
     "gulp-clean-css": "~3.7.0",
     "gulp-dest": "~0.2.3",
     "gulp-htmlmin": "~3.0.0",
     "gulp-rev": "~8.0.0",
     "gulp-usemin": "~0.3.28",
-    "prettier": "~1.5.3"
+    "prettier": "~1.5.3",
+    "require-dir": "^1.1.0"
   },
   "scripts": {
     "lint": "eslint .",

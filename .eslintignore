@@ -1,3 +1,5 @@
 build/*
 js/dependencies/*
+gulp-tasks/*
 gulpfile.js
+gulp-paths.js
