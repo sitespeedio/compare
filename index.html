@@ -509,11 +509,21 @@
           readConfig(har);
         }
       } catch (e) {
-        // Guess it's a gist
-        if (!paste.startsWith('http')) {
+        if (paste.startsWith('https://gist.github.com/')) {
+          const gistId = paste.substring(paste.lastIndexOf('/')+1, paste.length);
+          showLoading();
+          loadFilesFromGist(gistId);
+
+        } else if (paste.endsWith('.json')) {
+          showLoading();
+          loadFilesFromConfig(paste);
+        }
+        // Guess it's a gist id
+        else if (!paste.startsWith('http')) {
           showLoading();
           loadFilesFromGist(paste);
         }
+        // Ok let the the user paste the URL into the field
       }
       });
   </script>
