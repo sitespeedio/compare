@@ -7,7 +7,7 @@ const gulpPaths = require('../gulp-paths');
 
 function copyDevelopmentAssetsTask() {
   return gulp.src([
-    'index.html',
+    gulpPaths.paths.src.index,
     `${gulpPaths.paths.src.css}**/*`,
     `${gulpPaths.paths.src.js}**/*`,
     `${gulpPaths.paths.src.img}**/*`,
