@@ -39,21 +39,41 @@ Or you can just copy/paste your HAR file into the start page of compare.sitespee
 If you host your sitespeed.io result pages, you can copy/paste the URL to a page or to a specific run and Compare will automagically find the URL to the HAR file.
 
 ### Configuration
-You can use a configuration JSON to choose which HAR files that will be tested. 
+You can use a configuration JSON to choose which HAR files that will be tested. The minimal configuration needed:
 
 ```json
 {
   "har1": {
-    "url": "https://www.url.com/browsertime1.har",
-    "label": "Before change"
+    "url": "https://www.url.com/page1.har"
   },
   "har2": {
-    "url": "https://www.url.com/browsertime2.har",
-    "label": "After change"
+    "url": "https://www.url.com/page2.har"
   }
 }
 ```
-Labels are optional.
+
+But you can also add some extra sugar. All the extras are optional:
+```json
+{
+  "har1": {
+    "url": "https://www.url.com/page1.har",
+    "label": "Before change",
+    "run": 1
+  },
+  "har2": {
+    "url": "https://www.url.com/page2.har",
+    "label": "After change",
+    "run": 2
+  },
+  "title": "The page title used in the title bar"
+  "comments": {
+    "intro": "Extra information put at the top of the page",
+    "waterfall": "Text displayed at top of the waterfall",
+    "visualProgress": "Text displayed at the top of visual progress"
+  }
+}
+```
+
 
 And then you can use your configuration file in different ways. You can copy/paste the configuration into the start page of [compare.sitespeed.io](https://compare.sitespeed.io).
 
@@ -83,8 +103,8 @@ Deploying your own version is easy:
 2. Build: `cd compare && npm run build`
 3. Copy everything in *build/* to your server
 
-## Privacy 
-We take your privacy really serious: We do not use any tracking software at all (no Google Analytics or any other tracking software) in [compare.sitespeed.io](https://compare.sitespeed.io). The page do no call home. 
+## Privacy
+We take your privacy really serious: We do not use any tracking software at all (no Google Analytics or any other tracking software) in [compare.sitespeed.io](https://compare.sitespeed.io). The page do no call home.
 
 And you can deploy your own version of [compare.sitespeed.io](https://compare.sitespeed.io) if you want to be 100% in control.
 
