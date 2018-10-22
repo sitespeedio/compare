@@ -10,6 +10,11 @@ const gulp = require('gulp');
 requireDir('./gulp-tasks', { recurse: false });
 
 // set the default task, all tasks run in series
-gulp.task('default', gulp.series('clean', 'copy-img', 'copy-headers', 'usemin', function seriesComplete(done) {
+gulp.task('default', gulp.series('clean', 'copy-img', 'copy-headers', 'usemin', function defaultSeriesComplete(done) {
+  done();
+}));
+
+// setup the development workflow
+gulp.task('develop', gulp.series('clean', 'copy-development-assets', 'serve', function developmentSeriesComplete(done) {
   done();
 }));
