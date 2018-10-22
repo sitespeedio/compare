@@ -99,10 +99,6 @@ function generate(config) {
   // we store the HAR to easy get it when we switch runs
   window.har = config;
 
-  // Add the comment, maybe wanna do
-  const comment = document.getElementById('comment');
-  comment.innerHTML = config.comment || '';
-
   if (config.title) {
     // TODO we should auto generate better titles
     document.title = config.title;
@@ -217,6 +213,17 @@ function generate(config) {
     },
     'domainsContent'
   );
+
+  // Take care of comments
+  if (config.comments) {
+    const commentKeys = Object.keys(config.comments);
+    for (let key of commentKeys) {
+      const el = document.getElementById('comment-' + key);
+      if (el) {
+        el.innerHTML = config.comments[key];
+      }
+    }
+  }
 
   createUpload('har1upload');
   createUpload('har2upload');
