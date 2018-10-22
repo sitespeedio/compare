@@ -65,7 +65,7 @@ But you can also add some extra sugar. All the extras are optional:
     "label": "After change",
     "run": 2
   },
-  "title": "The page title used in the title bar"
+  "title": "The page title used in the title bar",
   "comments": {
     "intro": "Extra information put at the top of the page",
     "waterfall": "Text displayed at top of the waterfall",
