@@ -195,7 +195,7 @@ function loadFilesFromURL(config) {
           run: reworkedConfig2.run || config.har2.run || 1,
           label: config.har2.label || 'HAR2'
         },
-        comment: config.comment || '',
+        comments: config.comments || undefined,
         title: config.title || 'Compare HAR files'
       })
     )
