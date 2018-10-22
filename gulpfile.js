@@ -1,39 +1,15 @@
-const usemin = require('gulp-usemin');
-const htmlmin = require('gulp-htmlmin');
-const rev = require('gulp-rev');
+'use strict';
+/**
+ * Gulp 4 config file
+ * See 'gulp-tasks' directory for individual tasks
+ */
+const requireDir = require('require-dir');
 const gulp = require('gulp');
-const del = require('del');
 
-gulp.task('usemin', ['copy-img', 'copy-headers'], function() {
-  return gulp
-    .src('./index.html')
-    .pipe(
-      usemin({
-        jsAttributes: {
-          defer: true
-        },
-        css: [rev()],
-        html: [htmlmin({
-          collapseWhitespace: true
-        })],
-        js: [rev()]
-      })
-    )
-    .pipe(gulp.dest('build/'));
-});
+// include the task files
+requireDir('./gulp-tasks', { recurse: false });
 
-gulp.task('copy-img', ['clean'], function() {
-  return gulp.src(['./img/**/*']).pipe(gulp.dest('build/img/'));
-});
-
-gulp.task('copy-headers', [], function() {
-  return gulp.src(['_headers']).pipe(gulp.dest('build/'));
-});
-
-gulp.task('clean', function() {
-  return del([
-    'build/**/*'
-  ]);
-});
-
-gulp.task('default', ['usemin']);
+// set the default task, all tasks run in series
+gulp.task('default', gulp.series('clean', 'copy-img', 'copy-headers', 'usemin', function seriesComplete(done) {
+  done();
+}));
