@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, generateVisualProgress */
+/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, generateVisualProgress, formatDate */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
@@ -104,8 +104,15 @@ function generate(config) {
   comment.innerHTML = config.comment || '';
 
   if (config.title) {
-    // TODO we should auto generate better titles
     document.title = config.title;
+  } else if (
+    config.har1.har.log.pages[config.har1.run].startedDateTime &&
+    config.har2.har.log.pages[config.har2.run].startedDateTime
+  ) {
+    document.title =
+      formatDate(config.har1.har.log.pages[config.har1.run].startedDateTime) +
+      ' vs ' +
+      formatDate(config.har2.har.log.pages[config.har2.run].startedDateTime);
   }
 
   const pageXray1 = window.PageXray.convertIndex(
