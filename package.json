@@ -30,11 +30,13 @@
   },
   "homepage": "https://compare.sitespeed.io",
   "devDependencies": {
+    "browser-sync": "^2.26.3",
     "del": "~3.0.0",
     "eslint": "~4.5.0",
     "eslint-config-prettier": "~2.3.0",
     "eslint-plugin-prettier": "~2.1.2",
     "gulp": "^4.0.0",
+    "gulp-changed": "^3.2.0",
     "gulp-clean-css": "~3.7.0",
     "gulp-dest": "~0.2.3",
     "gulp-htmlmin": "~3.0.0",
@@ -47,6 +49,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
-    "build": "gulp"
+    "build": "gulp",
+    "develop": "gulp develop"
   }
 }
