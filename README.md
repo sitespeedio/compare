@@ -34,7 +34,7 @@ If you also run with **--firstParty** (adding a regex that show which assets tha
 ## How to use it
 You can either upload two HAR files (drag/drop) or give the URL to two URLs hosted online. If your HAR got multiple pages/runs, you can use just one HAR file.
 
-Or you can just copy/paste your HAR file into the start page of compare.sitespeed.io](https://compare.sitespeed.io).
+Or you can just copy/paste your HAR file into the start page of [compare.sitespeed.io](https://compare.sitespeed.io/).
 
 If you host your sitespeed.io result pages, you can copy/paste the URL to a page or to a specific run and Compare will automagically find the URL to the HAR file.
 
