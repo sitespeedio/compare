@@ -127,13 +127,15 @@ function generate(config) {
   for (let i = 0; i < config.har1.har.log.pages.length; i++) {
     runs1.push({
       id: i,
-      selected: config.har1.run == i ? 'selected' : ''
+      selected: config.har1.run == i ? 'selected' : '',
+      show: i + 1
     });
   }
   for (let i = 0; i < config.har2.har.log.pages.length; i++) {
     runs2.push({
       id: i,
-      selected: config.har2.run == i ? 'selected' : ''
+      selected: config.har2.run == i ? 'selected' : '',
+      show: i + 1
     });
   }
 

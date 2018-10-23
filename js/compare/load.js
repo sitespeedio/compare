@@ -116,7 +116,7 @@ function readConfig(config) {
     config.har2 &&
     config.har2.url
   ) {
-    return loadFilesFromURL(config);
+    return loadHARsFromConfig(config);
   } else {
     throw new Error('Malformed config file.');
   }
@@ -166,7 +166,16 @@ function loadFilesFromGist(id) {
     });
 }
 
-function loadFilesFromURL(config) {
+function loadHARsFromConfig(config) {
+  // The runs/pages are zer based since it's an array but
+  // in configuration we wanna use 1 based since it makes more sense
+  if (config.har1.run) {
+    config.har1.run = config.har1.run - 1;
+  }
+  if (config.har2.run) {
+    config.har2.run = config.har2.run - 1;
+  }
+
   // There's a magic hack to get the HAR and the run if you use sitespeed.io
   let reworkedConfig = config.har1;
   if (isSitespeedIoURL(config.har1.url)) {
