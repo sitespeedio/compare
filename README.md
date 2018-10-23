@@ -71,7 +71,7 @@ But you can also add some extra sugar. All the extras are optional:
     "waterfall": "Text displayed at top of the waterfall",
     "visualProgress": "Text displayed at the top of visual progress",
     "domains": "Text displayed at the top of domains",
-		"firstParty": "Text displayed at the top of first/third party"
+    "firstParty": "Text displayed at the top of first/third party"
   }
 }
 ```
