@@ -483,7 +483,6 @@
         showLoading();
         loadFilesFromConfig(getParam('config'));
       }
-    });
 
     document.addEventListener("paste", function(e) {
         const paste = e.clipboardData.getData('Text');
@@ -527,6 +526,7 @@
         // Ok let the the user paste the URL into the field
       }
       });
+    });
   </script>
 
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/compare-144.png">
