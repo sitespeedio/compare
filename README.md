@@ -96,8 +96,14 @@ You can also compare two HAR files on the fly without using a configuration file
 
 Add the parameters **?har1=FULL_URL1&har2=FULL_URL2&compare=1** and the two HAR files will be compared.
 
-## How to contribute a.k.a what are we looking for?
-Send us a PR/create an issue. If you have big change coming up, please discuss it with us in an issue first.
+## Developers
+
+To run the project locally start a server with:
+```
+npm run develop
+```
+
+Send us a PR/create an issue. If you have big change coming up, please discuss it with us in an issue first!
 
 ## Deploy your own version
 Deploying your own version is easy:
