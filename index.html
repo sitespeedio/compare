@@ -104,7 +104,7 @@
               {{#js_compare "this.runs1.length > 1"}}
               <select name="runs1" onchange="regenerate();" id="run1Option">
                 {{#each this.runs1}}
-                    <option value="{{id}}" {{selected}} >{{id+1}}</option>
+                    <option value="{{id}}" {{selected}} >{{show}}</option>
                 {{/each}}
               </select> {{/js_compare}}
             </td>
@@ -112,7 +112,7 @@
               {{#js_compare "this.runs2.length > 1"}}
               <select name="runs2" onchange="regenerate();" id="run2Option">
                 {{#each this.runs2}}
-                    <option value="{{id}}" {{selected}} >{{id+1}}</option>
+                    <option value="{{id}}" {{selected}} >{{show}}</option>
                 {{/each}}
               </select> {{/js_compare}}
             </td>
@@ -472,10 +472,10 @@
       getAndSet('har2','harurl2');
       if (getParam('har1') != undefined && getParam('har2') != undefined) {
         showLoading();
-        loadFilesFromURL({har1: {url: getParam('har1')}, har2: {url: getParam('har2')} });
+        loadHARsFromConfig({har1: {url: getParam('har1')}, har2: {url: getParam('har2')} });
       } else if ((getParam('har1') != undefined || getParam('har2') != undefined) && getParam('compare')) {
         showLoading();
-        loadFilesFromURL({har1: {url: getParam('har1') || getParam('har2')}, har2:{}});
+        loadHARsFromConfig({har1: {url: getParam('har1') || getParam('har2')}, har2:{}});
       } else if (getParam('gist') !== undefined) {
         showLoading();
         loadFilesFromGist(getParam('gist'));
@@ -571,7 +571,7 @@
           <a href="https://www.youtube.com/watch?v=dCThwpglIeE">introduction video</a> or please create an
           <a href="https://github.com/sitespeedio/compare/issues/new">issue</a> at Github.
         </div>
-<button type="button" class="submit" onclick="loadFilesFromURL({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});">Compare</button>
+        <button type="button" class="submit" onclick="loadHARsFromConfig({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});">Compare</button>
         <div id="message" class="message"></div>
       </div>
     </div>
@@ -612,7 +612,7 @@
         </div>
         <div id="domainsContent">
         </div>
-<button type="button" onclick="errorMessage('');showUpload();" class="submit">Upload again</button>
+        <button type="button" onclick="errorMessage('');showUpload();" class="submit">Upload again</button>
       </div>
     </div>
   </div>
