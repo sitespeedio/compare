@@ -559,20 +559,15 @@
           <p>Drop HAR files here (max two) or click to upload. You can add .har and .har.gz files.</p>
         </fieldset>
         <p class="smallish">
-          Or add the URL to your HAR files and press compare:
+          Or add the URL to your HAR files and press <b>compare</b>:
         </p>
         <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
         <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
-        <p class="smallish">Or <a href="https://github.com/sitespeedio/compare#github-gist">use a  Github gist</a>.</p>
+        <p class="smallish">You can also use a <a href="https://github.com/sitespeedio/compare#configuration">configuration
+            file</a> or a <a href="https://github.com/sitespeedio/compare#github-gist">Github gist</a>.</p>
         <p class="smallish">
-          <a href="#" onclick="show('help');">Need help?</a>
+          <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
         </p>
-        <div class="help" id="help">
-          You can add a URL to a HAR file or the
-          URL to a specific sitespeed.io run and we will automagically find the HAR. You can also compare two HAR files on the fly that are available on the internet. You can <a href="https://github.com/sitespeedio/compare#github-gist">use a Github gist</a> or add the parameters <i>?<b>har1</b>=FULL_URL1&<b>har2</b>=FULL_URL2&<b>compare</b>=1</i> and the two HAR files will be compared. If you need more help, look at the
-          <a href="https://www.youtube.com/watch?v=dCThwpglIeE">introduction video</a> or please create an
-          <a href="https://github.com/sitespeedio/compare/issues/new">issue</a> at Github.
-        </div>
         <button type="button" class="submit" onclick="loadHARsFromConfig({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});">Compare</button>
         <div id="message" class="message"></div>
       </div>
