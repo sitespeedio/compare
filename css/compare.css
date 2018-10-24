@@ -273,13 +273,6 @@ table .pageXrayTable {
   box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
 }
 
-.help {
-  text-align: center;
-  display: none;
-  max-width: 600px;
-  margin: 40px auto 0;
-}
-
 .message {
   text-align: center;
   padding: 20px;
