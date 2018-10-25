@@ -236,6 +236,7 @@ table .pageXrayTable {
   background: #e1f6fd;
   padding: 20px;
   position: relative;
+  overflow-x: hidden;
 }
 .header-result {
   background: #e1f6fd;
