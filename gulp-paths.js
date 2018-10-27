@@ -4,7 +4,10 @@ module.exports = {
       img: 'img/',
       index: 'index.html',
       css: 'css/',
-      js: 'js/'
+      vendor: 'css/vendor/',
+      sass: 'sass/',
+      js: 'js/',
+      headers: '_headers'
     },
     dist: {
       build: 'build/',

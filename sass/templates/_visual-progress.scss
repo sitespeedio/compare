@@ -1,0 +1,10 @@
+// Visual Progress Template
+.resource-legend {
+  .legend-url1::before {
+    background: $series-a;
+  }
+
+  .legend-url2::before {
+    background: $series-b;
+  }
+}

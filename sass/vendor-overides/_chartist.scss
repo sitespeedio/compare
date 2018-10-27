@@ -1,0 +1,31 @@
+//Chartist Extras
+.chartist-tooltip {
+  background: $tooltip;
+  color: $white;
+
+  &::before {
+    border-top-color: $tooltip;
+  }
+}
+
+.ct-series-a {
+  .ct-point,
+  .ct-line {
+    stroke: $series-a;
+  }
+
+  .ct-area {
+    fill: $series-a;
+  }
+}
+
+.ct-series-b {
+  .ct-point,
+  .ct-line {
+    stroke: $series-b;
+  }
+
+  .ct-area {
+    fill: $series-b;
+  }
+}

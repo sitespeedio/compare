@@ -1,0 +1,11 @@
+rules:
+   property-sort-order: 0
+   hex-length:
+      - 0
+      - style: long
+   force-element-nesting: 0
+   force-pseudo-nesting: 0
+   class-name-format: 0
+   leading-zero: 0
+   force-attribute-nesting: 0
+   no-qualifying-elements: 0

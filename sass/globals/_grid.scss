@@ -1,0 +1,26 @@
+// Grid customisation
+.grid-result {
+  padding-top: 0;
+  overflow-y: auto;
+}
+
+@media (min-width: 1550px) {
+  .grid {
+    max-width: 1400px;
+    font-size: 1.2em;
+  }
+}
+
+@media (min-width: 1900px) {
+  .grid {
+    max-width: 1800px;
+    font-size: 1.4em;
+  }
+}
+
+@media (min-width: 2400px) {
+  .grid {
+    max-width: 2300px;
+    font-size: 1.6em;
+  }
+}

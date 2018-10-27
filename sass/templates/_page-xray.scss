@@ -1,0 +1,78 @@
+// Page x-ray template
+.userShowable {
+  display: none;
+  background: $darker-grey;
+}
+
+.pageXrayTable tr {
+  &:hover td {
+    background: $link;
+    color: $white;
+
+    a {
+      color: $white;
+    }
+  }
+
+  &:nth-child(odd) {
+    td {
+      background: $grey;
+    }
+
+    &:hover td {
+      background: $link;
+    }
+  }
+}
+
+table .pageXrayTable {
+  table-layout: fixed;
+}
+
+.tableXrayMetric {
+  width: 20%;
+}
+
+.tableXrayHarMetric,
+.tableXrayHar2Metric {
+  width: 40%;
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+
+  + label {
+    display: inline;
+    font-size: 11px;
+    vertical-align: middle;
+    padding: 6px 12px;
+    font-weight: 200;
+    line-height: 20px;
+    margin: 20px auto;
+    background-color: $tooltip;
+    color: $white;
+    cursor: pointer;
+    border-color: $tooltip;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-radius: 4px;
+
+    &:hover {
+      transform: translateY(-1px);
+      // sass-lint:disable-block no-color-literals
+      box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+@media screen and (max-width: 400px) {
+  select {
+    max-width: 100%;
+  }
+}

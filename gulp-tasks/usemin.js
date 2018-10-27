@@ -17,7 +17,6 @@ function useminTask(){
         jsAttributes: {
           defer: true
         },
-        css: [rev()],
         html: [htmlmin({
           collapseWhitespace: true
         })],

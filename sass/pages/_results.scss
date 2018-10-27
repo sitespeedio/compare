@@ -1,0 +1,21 @@
+// Results layout
+.harwrapper {
+  position: relative;
+}
+
+.har2 {
+  opacity: 0;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+}
+
+.har1 {
+  opacity: 1;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 100%;
+}
