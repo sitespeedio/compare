@@ -43,7 +43,6 @@
     "gulp-concat-css": "^3.1.0",
     "gulp-dest": "~0.2.3",
     "gulp-htmlmin": "~3.0.0",
-    "gulp-hub": "^0.8.0",
     "gulp-mode": "^1.0.2",
     "gulp-postcss": "^8.0.0",
     "gulp-rev": "~8.0.0",
