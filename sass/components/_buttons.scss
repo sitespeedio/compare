@@ -1,0 +1,32 @@
+// Buttons
+.submit {
+  margin: 20px auto;
+  font-size: 25px;
+  display: block;
+  padding: 10px 20px;
+  background-color: $tooltip;
+  color: $white;
+  cursor: pointer;
+  border-color: $tooltip;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 4px;
+  font-weight: 900;
+
+  &:hover {
+    transform: translateY(-1px);
+    // sass-lint:disable-block no-color-literals
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.102), 0 3px 6px rgba(0, 0, 0, 0.078);
+  }
+}
+
+.submit-smaller {
+  display: inline;
+  font-size: 11px;
+  vertical-align: middle;
+  padding: 0 8px;
+  font-weight: 200;
+  line-height: 20px;
+  margin: 0;
+}

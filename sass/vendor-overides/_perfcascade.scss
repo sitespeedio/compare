@@ -1,0 +1,69 @@
+// Perf Cascade Overides
+.water-fall-chart {
+  .type-firstpaint .line-holder,
+  .type-firstvisualchange .line-holder {
+    stroke: $perf-first;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-3;
+  }
+
+  .type-visualcomplete85 .line-holder {
+    stroke: $perf-visual-complete-85;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-3;
+  }
+
+  .type-lastvisualchange .line-holder {
+    stroke: $perf-last-visual-change;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-3;
+  }
+
+  .type-onload .line-holder {
+    stroke: $perf-on-load;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-3;
+  }
+
+  .type-oncontentload .line-holder {
+    stroke: $perf-on-content-load;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-3;
+  }
+
+  .type-dominteractivetime .line-holder {
+    stroke: $perf-dom-interactive-time;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-2;
+  }
+
+  .type-domcontentloadedtime .line-holder {
+    stroke: $perf-dom-content-loaded-time;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-2;
+  }
+
+  .type-logo .line-holder {
+    stroke: $perf-logo;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-2;
+  }
+
+  .type-largestimage .line-holder {
+    stroke: $perf-largest-image;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-2;
+  }
+
+  .type-heading .line-holder {
+    stroke: $perf-heading;
+    stroke-opacity: $opacity;
+    stroke-width: $stroke-width-2;
+  }
+}
+
+select.page-selector {
+  display: none;
+  clear: both;
+  margin: 1em 0;
+}

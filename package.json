@@ -30,17 +30,27 @@
   },
   "homepage": "https://compare.sitespeed.io",
   "devDependencies": {
+    "autoprefixer": "^9.3.1",
     "browser-sync": "^2.26.3",
-    "del": "~3.0.0",
+    "cssnano": "^4.1.7",
+    "del": "^3.0.0",
     "eslint": "~4.5.0",
     "eslint-config-prettier": "~2.3.0",
     "eslint-plugin-prettier": "~2.1.2",
     "gulp": "^4.0.0",
     "gulp-changed": "^3.2.0",
-    "gulp-clean-css": "~3.7.0",
+    "gulp-clean-css": "^3.7.0",
+    "gulp-concat-css": "^3.1.0",
     "gulp-dest": "~0.2.3",
     "gulp-htmlmin": "~3.0.0",
+    "gulp-mode": "^1.0.2",
+    "gulp-postcss": "^8.0.0",
     "gulp-rev": "~8.0.0",
+    "gulp-rev-delete-original": "^0.2.3",
+    "gulp-rev-rewrite": "^1.1.1",
+    "gulp-sass": "^4.0.2",
+    "gulp-sass-lint": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.4",
     "gulp-usemin": "~0.3.28",
     "prettier": "~1.5.3",
     "require-dir": "^1.1.0"
@@ -49,7 +59,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
-    "build": "gulp",
-    "develop": "gulp develop"
+    "build": "gulp --production",
+    "develop": "gulp develop --development"
   }
 }

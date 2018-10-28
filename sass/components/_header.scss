@@ -1,0 +1,61 @@
+// Page header
+.wip {
+  transform: rotate(45deg);
+  position: absolute;
+  right: -35px;
+  background-color: $tooltip;
+  font-size: 22px;
+  font-weight: 900;
+  font-style: normal;
+  font-stretch: normal;
+  color: $white;
+  width: 150px;
+  text-align: center;
+  padding: 4px;
+}
+
+.logo {
+  position: absolute;
+}
+
+.title {
+  text-align: center;
+  font-size: 64px;
+  margin-top: 0;
+  padding-top: 18px;
+  margin-bottom: 0;
+}
+
+.subtitle {
+  text-align: center;
+  font-weight: 300;
+  font-size: 20px;
+}
+
+.header {
+  background: $header-background;
+  padding: 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.header-result {
+  background: $header-background;
+  padding: 10px;
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .img-logo {
+    width: 100%;
+    max-width: 30px;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 48px;
+    margin-top: 0;
+    padding-top: 20px;
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,19 @@
+// Typography
+.smallish {
+  font-size: 80%;
+  font-weight: 400;
+  margin-top: .25rem;
+  color: $dark-grey;
+  text-align: center;
+}
+
+.tabletext {
+  text-align: left;
+  padding: 4px;
+  vertical-align: top;
+}
+
+.comment {
+  text-align: center;
+  margin: 40px auto 0;
+}

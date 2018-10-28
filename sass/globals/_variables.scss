@@ -1,0 +1,42 @@
+// Global settings
+$font-stack: Tahoma, Verdana, sans-serif;
+
+// Global Colors
+$white: #ffffff;
+$lightest-grey: #eeeeee;
+$light-grey: #e1e1e1;
+$grey: #f3f3f3;
+$darker-grey: #f5f5f5;
+$dark-grey: #636c72;
+
+$black: #000000;
+$red: #ff0000;
+$link: #0073b0;
+
+// Header
+$header-background: #e1f6fd;
+
+// Chartist Colors
+$series-a: #008000;
+$series-b: #800000;
+$tooltip: #0095d2;
+
+// Range
+$input-fill: #2a6495;
+
+// Perf Cascade Metrics
+$opacity: 1;
+$stroke-width-2: 2;
+$stroke-width-3: 3;
+
+// Perf Cascade Colors
+$perf-first: #42f46e;
+$perf-visual-complete-85: #ee7777;
+$perf-last-visual-change: #ee42f4;
+$perf-on-load: #9c99e5;
+$perf-on-content-load: #9842f4;
+$perf-dom-interactive-time: #1842f4;
+$perf-dom-content-loaded-time: #1212f4;
+$perf-logo: #08833f;
+$perf-largest-image: #75917c;
+$perf-heading: #ad0b77;

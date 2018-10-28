@@ -1,0 +1,60 @@
+// Global Changes
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: $white;
+  font-family: $font-stack;
+  font-size: 1.2em;
+  line-height: 1.618em;
+  word-wrap: break-word;
+}
+
+table {
+  width: 100%;
+  margin-bottom: 2.5rem;
+  border-collapse: collapse;
+  border-spacing: 1px;
+}
+
+td,
+th {
+  text-align: right;
+  word-break: break-all;
+  padding: 4px;
+}
+
+thead tr th {
+  border-bottom: 1px solid $grey;
+  border-collapse: separate;
+  border-spacing: 5px 5px;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.8em;
+  line-height: 1.6em;
+  margin-bottom: 2rem;
+}
+
+ul {
+  list-style: none;
+}
+
+fieldset {
+  border: 0;
+}
+
+i {
+  border: solid $white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+a {
+  color: $link;
+}

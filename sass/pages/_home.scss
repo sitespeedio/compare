@@ -1,0 +1,38 @@
+// Homepage
+.dropzone {
+  border: 3px dashed $tooltip;
+  border-radius: 16px;
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.fd-zone {
+  position: relative;
+  overflow: hidden;
+
+  &.over {
+    border-color: $series-b;
+    background: $lightest-grey;
+  }
+}
+
+.result,
+.loading {
+  display: none;
+}
+
+.input-field {
+  font-size: 25px;
+  margin: 30px auto 0;
+  display: block;
+  border: solid 1px $black;
+  border-radius: 4px;
+  padding: 10px 20px;
+}
+
+.message {
+  text-align: center;
+  padding: 20px;
+  color: $red;
+}
