@@ -5,6 +5,8 @@
 * Added support for using Github gists see [#34](https://github.com/sitespeedio/compare/issues/34).
 * Added support for using a config file to configure which HARs to test.
 * Added support for copy/paste directly you HAR, configuration file or a gist URL or id.
+* Refactor the CSS into Sass, development build process now uses BrowserSync.
+* Service worker added for offline support. Workbox is used to achieve this.
 
 ### Changed
 * New internal structure and use the new configuration object all the way.
@@ -29,7 +31,7 @@
 ## 0.4.1 2018-04-04
 ### Fixed
 * Major code refactoring to make it easier to do changes in the future.
-* Uploading files failed on Firefox. 
+* Uploading files failed on Firefox.
 
 ## 0.4.0 2018-04-02
 ### Added
@@ -37,7 +39,7 @@
 * You can change/upload HAR files when you already compare two HARs.
 
 ### Fixed
-* The layout in the PageXray table was dependent of the length of the URL. That could make some pages look really bad. 
+* The layout in the PageXray table was dependent of the length of the URL. That could make some pages look really bad.
 
 
 ## 0.3.0 2018-03-30
@@ -49,7 +51,7 @@
 
 ## 0.2.1 2018-02-03
 
-### Fixed 
+### Fixed
 * Upgraded to PerfCascade 2.2.2 that makes HAR files from WebPageTest Linux render
 * Log errors to the console
 
@@ -74,7 +76,7 @@
 * Added a switch button so you can choose which HAR that will be number 1 and 2.
 * Made drag/drop first option to make it more generic.
 
-### Fixed 
+### Fixed
 * Make sure we don't hide content when choosing header links
 
 ## 0.0.1 2017-09-06
