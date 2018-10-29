@@ -10,3 +10,5 @@
         Cache-Control: public, max-age=360000
 /*.png
         Cache-Control: public, max-age=360000
+/*.ico
+        Cache-Control: public, max-age=360000
