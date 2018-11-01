@@ -2,10 +2,12 @@
 	X-Content-Type-Options: nosniff
 	x-frame-options: SAMEORIGIN
 	X-XSS-Protection: 1; mode=block
-        Referrer-Policy: strict-origin
+  Referrer-Policy: strict-origin
 
+/service-worker.js
+	      Cache-Control: no-cache
 /*.js
-	Cache-Control: public, max-age=360000
+	      Cache-Control: public, max-age=360000
 /*.css
         Cache-Control: public, max-age=360000
 /*.png
