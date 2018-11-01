@@ -37,3 +37,6 @@ function generateTask() {
 }
 
 gulp.task('generate-sw', generateTask);
+
+// expose the module so it can be used in browsersync watch
+module.exports = generateTask;
