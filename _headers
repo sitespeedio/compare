@@ -4,10 +4,10 @@
 	X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin
 
-/service-worker.js
-	      Cache-Control: no-cache
 /*.js
 	      Cache-Control: public, max-age=360000
+/service-worker.js
+	      Cache-Control: no-cache
 /*.css
         Cache-Control: public, max-age=360000
 /*.png
