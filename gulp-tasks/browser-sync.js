@@ -8,6 +8,7 @@ const changed = require('gulp-changed');
 
 // import local sass module for watch task
 const sass = require('./sass');
+const generateSW = require('./generate-service-worker');
 const gulpPaths = require('../gulp-paths');
 
 
@@ -65,11 +66,11 @@ function serveTask(){
   });
 
   // If sass changes, inject into the page
-  gulp.watch(`${gulpPaths.paths.src.sass}*.scss`, sass);
+  gulp.watch(`${gulpPaths.paths.src.sass}**/*.scss`, gulp.series(generateSW, sass));
   // if any below file changes will browsersync will reload the page
-  gulp.watch(`${gulpPaths.paths.dist.js}**/*`).on('change', reload);
-  gulp.watch(`${gulpPaths.paths.dist.img}**/*`).on('change', reload);
-  gulp.watch(`${gulpPaths.paths.dist.build}*.html`).on('change', reload);
+  gulp.watch(`${gulpPaths.paths.dist.js}**/*`).on('change', gulp.series(generateSW, reload));
+  gulp.watch(`${gulpPaths.paths.dist.img}**/*`).on('change', gulp.series(generateSW, reload));
+  gulp.watch(`${gulpPaths.paths.dist.build}*.html`).on('change', gulp.series(generateSW, reload));
 }
 
 // watch files and serve run in parallel
