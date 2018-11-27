@@ -456,15 +456,15 @@
               <th class="tabletext">URL</td>
               <th class="tabletext">{{config.har1.label}}</td>
               <th class="tabletext">{{config.har2.label}}</td>
-              <th class="tabletext">Diff</td>
+              <th class="tabletext">Diff (bytes)</td>
             </tr>
           </thead>
           <tbody>
           {{#each requestDiff}}
             <tr>
                 <td class="tabletext"><a href="{{url}}">{{js "formatURL(this.url)"}}</a></td>
-                <td class="tabletext">{{har1}}</td>
-                <td class="tabletext">{{har2}}</td>
+                <td class="tabletext">{{js "formatBytes(this.har1)"}}</td>
+                <td class="tabletext">{{js "formatBytes(this.har2)"}}</td>
                 <td class="tabletext">{{diff}}</td>
             </tr>
           {{/each}}

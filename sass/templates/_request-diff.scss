@@ -2,14 +2,14 @@
 .requestDiffTable tr {
 
   td {
-    font-size: 90%;
+    font-size: 80%;
     background: $white;
   }
 
   &:nth-child(odd) {
     td {
       background: $grey;
-      font-size: 90%;
+      font-size: 80%;
     }
   }
 }

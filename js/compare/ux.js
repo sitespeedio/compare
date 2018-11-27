@@ -80,8 +80,14 @@ function formatURL(url) {
     return url.substring(url.lastIndexOf('/') + 1, url.length);
   } else 
   */
-  if (url.length > 80) {
-    return url.substring(0, 79) + '...';
+  if (url.length > 90) {
+    if (url.indexOf('/') > -1) {
+      const ending = url.substring(url.lastIndexOf('/') + 1, url.length);
+      if (90 - ending.length - 50 > 0) {
+        return url.substring(0, 49) + '.../' + ending;
+      }
+    }
+    return url.substring(0, 89) + '...';
   }
   return url;
 }
@@ -93,6 +99,8 @@ function formatTime(ms) {
 function formatBytes(bytes) {
   if (bytes === 0) {
     return '0 B';
+  } else if (bytes === undefined) {
+    return '';
   }
 
   return Math.round(bytes / 1000) + ' kb';
