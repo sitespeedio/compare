@@ -450,21 +450,25 @@
       {{#js_if "this.requestDiff.length > 0 "}}
         <h3 id="visualProgressHeader">Request difference</h3>
         <div class="col-1-1">
-          <table class="pageXrayTable">
-          <tr>
-            <td class="tabletext"><b>URL</b></td>
-            <td class="tabletext"><b>{{config.har1.label}}</b></td>
-            <td class="tabletext"><b>{{config.har2.label}}</b></td>
-            <td class="tabletext"><b>Diff</b></td>
-          </tr>
+          <table class="requestDiffTable">
+          <thead>
+            <tr>
+              <th class="tabletext">URL</td>
+              <th class="tabletext">{{config.har1.label}}</td>
+              <th class="tabletext">{{config.har2.label}}</td>
+              <th class="tabletext">Diff</td>
+            </tr>
+          </thead>
+          <tbody>
           {{#each requestDiff}}
             <tr>
-                <td class="tabletext">{{js "formatURL(this.url)"}}</td>
+                <td class="tabletext"><a href="{{url}}">{{js "formatURL(this.url)"}}</a></td>
                 <td class="tabletext">{{har1}}</td>
                 <td class="tabletext">{{har2}}</td>
                 <td class="tabletext">{{diff}}</td>
             </tr>
           {{/each}}
+          </tbody>
           </table> 
         </div>
       {{/js_if}} 
