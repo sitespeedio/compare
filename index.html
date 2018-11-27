@@ -445,6 +445,32 @@
     </div>
   </script>
 
+  <script id="requestDiffTemplate" type="text/template7">
+    {{#if requestDiff}}
+      {{#js_if "this.requestDiff.length > 0 "}}
+        <h3 id="visualProgressHeader">Request difference</h3>
+        <div class="col-1-1">
+          <table class="pageXrayTable">
+          <tr>
+            <td class="tabletext"><b>URL</b></td>
+            <td class="tabletext"><b>{{config.har1.label}}</b></td>
+            <td class="tabletext"><b>{{config.har2.label}}</b></td>
+            <td class="tabletext"><b>Diff</b></td>
+          </tr>
+          {{#each requestDiff}}
+            <tr>
+                <td class="tabletext">{{js "formatURL(this.url)"}}</td>
+                <td class="tabletext">{{har1}}</td>
+                <td class="tabletext">{{har2}}</td>
+                <td class="tabletext">{{diff}}</td>
+            </tr>
+          {{/each}}
+          </table> 
+        </div>
+      {{/js_if}} 
+    {{/if}}
+  </script>
+
   <!--
 -->
 
@@ -594,6 +620,8 @@
         </div>
         <div id="visualProgressContent">
         </div>
+        <div id="requestDiffContent">
+          </div>
         <div id="thirdPartyContent">
         </div>
         <div id="domainsContent">

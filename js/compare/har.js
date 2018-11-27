@@ -1,4 +1,4 @@
-/* exported getLastTiming getAllDomains*/
+/* exported getLastTiming getAllDomains getUniqueRequests*/
 
 /**
  * Helper functions to get things out of the HAR
@@ -60,4 +60,65 @@ function getAllDomains(firstPage, secondPage) {
   }
 
   return allDomains;
+}
+
+function getUniqueRequests(har1, run1, har2, run2) {
+  const urls1 = getURLs(har1, run1);
+  const urls2 = getURLs(har2, run2);
+  const all = [];
+  const minDiffInBytes = 8;
+  for (let url of Object.keys(urls1)) {
+    if (
+      (urls2[url] && urls2[url] === urls1[url]) ||
+      (urls2[url] &&
+        urls2[url] - urls1[url] < minDiffInBytes &&
+        urls2[url] - urls1[url] > -minDiffInBytes)
+    ) {
+      // TODO no diff, do nada
+    } else if (urls2[url]) {
+      // There's a diff in size
+      all.push({
+        url: url,
+        har1: urls1[url],
+        har2: urls2[url],
+        diff: urls2[url] - urls1[url]
+      });
+    } else {
+      all.push({
+        url: url,
+        diff: -urls1[url],
+        har1: urls1[url]
+      });
+    }
+  }
+  for (let url of Object.keys(urls2)) {
+    if (urls2[url] && !urls1[url]) {
+      all.push({
+        url: url,
+        diff: urls2[url],
+        har2: urls2[url]
+      });
+    }
+  }
+  return all;
+}
+
+function getURLs(har, run) {
+  const harEntries = har.log.entries;
+  const pageId = har.log.pages[run].id;
+  const cleaned = harEntries.filter(entry => {
+    // filter inline data
+    if (
+      entry.request.url.indexOf('data:') === 0 ||
+      entry.request.url.indexOf('javascript:') === 0
+    ) {
+      return false;
+    }
+    return entry.pageref === pageId;
+  });
+  const urls = {};
+  for (let entry of cleaned) {
+    urls[entry.request.url] = entry.response.bodySize;
+  }
+  return urls;
 }

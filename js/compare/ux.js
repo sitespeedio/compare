@@ -1,4 +1,4 @@
-/* exported showUpload, formatDate, toggleRow, hideUpload, objectPropertiesToArray, formatTime, showLoading, errorMessage, formatBytes, changeOpacity*/
+/* exported showUpload, formatDate, formatURL, toggleRow, hideUpload, objectPropertiesToArray, formatTime, showLoading, errorMessage, formatBytes, changeOpacity*/
 
 // Hide the upload functionality
 function hideUpload() {
@@ -72,6 +72,18 @@ function hide(id) {
 
 function formatDate(dateString) {
   return new Date(dateString).toLocaleString();
+}
+
+function formatURL(url) {
+  /*
+  if (url.indexOf('/') > -1) {
+    return url.substring(url.lastIndexOf('/') + 1, url.length);
+  } else 
+  */
+  if (url.length > 80) {
+    return url.substring(0, 79) + '...';
+  }
+  return url;
 }
 
 function formatTime(ms) {
