@@ -450,8 +450,8 @@
 
   <script id="requestDiffTemplate" type="text/template7">
     {{#if requestDiff}}
-      {{#js_if "this.requestDiff.length > 0 "}}
-        <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
+      <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
+      {{#js_if "this.requestDiff.length > 0 "}} 
         <div class="col-1-1">
           <table class="requestDiffTable">
           <thead>
@@ -530,6 +530,8 @@
             </tbody>
           </table>
         </div>
+      {{else}}
+        <p>There are no difference in size of the requests/responses.</p>
       {{/js_if}} 
     {{/if}}
   </script>
