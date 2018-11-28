@@ -1,12 +1,13 @@
 # CHANGELOG - compare
 
-## UNRELEASED
+## 1.0.0 2018-11-28
 ### Added
 * Added support for using Github gists see [#34](https://github.com/sitespeedio/compare/issues/34).
 * Added support for using a config file to configure which HARs to test.
 * Added support for copy/paste directly you HAR, configuration file or a gist URL or id.
 * Refactor the CSS into Sass, development build process now uses BrowserSync.
 * Service worker added for offline support. Workbox is used to achieve this.
+* Added support for showing changes in request/responses if you compare the same page [#63](https://github.com/sitespeedio/compare/pull/63).
 
 ### Changed
 * New internal structure and use the new configuration object all the way.
