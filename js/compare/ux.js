@@ -1,4 +1,4 @@
-/* exported showUpload, formatDate, toggleRow, hideUpload, objectPropertiesToArray, formatTime, showLoading, errorMessage, formatBytes, changeOpacity*/
+/* exported showUpload, formatDate, formatURL, toggleRow, hideUpload, objectPropertiesToArray, formatTime, showLoading, errorMessage, formatBytes, changeOpacity*/
 
 // Hide the upload functionality
 function hideUpload() {
@@ -74,6 +74,16 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleString();
 }
 
+function formatURL(url) {
+  if (url.length > 90) {
+    if (url.indexOf('/') > -1) {
+      const ending = url.substring(url.length - 30, url.length);
+      return url.substring(0, 56) + '....' + ending;
+    }
+  }
+  return url;
+}
+
 function formatTime(ms) {
   return ms + ' ms';
 }
@@ -81,6 +91,8 @@ function formatTime(ms) {
 function formatBytes(bytes) {
   if (bytes === 0) {
     return '0 B';
+  } else if (bytes === undefined) {
+    return '';
   }
 
   return Math.round(bytes / 1000) + ' kb';

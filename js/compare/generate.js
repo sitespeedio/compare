@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, generateVisualProgress, formatDate */
+/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate  getUniqueRequests */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
@@ -232,6 +232,27 @@ function generate(config) {
         el.innerHTML = config.comments[key];
       }
     }
+  }
+
+  // At the moment we only test this if you test the same URL
+  // But we should find a better way to do it in the future
+  if (pageXray1.url === pageXray2.url) {
+    const requestDiff = getUniqueRequests(
+      config.har1.har,
+      config.har1.run,
+      config.har2.har,
+      config.har2.run
+    );
+    const total = getTotalDiff(requestDiff);
+    parseTemplate(
+      'requestDiffTemplate',
+      {
+        requestDiff,
+        total,
+        config
+      },
+      'requestDiffContent'
+    );
   }
 
   createUpload('har1upload');
