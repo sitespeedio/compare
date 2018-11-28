@@ -1,4 +1,4 @@
-/* exported getLastTiming getAllDomains getUniqueRequests*/
+/* exported getLastTiming getAllDomains getTotalDiff getUniqueRequests*/
 
 /**
  * Helper functions to get things out of the HAR
@@ -60,6 +60,20 @@ function getAllDomains(firstPage, secondPage) {
   }
 
   return allDomains;
+}
+
+function getTotalDiff(requestDiff) {
+  const total = {
+    har1: 0,
+    har2: 0,
+    diff: 0
+  };
+  for (let diff of requestDiff) {
+    if (diff.har1) total.har1 += diff.har1;
+    if (diff.har2) total.har2 += diff.har2;
+    if (diff.diff) total.diff += diff.diff;
+  }
+  return total;
 }
 
 function getUniqueRequests(har1, run1, har2, run2) {

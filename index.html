@@ -468,6 +468,12 @@
                 <td class="tabletext">{{js "formatBytes(this.diff)"}}</td>
             </tr>
           {{/each}}
+          <tr>
+            <td class="tabletext"><b>Total</b></td>
+            <td class="tabletext">{{js "formatBytes(this.total.har1)"}}</td>
+            <td class="tabletext">{{js "formatBytes(this.total.har2)"}}</td>
+            <td class="tabletext">{{js "formatBytes(this.total.diff)"}}</td>
+          </tr>  
           </tbody>
           </table> 
         </div>

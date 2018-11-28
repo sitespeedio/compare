@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, generateVisualProgress, formatDate  getUniqueRequests */
+/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate  getUniqueRequests */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
@@ -243,11 +243,12 @@ function generate(config) {
       config.har2.har,
       config.har2.run
     );
-
+    const total = getTotalDiff(requestDiff);
     parseTemplate(
       'requestDiffTemplate',
       {
         requestDiff,
+        total,
         config
       },
       'requestDiffContent'
