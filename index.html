@@ -465,7 +465,19 @@
                 <td class="tabletext"><a href="{{url}}">{{js "formatURL(this.url)"}}</a></td>
                 <td class="tabletext">{{js "formatBytes(this.har1)"}}</td>
                 <td class="tabletext">{{js "formatBytes(this.har2)"}}</td>
-                <td class="tabletext">{{js "formatBytes(this.diff)"}}</td>
+                    {{#js_compare "this.har1 && this.har2"}}
+                      {{#js_compare "this.diff < 0"}}
+                        <td class="tabletext green">{{js "formatBytes(this.diff)"}}</td>
+                      {{else}} 
+                        <td class="tabletext red">+{{js "formatBytes(this.diff)"}}</td>
+                      {{/js_compare}}
+                    {{else}}
+                      {{#js_compare "this.har1"}}
+                      <td class="tabletext green">Removed</td>
+                      {{else}}
+                      <td class="tabletext red">New</td>
+                      {{/js_compare}}
+                    {{/js_compare}}
             </tr>
           {{/each}}
           <tr>
