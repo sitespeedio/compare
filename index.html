@@ -399,6 +399,9 @@
       {{#if p1.thirdParty.contentTypes}}
         <a href="#firstPartyHeader">1st vs 3rd party</a> -
       {{/if}}
+      {{#js_compare "this.p1.url === this.p2.url"}}
+        <a href="#requestDifffHeader">Request diff</a> - 
+      {{/js_compare}}
       <a href="#domainsHeader">Domains</a>
     </div>
   </script>
@@ -448,7 +451,7 @@
   <script id="requestDiffTemplate" type="text/template7">
     {{#if requestDiff}}
       {{#js_if "this.requestDiff.length > 0 "}}
-        <h3 id="visualProgressHeader">Request/response difference (larger than 1 kb)</h3>
+        <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
         <div class="col-1-1">
           <table class="requestDiffTable">
           <thead>
@@ -476,7 +479,7 @@
                       <td class="tabletext green">Removed</td>
                       {{else}}
                       <td class="tabletext red">New</td>
-                      {{/js_compare}}
+                    {{/js_compare}}
                     {{/js_compare}}
             </tr>
           {{/each}}
@@ -495,7 +498,7 @@
           <table>
             <thead>
                 <tr>
-                  <th class="tabletext">Summary of difference</td>
+                  <th class="tabletext">Summary of request/response difference</td>
                   <th>Size</td>
                 </tr>
             </thead>
