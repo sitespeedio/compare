@@ -1,5 +1,9 @@
 # CHANGELOG - compare
 
+## UNRELEASED
+### Added
+* Added comment for request diff.
+
 ## 1.0.0 2018-11-28
 ### Added
 * Added support for using Github gists see [#34](https://github.com/sitespeedio/compare/issues/34).

@@ -451,6 +451,8 @@
   <script id="requestDiffTemplate" type="text/template7">
     {{#if requestDiff}}
       <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
+      <div id="comment-requestDiff" class="comment">
+      </div>
       {{#js_if "this.requestDiff.length > 0 "}} 
         <div class="col-1-1">
           <table class="requestDiffTable">

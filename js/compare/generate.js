@@ -223,17 +223,6 @@ function generate(config) {
     'domainsContent'
   );
 
-  // Take care of comments
-  if (config.comments) {
-    const commentKeys = Object.keys(config.comments);
-    for (let key of commentKeys) {
-      const el = document.getElementById('comment-' + key);
-      if (el) {
-        el.innerHTML = config.comments[key];
-      }
-    }
-  }
-
   // At the moment we only test this if you test the same URL
   // But we should find a better way to do it in the future
   if (pageXray1.url === pageXray2.url) {
@@ -253,6 +242,17 @@ function generate(config) {
       },
       'requestDiffContent'
     );
+
+    // Take care of comments
+    if (config.comments) {
+      const commentKeys = Object.keys(config.comments);
+      for (let key of commentKeys) {
+        const el = document.getElementById('comment-' + key);
+        if (el) {
+          el.innerHTML = config.comments[key];
+        }
+      }
+    }
   }
 
   createUpload('har1upload');
