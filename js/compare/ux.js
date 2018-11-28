@@ -75,19 +75,11 @@ function formatDate(dateString) {
 }
 
 function formatURL(url) {
-  /*
-  if (url.indexOf('/') > -1) {
-    return url.substring(url.lastIndexOf('/') + 1, url.length);
-  } else 
-  */
   if (url.length > 90) {
     if (url.indexOf('/') > -1) {
-      const ending = url.substring(url.lastIndexOf('/') + 1, url.length);
-      if (90 - ending.length - 50 > 0) {
-        return url.substring(0, 49) + '.../' + ending;
-      }
+      const ending = url.substring(url.length - 30, url.length);
+      return url.substring(0, 56) + '....' + ending;
     }
-    return url.substring(0, 89) + '...';
   }
   return url;
 }
