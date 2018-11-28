@@ -484,10 +484,48 @@
             <td class="tabletext"><b>Total</b></td>
             <td class="tabletext"><b>{{js "formatBytes(this.total.har1)"}}</b></td>
             <td class="tabletext"><b>{{js "formatBytes(this.total.har2)"}}</b></td>
-            <td class="tabletext"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
+            {{#js_compare "this.total.diff < 0"}}
+              <td class="tabletext green"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
+            {{else}}
+              <td class="tabletext red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
+            {{/js_compare}}
           </tr>  
           </tbody>
           </table> 
+          <table>
+            <thead>
+                <tr>
+                  <th class="tabletext">Summary of difference</td>
+                  <th>Size</td>
+                </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tabletext">New ({{total.new}})</td>
+                <td class="red">{{js "formatBytes(this.total.newBytes)"}}</td>
+              </tr>
+              <tr>
+                  <td class="tabletext">Removed ({{total.removed}})</td>
+                  <td class="green">-{{js "formatBytes(this.total.removedBytes)"}}</td>
+              </tr>
+              <tr>
+                  <td class="tabletext">Increased ({{total.increased}})</td>
+                  <td class="red">{{js "formatBytes(this.total.increasedBytes)"}}</td>
+              </tr>
+              <tr>
+                  <td class="tabletext">Decreased ({{total.decreased}})</td>
+                  <td class="green">{{js "formatBytes(this.total.decreasedBytes)"}}</td>
+              </tr>  
+              <tr>
+                  <td class="tabletext"><b>Total</b></td>
+                  {{#js_compare "this.total.diff < 0"}}
+                    <td class="green"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
+                  {{else}}
+                    <td class="red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
+                  {{/js_compare}}
+              </tr>
+            </tbody>
+          </table>
         </div>
       {{/js_if}} 
     {{/if}}

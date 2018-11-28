@@ -66,12 +66,38 @@ function getTotalDiff(requestDiff) {
   const total = {
     har1: 0,
     har2: 0,
-    diff: 0
+    diff: 0,
+    new: 0,
+    newBytes: 0,
+    removed: 0,
+    removedBytes: 0,
+    increased: 0,
+    increasedBytes: 0,
+    decreased: 0,
+    decreasedBytes: 0
   };
   for (let diff of requestDiff) {
     if (diff.har1) total.har1 += diff.har1;
     if (diff.har2) total.har2 += diff.har2;
     if (diff.diff) total.diff += diff.diff;
+
+    // is new!
+    if (diff.har2 && !diff.har1) {
+      total.new += 1;
+      total.newBytes += diff.har2;
+    } else if (diff.har1 && !diff.har2) {
+      // is removed
+      total.removed += 1;
+      total.removedBytes += diff.har1;
+    } else if (diff.diff < 0) {
+      // decrease!
+      total.decreased += 1;
+      total.decreasedBytes += diff.diff;
+    } else {
+      // must be increase
+      total.increased += 1;
+      total.increasedBytes += diff.diff;
+    }
   }
   return total;
 }
