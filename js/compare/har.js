@@ -66,7 +66,7 @@ function getUniqueRequests(har1, run1, har2, run2) {
   const urls1 = getURLs(har1, run1);
   const urls2 = getURLs(har2, run2);
   const all = [];
-  const minDiffInBytes = 8;
+  const minDiffInBytes = 1000;
   for (let url of Object.keys(urls1)) {
     if (
       (urls2[url] && urls2[url] === urls1[url]) ||
