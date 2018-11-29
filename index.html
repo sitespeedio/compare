@@ -303,13 +303,19 @@
 
   <script id="thirdPartyTemplate" type="text/template7">
     <h3 id="firstPartyHeader">First Party vs Third Party content</h3>
+    {{#js_compare "this.p1.firstPartyRegEx === this.p2.firstPartyRegEx"}}
+        <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter.</p>
+      {{else}}
+      <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter for {{config.har1.label}} and <b>{{p2.firstPartyRegEx}}</b> for {{config.har2.label}}.</p>
+    {{/js_compare}}
+    
     <div id="comment-firstParty" class="comment"></div>
     <table>
       <thead>
         <tr>
           <th class="tabletext">Metric</th>
-          <th> HAR 1</th>
-          <th> HAR 2</th>
+          <th> {{config.har1.label}}</th>
+          <th> {{config.har2.label}}</th>
         </tr>
       </thead>
       <tbody>

@@ -3,6 +3,7 @@
 ## UNRELEASED
 ### Added
 * Added comment for request diff.
+* Upgraded to latest PageXray that will automatically calculate first/third party request + adding the possibility to configure it in a config file.
 
 ## 1.0.0 2018-11-28
 ### Added
