@@ -7,6 +7,13 @@
   text-align: center;
 }
 
+.small {
+  font-size: 80%;
+  font-weight: 400;
+  margin-top: .25rem;
+  color: $dark-grey;
+}
+
 .tabletext {
   text-align: left;
   padding: 4px;

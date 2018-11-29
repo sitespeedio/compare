@@ -205,7 +205,8 @@ function loadHARsFromConfig(config) {
           label: config.har2.label || 'HAR2'
         },
         comments: config.comments || undefined,
-        title: config.title || 'Compare HAR files'
+        title: config.title || 'Compare HAR files',
+        firstParty: config.firstParty || undefined
       })
     )
     .catch(e => {

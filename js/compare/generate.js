@@ -113,11 +113,13 @@ function generate(config) {
 
   const pageXray1 = window.PageXray.convertIndex(
     config.har1.har,
-    config.har1.run
+    config.har1.run,
+    { firstParty: config.firstParty }
   );
   const pageXray2 = window.PageXray.convertIndex(
     config.har2.har,
-    config.har2.run
+    config.har2.run,
+    { firstParty: config.firstParty }
   );
 
   // special handling for Template7 limits
@@ -207,7 +209,8 @@ function generate(config) {
       'thirdPartyTemplate',
       {
         p1: pageXray1,
-        p2: pageXray2
+        p2: pageXray2,
+        config
       },
       'thirdPartyContent'
     );
