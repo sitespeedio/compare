@@ -321,8 +321,8 @@
       <tbody>
         <tr>
           <td class="tabletext">First party requests <button onclick="toggleRow(this, 'firstPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{p1.firstParty.requests}} ({{js "Math.round((this.p1.firstParty.requests / this.p1.requests)*100)"}}%)</td>
-          <td>{{p2.firstParty.requests}} ({{js "Math.round((this.p2.firstParty.requests / this.p2.requests)*100)"}}%)</td>
+          <td>{{p1.firstParty.requests}} ({{js "this.p1.firstParty.requests>0?Math.round((this.p1.firstParty.requests / this.p1.requests)*100):0"}}%)</td>
+          <td>{{p2.firstParty.requests}} ({{js "this.p2.firstParty.requests>0?Math.round((this.p2.firstParty.requests / this.p2.requests)*100):0"}}%)</td>
         </tr>
         {{#each p1.firstParty.contentTypes}}
         <tr class="userShowable firstPartyRequests">
@@ -334,8 +334,8 @@
         <tr>
           <td class="tabletext">First party transfer size <button onclick="toggleRow(this, 'firstPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
           <td>{{js "formatBytes(this.p1.firstParty.transferSize)"}} 
-        ({{js "Math.round((this.p1.firstParty.transferSize / this.p1.transferSize)*100)"}}%)</td>
-          <td>{{js "formatBytes(this.p2.firstParty.transferSize)"}} ({{js "Math.round((this.p2.firstParty.transferSize / this.p2.transferSize)*100)"}}%)</td>
+        ({{js "this.p1.firstParty.transferSize>0?Math.round((this.p1.firstParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
+          <td>{{js "formatBytes(this.p2.firstParty.transferSize)"}} ({{js "this.p2.firstParty.transferSize>0?Math.round((this.p2.firstParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
         </tr>
         {{#each p1.firstParty.contentTypes}}
         <tr class="userShowable firstPartyTransferSize">
@@ -346,8 +346,8 @@
         {{/each}}
         <tr>
           <td class="tabletext">First party content size <button onclick="toggleRow(this, 'firstPartyContentSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.firstParty.contentSize)"}} ({{js "Math.round((this.p1.firstParty.contentSize / this.p1.contentSize)*100)"}}%)</td>
-          <td>{{js "formatBytes(this.p2.firstParty.contentSize)"}} ({{js "Math.round((this.p2.firstParty.contentSize / this.p2.contentSize)*100)"}}%)</td>
+          <td>{{js "formatBytes(this.p1.firstParty.contentSize)"}} ({{js "this.p1.firstParty.contentSize>0?Math.round((this.p1.firstParty.contentSize / this.p1.contentSize)*100):0"}}%)</td>
+          <td>{{js "formatBytes(this.p2.firstParty.contentSize)"}} ({{js "this.p2.firstParty.contentSize>0?Math.round((this.p2.firstParty.contentSize / this.p2.contentSize)*100):0"}}%)</td>
         </tr>
         {{#each p1.firstParty.contentTypes}}
         <tr class="userShowable firstPartyContentSize">
@@ -358,8 +358,8 @@
         {{/each}}
         <tr>
           <td class="tabletext">Third party requests <button onclick="toggleRow(this, 'thirdPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{p1.thirdParty.requests}} ({{js "Math.round((this.p1.thirdParty.requests / this.p1.requests)*100)"}}%)</td>
-          <td>{{p2.thirdParty.requests}} ({{js "Math.round((this.p2.thirdParty.requests / this.p2.requests)*100)"}}%)</td>
+          <td>{{p1.thirdParty.requests}} ({{js "this.p1.thirdParty.requests>0?Math.round((this.p1.thirdParty.requests / this.p1.requests)*100):0"}}%)</td>
+          <td>{{p2.thirdParty.requests}} ({{js "this.p2.thirdParty.requests>0?Math.round((this.p2.thirdParty.requests / this.p2.requests)*100):0"}}%)</td>
         </tr>
         {{#each p1.thirdParty.contentTypes}}
         <tr class="userShowable thirdPartyRequests">
@@ -370,8 +370,8 @@
         {{/each}}
         <tr>
           <td class="tabletext">Third party transfer size <button onclick="toggleRow(this, 'thirdPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.thirdParty.transferSize)"}} ({{js "Math.round((this.p1.thirdParty.transferSize / this.p1.transferSize)*100)"}}%)</td>
-          <td>{{js "formatBytes(this.p2.thirdParty.transferSize)"}} ({{js "Math.round((this.p2.thirdParty.transferSize / this.p2.transferSize)*100)"}}%)</td>
+          <td>{{js "formatBytes(this.p1.thirdParty.transferSize)"}} ({{js "this.p1.thirdParty.transferSize>0?Math.round((this.p1.thirdParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
+          <td>{{js "formatBytes(this.p2.thirdParty.transferSize)"}} ({{js "this.p2.thirdParty.transferSize>0?Math.round((this.p2.thirdParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
         </tr>
         {{#each p1.thirdParty.contentTypes}}
         <tr class="userShowable thirdPartyTransferSize">
@@ -382,8 +382,8 @@
         {{/each}}
         <tr>
           <td class="tabletext">Third party content size <button onclick="toggleRow(this, 'thirdPartyContentSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.thirdParty.contentSize)"}} ({{js "Math.round((this.p1.thirdParty.contentSize / this.p1.contentSize)*100)"}}%)</td>
-          <td>{{js "formatBytes(this.p2.thirdParty.contentSize)"}} ({{js "Math.round((this.p2.thirdParty.contentSize / this.p2.contentSize)*100)"}}%)</td>
+          <td>{{js "formatBytes(this.p1.thirdParty.contentSize)"}} ({{js "this.p1.thirdParty.contentSize>0?Math.round((this.p1.thirdParty.contentSize / this.p1.contentSize)*100):0"}}%)</td>
+          <td>{{js "formatBytes(this.p2.thirdParty.contentSize)"}} ({{js "this.p2.thirdParty.contentSize>0?Math.round((this.p2.thirdParty.contentSize / this.p2.contentSize)*100):0"}}%)</td>
         </tr>
         {{#each p1.thirdParty.contentTypes}}
         <tr class="userShowable thirdPartyContentSize">
