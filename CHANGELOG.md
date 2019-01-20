@@ -5,6 +5,7 @@
 * Added comment for request diff.
 * Upgraded to latest PageXray that will automatically calculate first/third party request + adding the possibility to configure it in a config file.
 * Added first/third party % to make it easier to see how much content that is actually third party.
+* Updated to PageXray 2.5.3
 
 ## 1.0.0 2018-11-28
 ### Added
