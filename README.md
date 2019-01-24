@@ -83,6 +83,8 @@ And then you can use your configuration file in different ways. You can copy/pas
 
 Or you can use it like this: https://compare.sitespeed.io/?config=https://URL_TO_THE_CONFIG_FILE
 
+Make sure that your server has correct [CORS settings](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) so that compare.sitespeed.io can get the HAR file.
+
 ### Github gist
 You can also use host your configuration file on a [Github gist](https://gist.github.com/) and use the gist id https://compare.sitespeed.io?gist=GIST_ID to get the configuration file.
 
