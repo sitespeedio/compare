@@ -54,7 +54,7 @@
     "gulp-usemin": "~0.3.28",
     "prettier": "~1.5.3",
     "require-dir": "^1.1.0",
-    "workbox-build": "^3.6.3"
+    "workbox-build": "4.0.0"
   },
   "scripts": {
     "lint": "eslint .",
