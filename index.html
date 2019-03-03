@@ -308,7 +308,7 @@
       {{else}}
       <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter for {{config.har1.label}} and <b>{{p2.firstPartyRegEx}}</b> for {{config.har2.label}}.</p>
     {{/js_compare}}
-    
+
     <div id="comment-firstParty" class="comment"></div>
     <table>
       <thead>
@@ -330,10 +330,10 @@
           <td>{{this.requests}}</td>
           <td>{{get @root.p2.firstParty.contentTypes @key 'requests'}}</td>
         </tr>
-        {{/each}}         
+        {{/each}}
         <tr>
           <td class="tabletext">First party transfer size <button onclick="toggleRow(this, 'firstPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.firstParty.transferSize)"}} 
+          <td>{{js "formatBytes(this.p1.firstParty.transferSize)"}}
         ({{js "this.p1.firstParty.transferSize>0?Math.round((this.p1.firstParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
           <td>{{js "formatBytes(this.p2.firstParty.transferSize)"}} ({{js "this.p2.firstParty.transferSize>0?Math.round((this.p2.firstParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
         </tr>
@@ -407,7 +407,7 @@
         <a href="#firstPartyHeader">1st vs 3rd party</a> -
       {{/if}}
       {{#js_compare "this.p1.url === this.p2.url"}}
-        <a href="#requestDifffHeader">Request diff</a> - 
+        <a href="#requestDifffHeader">Request diff</a> -
       {{/js_compare}}
       <a href="#domainsHeader">Domains</a>
     </div>
@@ -460,7 +460,7 @@
       <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
       <div id="comment-requestDiff" class="comment">
       </div>
-      {{#js_compare "this.requestDiff.length > 0 "}} 
+      {{#js_compare "this.requestDiff.length > 0 "}}
         <div class="col-1-1">
           <table class="requestDiffTable">
           <thead>
@@ -480,7 +480,7 @@
                     {{#js_compare "this.har1 && this.har2"}}
                       {{#js_compare "this.diff < 0"}}
                         <td class="tabletext green">{{js "formatBytes(this.diff)"}}</td>
-                      {{else}} 
+                      {{else}}
                         <td class="tabletext red">+{{js "formatBytes(this.diff)"}}</td>
                       {{/js_compare}}
                     {{else}}
@@ -501,9 +501,9 @@
             {{else}}
               <td class="tabletext red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
             {{/js_compare}}
-          </tr>  
+          </tr>
           </tbody>
-          </table> 
+          </table>
           <table>
             <thead>
                 <tr>
@@ -527,7 +527,7 @@
               <tr>
                   <td class="tabletext">Decreased ({{total.decreased}})</td>
                   <td class="green">{{js "formatBytes(this.total.decreasedBytes)"}}</td>
-              </tr>  
+              </tr>
               <tr>
                   <td class="tabletext"><b>Total</b></td>
                   {{#js_compare "this.total.diff < 0"}}
@@ -541,7 +541,7 @@
         </div>
       {{else}}
         <p>There are no difference in size of the requests/responses.</p>
-      {{/js_compare}} 
+      {{/js_compare}}
     {{/if}}
   </script>
 
@@ -750,13 +750,14 @@
         return decodeURIComponent(name[1]);
     }
   </script>
-  <script>
+  <script type="module">
+    import {Workbox} from '/workbox-v4.0.0/workbox-window.prod.mjs';
+
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js');
-      });
+      const wb = new Workbox('/service-worker.js');
+      wb.register();
     }
-</script>
+  </script>
 </body>
 
 </html>
