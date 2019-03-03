@@ -55,6 +55,7 @@
   <script src="js/compare/generateVisualProgress.js" defer></script>
   <script src="js/compare/template7.js" defer></script>
   <script src="js/compare/compare.js" defer></script>
+  <script src="js/compare/update-available.js" defer></script>
   <!-- endbuild -->
 
   <script id="visualProgressTemplate" type="text/template7">
@@ -740,6 +741,11 @@
       </div>
     </div>
   </footer>
+  <div class="update-available">
+    <p>Update available</p>
+    <button class="update-reload" type="button">reload</button>
+    <button class="update-dismiss" type="button">dismiss</button>
+  </div>
   <script>
     function getParam(name) {
       if (
@@ -755,9 +761,15 @@
 
     if ('serviceWorker' in navigator) {
       const wb = new Workbox('/service-worker.js');
+
+      wb.addEventListener('installed', (event) => {
+        if (event.isUpdate) {
+          updateInit();
+        }
+      });
+
       wb.register();
     }
   </script>
 </body>
-
 </html>

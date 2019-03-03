@@ -1,0 +1,63 @@
+// SW detects an update, dialog
+$update-width: 344;
+
+.update-available {
+  font: 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, sans-serif;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  color: $lightest-grey;
+  background: $update-bg;
+  box-shadow: 0 1px 4px rgba($black, .5);
+  border-radius: 0;
+  display: none;
+  animation: fadeIn ease 0.3s;
+
+  @media (min-width: 400px) {
+    width: $update-width * 1px;
+    bottom: 24px;
+    left: 50%;
+    margin-left: ($update-width / 2) * -1px;
+    border-radius: 2px;
+  }
+
+  p {
+    padding: 16px;
+    flex: 1 1 auto;
+    margin: 0;
+  }
+
+  button {
+    color: $update-button;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    padding: 8px;
+    height: 36px;
+    border: 0;
+    border-radius: 3px;
+    flex: 0 1 auto;
+    margin: auto 8px auto -8px;
+
+    &:hover {
+      background-color: rgba($black, .15);
+    }
+  }
+
+  &.update-visible {
+    display: flex;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
