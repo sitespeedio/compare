@@ -3,6 +3,7 @@ module.exports = {
     src: {
       img: 'img/',
       index: 'index.html',
+      manifest: 'manifest.json',
       css: 'css/',
       vendor: 'css/vendor/',
       sass: 'sass/',

@@ -8,6 +8,7 @@ const gulpPaths = require('../gulp-paths');
 function copyDevelopmentAssetsTask() {
   return gulp.src([
     gulpPaths.paths.src.index,
+    gulpPaths.paths.src.manifest,
     `${gulpPaths.paths.src.js}**/*`,
     `${gulpPaths.paths.src.img}**/*`,
   ], { base: './' }).pipe(gulp.dest(`${gulpPaths.paths.dist.build}`));
@@ -16,6 +17,7 @@ function copyDevelopmentAssetsTask() {
 function copyProductionAssetsTask() {
   return gulp.src([
     gulpPaths.paths.src.index,
+    gulpPaths.paths.src.manifest,
     gulpPaths.paths.src.headers,
     `${gulpPaths.paths.src.img}**/*`,
   ], { base: './' }).pipe(gulp.dest(`${gulpPaths.paths.dist.build}`));
