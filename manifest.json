@@ -1,0 +1,21 @@
+{
+  "short_name": "Compare",
+  "name": "Sitespeed.io Compare",
+  "icons": [
+    {
+      "src": "/img/ico/compare-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/ico/compare-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#e1f6fd",
+  "display": "browser",
+  "scope": "/",
+  "theme_color": "#e1f6fd"
+}
