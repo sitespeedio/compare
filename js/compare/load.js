@@ -201,7 +201,7 @@ function loadHARsFromConfig(config) {
         },
         har2: {
           har: har2,
-          run: reworkedConfig2.run || config.har2.run || 1,
+          run: reworkedConfig2.run || config.har2.run || 0,
           label: config.har2.label || 'HAR2'
         },
         comments: config.comments || undefined,
