@@ -85,7 +85,9 @@ function formatURL(url) {
 }
 
 function formatTime(ms) {
-  return ms + ' ms';
+  if (ms !== undefined) {
+    return ms + ' ms';
+  } else return '';
 }
 
 function formatBytes(bytes) {
