@@ -1,777 +1,852 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Compare HAR files</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Twitter -->
+    <meta name="twitter:site" content="@sitespeedio" />
+    <meta name="twitter:creator" content="@sitespeedio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Compare or view HAR files" />
+    <meta
+      name="twitter:description"
+      content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them."
+    />
+    <meta
+      name="twitter:image"
+      content="https://compare.sitespeed.io/img/twitter/compare.png"
+    />
+    <meta name="twitter:image:alt" content="Compare logo" />
 
-<head>
-  <meta charset="UTF-8">
-  <title>Compare HAR files</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Twitter -->
-  <meta name="twitter:site" content="@sitespeedio">
-  <meta name="twitter:creator" content="@sitespeedio">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Compare or view HAR files">
-  <meta name="twitter:description" content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them.">
-  <meta name="twitter:image" content="https://compare.sitespeed.io/img/twitter/compare.png">
-  <meta name="twitter:image:alt" content="Compare logo">
+    <!-- Facebook -->
+    <meta property="og:url" content="https://compare.sitespeed.io" />
+    <meta property="og:title" content="Compare HAR files" />
+    <meta
+      property="og:description"
+      content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them."
+    />
+    <meta
+      property="og:image"
+      content="https://compare.sitespeed.io/img/facebook/compare.png"
+    />
+    <meta
+      property="og:image:secure_url"
+      content="https://compare.sitespeed.io/img/facebook/compare.png"
+    />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="979" />
+    <meta property="og:image:height" content="1000" />
 
-  <!-- Facebook -->
-  <meta property="og:url" content="https://compare.sitespeed.io">
-  <meta property="og:title" content="Compare HAR files">
-  <meta property="og:description" content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them.">
-  <meta property="og:image" content="https://compare.sitespeed.io/img/facebook/compare.png">
-  <meta property="og:image:secure_url" content="https://compare.sitespeed.io/img/facebook/compare.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="979">
-  <meta property="og:image:height" content="1000">
+    <!-- Meta -->
+    <meta
+      name="description"
+      content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them."
+    />
+    <meta
+      name="author"
+      content="Peter Hedenskog, Tobias Lidskog, Jonathan Lee, and sitespeed.io contributors"
+    />
+    <meta name="theme-color" content="#e1f6fd" />
+    <link href="manifest.json" rel="manifest" />
 
-  <!-- Meta -->
-  <meta name="description" content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them.">
-  <meta name="author" content="Peter Hedenskog, Tobias Lidskog, Jonathan Lee, and sitespeed.io contributors">
-  <meta name="theme-color" content="#e1f6fd">
-  <link href="manifest.json" rel="manifest">
+    <link href="css/vendor.css" media="all" rel="stylesheet" />
+    <link href="css/all.css" media="all" rel="stylesheet" />
 
-  <link href="css/vendor.css" media="all" rel="stylesheet" />
-  <link href="css/all.css" media="all" rel="stylesheet" />
+    <script type="text/javascript">
+      window.fd = {
+        logging: false
+      };
+    </script>
 
-  <script type="text/javascript">
-    window.fd = {
-      logging: false
-    };
-  </script>
+    <!-- build:js js/combined.js -->
+    <script src="js/dependencies/template7.min.js" defer></script>
+    <script src="js/dependencies/pagexray.min.js" defer></script>
+    <script src="js/dependencies/perf-cascade.min.js" defer></script>
+    <script src="js/dependencies/gunzip.min.js" defer></script>
+    <script src="js/dependencies/filedrop-min.js" defer></script>
+    <script src="js/dependencies/chartist.min.js" defer></script>
+    <script
+      src="js/dependencies/chartist-plugin-axistitle.min.js"
+      defer
+    ></script>
+    <script src="js/dependencies/chartist-plugin-tooltip.min.js" defer></script>
+    <script src="js/compare/upload.js" defer></script>
+    <script src="js/compare/har.js" defer></script>
+    <script src="js/compare/gzip.js" defer></script>
+    <script src="js/compare/ux.js" defer></script>
+    <script src="js/compare/load.js" defer></script>
+    <script src="js/compare/generate.js" defer></script>
+    <script src="js/compare/generateVisualProgress.js" defer></script>
+    <script src="js/compare/template7.js" defer></script>
+    <script src="js/compare/compare.js" defer></script>
+    <script src="js/compare/update-available.js" defer></script>
+    <!-- endbuild -->
 
-  <!-- build:js js/combined.js -->
-  <script src="js/dependencies/template7.min.js" defer></script>
-  <script src="js/dependencies/pagexray.min.js" defer></script>
-  <script src="js/dependencies/perf-cascade.min.js" defer></script>
-  <script src="js/dependencies/gunzip.min.js" defer></script>
-  <script src="js/dependencies/filedrop-min.js" defer></script>
-  <script src="js/dependencies/chartist.min.js" defer></script>
-  <script src="js/dependencies/chartist-plugin-axistitle.min.js" defer></script>
-  <script src="js/dependencies/chartist-plugin-tooltip.min.js" defer></script>
-  <script src="js/compare/upload.js" defer></script>
-  <script src="js/compare/har.js" defer></script>
-  <script src="js/compare/gzip.js" defer></script>
-  <script src="js/compare/ux.js" defer></script>
-  <script src="js/compare/load.js" defer></script>
-  <script src="js/compare/generate.js" defer></script>
-  <script src="js/compare/generateVisualProgress.js" defer></script>
-  <script src="js/compare/template7.js" defer></script>
-  <script src="js/compare/compare.js" defer></script>
-  <script src="js/compare/update-available.js" defer></script>
-  <!-- endbuild -->
-
-  <script id="visualProgressTemplate" type="text/template7">
-    <h3 id="visualProgressHeader">Visual Progress</h3>
-    <div id="comment-visualProgress" class="comment"></div>
-    <div id="visualProgress" class="ct-chart ct-major-tenth"></div>
-    <div id="visualProgressLegendHolder">
-      <ul class="resource-legend">
-        <li class="legend-url1" title="{{p1.url}}">{{config.har1.label}}</li>
-        <li class="legend-url2" title="{{p2.url}}">{{config.har2.label}}</li>
-      </ul>
-    </div>
-  </script>
-
-  <script id="pageXrayTemplate" type="text/template7">
-    <div>
-      <table class="pageXrayTable">
-        <thead>
-          <tr>
-            <th class="tabletext tableXrayMetric">Metric <button onclick="regenerate(true);" class="submit submit-smaller">Switch</button></th>
-              <th class="tableXrayHarMetric">{{config.har1.label}}
-              <input type="file" id="har1upload" class="inputfile"/>
-              <label for="har1upload">Upload</label>
-            </th>
-              <th class="tableXrayHar2Metric"> {{config.har2.label}}
-              <input type="file" id="har2upload" class="inputfile"/>
-              <label for="har2upload">Upload</label>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#js_compare "this.runs1.length > 1 || this.runs2.length > 1"}}
-          <tr>
-            <td class="tabletext">Run</td>
-            <td>
-              {{#js_compare "this.runs1.length > 1"}}
-              <select name="runs1" onchange="regenerate();" id="run1Option">
-                {{#each this.runs1}}
-                    <option value="{{id}}" {{selected}} >{{show}}</option>
-                {{/each}}
-              </select> {{/js_compare}}
-            </td>
-            <td>
-              {{#js_compare "this.runs2.length > 1"}}
-              <select name="runs2" onchange="regenerate();" id="run2Option">
-                {{#each this.runs2}}
-                    <option value="{{id}}" {{selected}} >{{show}}</option>
-                {{/each}}
-              </select> {{/js_compare}}
-            </td>
-          </tr>
-          {{/js_compare}}
-          <tr>
-            <td class="tabletext">URL</td>
-            <td><a href="{{p1.url}}" title="{{p1.meta.title}}">{{p1.url}}</a></td>
-            <td><a href="{{p2.url}}" title="{{p2.meta.title}}">{{p2.url}}</a></td>
-          </tr>
-          <tr>
-            <td class="tabletext">Date</td>
-            <td> {{js "formatDate(this.p1.meta.startedDateTime)"}} </td>
-            <td> {{js "formatDate(this.p2.meta.startedDateTime)"}} </td>
-          </tr>
-          <tr>
-            <td class="tabletext">Browser</td>
-            <td> {{#if p1.meta.browser}} {{p1.meta.browser.name}} {{p1.meta.browser.version}} {{/if}}</td>
-            <td> {{#if p2.meta.browser}} {{p2.meta.browser.name}} {{p2.meta.browser.version}} {{/if}}</td>
-          </tr>
-          {{#if p1.meta.connectivity}} {{#if p2.meta.connectivity}}
-          <tr>
-            <td class="tabletext">Connectivity</td>
-            <td> {{p1.meta.connectivity}} </td>
-            <td> {{p2.meta.connectivity}} </td>
-          </tr>
-          {{/if}} {{/if}}
-          <tr>
-            <td class="tabletext">Total</td>
-            <td> {{p1.requests}} ({{js "formatBytes(this.p1.transferSize)"}} / {{js "formatBytes(this.p1.contentSize)"}})
-            </td>
-            <td> {{p2.requests}} ({{js "formatBytes(this.p2.transferSize)"}} / {{js "formatBytes(this.p2.contentSize)"}})
-            </td>
-          </tr>
-          <tr>
-            <td class="tabletext">HTML</td>
-            <td> {{p1.contentTypes.html.requests}} ({{js "formatBytes(this.p1.contentTypes.html.transferSize)"}} / {{js "formatBytes(this.p1.contentTypes.html.contentSize)"}})
-            </td>
-            <td> {{p2.contentTypes.html.requests}} ({{js "formatBytes(this.p2.contentTypes.html.transferSize)"}} / {{js "formatBytes(this.p2.contentTypes.html.contentSize)"}})
-            </td>
-          </tr>
-          <tr>
-            <td class="tabletext">CSS</td>
-            <td> {{p1.contentTypes.css.requests}} ({{js "formatBytes(this.p1.contentTypes.css.transferSize)"}} / {{js "formatBytes(this.p1.contentTypes.css.contentSize)"}})
-            </td>
-            <td> {{p2.contentTypes.css.requests}} ({{js "formatBytes(this.p2.contentTypes.css.transferSize)"}} / {{js "formatBytes(this.p2.contentTypes.css.contentSize)"}})
-            </td>
-          </tr>
-          <tr>
-            <td class="tabletext">JavaScript</td>
-            <td> {{p1.contentTypes.javascript.requests}} ({{js "formatBytes(this.p1.contentTypes.javascript.transferSize)"}} / {{js "formatBytes(this.p1.contentTypes.javascript.contentSize)"}})
-            </td>
-            <td> {{p2.contentTypes.javascript.requests}} ({{js "formatBytes(this.p2.contentTypes.javascript.transferSize)"}} / {{js "formatBytes(this.p2.contentTypes.javascript.contentSize)"}})
-            </td>
-          </tr>
-          <tr>
-            <td class="tabletext">Image</td>
-            <td> {{p1.contentTypes.image.requests}} ({{js "formatBytes(this.p1.contentTypes.image.transferSize)"}})</td>
-            <td> {{p2.contentTypes.image.requests}} ({{js "formatBytes(this.p2.contentTypes.image.transferSize)"}})</td>
-          </tr>
-          {{#js_compare "this.p1.visualMetric || this.p2.visualMetrics"}}
-          <tr>
-            <td class="tabletext">First Visual Change</td>
-            <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
-            <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
-          </tr>
-          {{#if p1.visualMetrics.LargestImage}} {{#if p2.visualMetrics.LargestImage}}
-          <tr>
-            <td class="tabletext">Largest Image</td>
-            <td> {{js "formatTime(this.p1.visualMetrics.LargestImage)"}}</td>
-            <td> {{js "formatTime(this.p2.visualMetrics.LargestImage)"}}</td>
-          </tr>
-          {{/if}} {{/if}}
-          {{#if p1.visualMetrics.Logo}} {{#if p2.visualMetrics.Logo}}
-          <tr>
-            <td class="tabletext">Logo</td>
-            <td>{{js "formatTime(this.p1.visualMetrics.Logo)"}}</td>
-            <td>{{js "formatTime(this.p2.visualMetrics.Logo)"}}</td>
-          </tr>
-          {{/if}} {{/if}}
-          {{#if p1.visualMetrics.Heading}} {{#if p2.visualMetrics.Heading}}
-          <tr>
-            <td class="tabletext">Heading</td>
-            <td> {{js "formatTime(this.p1.visualMetrics.Heading)"}}</td>
-            <td> {{js "formatTime(this.p2.visualMetrics.Heading)"}}</td>
-          </tr>
-          {{/if}} {{/if}}
-          <tr>
-            <td class="tabletext">Speed Index</td>
-            <td> {{#if p1.visualMetrics}} {{p1.visualMetrics.SpeedIndex}} {{/if}}</td>
-            <td> {{#if p2.visualMetrics}} {{p2.visualMetrics.SpeedIndex}} {{/if}}</td>
-          </tr>
-          <tr>
-            <td class="tabletext">Last Visual Change</td>
-            <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.LastVisualChange)"}} {{/if}}</td>
-            <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.LastVisualChange)"}} {{/if}}</td>
-          </tr>
-          {{#if p1.visualMetrics.VisualReadiness}} {{#if p2.visualMetrics.VisualReadiness}}
-          <tr>
-            <td class="tabletext">Visual Readiness</td>
-            <td>{{js "formatTime(this.p1.visualMetrics.VisualReadiness)"}}</td>
-            <td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
-          </tr>
-          {{/if}} {{/if}}
-          {{/js_compare}} {{#if p1.meta.screenshot}} {{#if p2.meta.screenshot}}
-          <tr>
-            <td class="tabletext">Screenshot</td>
-            <td>
-              <a href="{{p1.meta.screenshot}}"><img src="{{p1.meta.screenshot}}" width="200"/></a>
-            </td>
-            <td>
-              <a href="{{p2.meta.screenshot}}"><img src="{{p2.meta.screenshot}}" width="200"/></a>
-            </td>
-          </tr>
-          {{/if}} {{/if}} {{#if p1.meta.video}} {{#if p2.meta.video}}
-          <tr>
-            <td class="tabletext">Video</td>
-            <td>
-              <video width="200" controls poster="{{p1.meta.screenshot}}">
-                <source src="{{p1.meta.video}}" type="video/mp4">
-              </video>
-            </td>
-            <td>
-              <video width="200" controls poster="{{p2.meta.screenshot}}">
-                <source src="{{p2.meta.video}}" type="video/mp4">
-              </video>
-            </td>
-          </tr>
-          {{/if}} {{/if}} {{#if p1.meta.result}} {{#if p2.meta.result}}
-          <tr>
-            <td class="tabletext">Extra</td>
-            <td>
-              <a href="{{p1.meta.result}}" target="_blank" rel="noopener noreferrer">Result page</a>
-            </td>
-            <td>
-              <a href="{{p2.meta.result}}" target="_blank" rel="noopener noreferrer">Result page</a>
-            </td>
-          </tr>
-          {{/if}} {{/if}}
-            {{#if cpuCategories1.Painting}} {{#if cpuCategories2.Painting}}
-            <tr>
-              <td class="tabletext">CPU Painting:
-              </td>
-              <td>{{cpuCategories1.Painting.toFixed(3)}}
-              </td>
-              <td>{{cpuCategories2.Painting.toFixed(3)}}
-              </td>
-            </tr>
-            <tr>
-              <td class="tabletext">CPU Loading:
-              </td>
-              <td>{{cpuCategories1.Loading.toFixed(3)}}
-              </td>
-              <td>{{cpuCategories2.Loading.toFixed(3)}}
-              </td>
-            </tr>
-            <tr>
-              <td class="tabletext">CPU Rendering:
-              </td>
-              <td>{{cpuCategories1.Rendering.toFixed(3)}}
-              </td>
-              <td>{{cpuCategories2.Rendering.toFixed(3)}}
-              </td>
-            </tr>
-            <tr>
-              <td class="tabletext">CPU Scripting:
-              </td>
-              <td>{{cpuCategories1.Scripting.toFixed(3)}}
-              </td>
-              <td>{{cpuCategories2.Scripting.toFixed(3)}}
-              </td>
-            </tr>
-            <tr>
-              <td class="tabletext" colspan="3">CPU Events <button onclick="toggleRow(this, 'cpuExtraInfo', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-            </tr>
-            <tr class="userShowable cpuExtraInfo">
-              <td class="tabletext">
-              </td>
-              <td>
-                <ul>
-                  {{#each cpuEvents1}}
-                      <li>{{name}} : {{value.toFixed(3)}}</li>
-                  {{/each}}
-                </ul>
-              </td>
-              <td>
-                <ul>
-                  {{#each cpuEvents2}}
-                      <li>{{name}} : {{value.toFixed(3)}}</li>
-                  {{/each}}
-                </ul>
-              </td>
-            </tr>
-            {{/if}} {{/if}}
-        </tbody>
-      </table>
-    </div>
-  </script>
-
-  <script id="thirdPartyTemplate" type="text/template7">
-    <h3 id="firstPartyHeader">First Party vs Third Party content</h3>
-    {{#js_compare "this.p1.firstPartyRegEx === this.p2.firstPartyRegEx"}}
-        <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter.</p>
-      {{else}}
-      <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter for {{config.har1.label}} and <b>{{p2.firstPartyRegEx}}</b> for {{config.har2.label}}.</p>
-    {{/js_compare}}
-
-    <div id="comment-firstParty" class="comment"></div>
-    <table>
-      <thead>
-        <tr>
-          <th class="tabletext">Metric</th>
-          <th> {{config.har1.label}}</th>
-          <th> {{config.har2.label}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="tabletext">First party requests <button onclick="toggleRow(this, 'firstPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{p1.firstParty.requests}} ({{js "this.p1.firstParty.requests>0?Math.round((this.p1.firstParty.requests / this.p1.requests)*100):0"}}%)</td>
-          <td>{{p2.firstParty.requests}} ({{js "this.p2.firstParty.requests>0?Math.round((this.p2.firstParty.requests / this.p2.requests)*100):0"}}%)</td>
-        </tr>
-        {{#each p1.firstParty.contentTypes}}
-        <tr class="userShowable firstPartyRequests">
-          <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
-          <td>{{this.requests}}</td>
-          <td>{{get @root.p2.firstParty.contentTypes @key 'requests'}}</td>
-        </tr>
-        {{/each}}
-        <tr>
-          <td class="tabletext">First party transfer size <button onclick="toggleRow(this, 'firstPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.firstParty.transferSize)"}}
-        ({{js "this.p1.firstParty.transferSize>0?Math.round((this.p1.firstParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
-          <td>{{js "formatBytes(this.p2.firstParty.transferSize)"}} ({{js "this.p2.firstParty.transferSize>0?Math.round((this.p2.firstParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
-        </tr>
-        {{#each p1.firstParty.contentTypes}}
-        <tr class="userShowable firstPartyTransferSize">
-          <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
-          <td>{{js "formatBytes(this.transferSize)"}}</td>
-          <td>{{getAsBytes @root.p2.firstParty.contentTypes @key 'transferSize'}}</td>
-        </tr>
-        {{/each}}
-        <tr>
-          <td class="tabletext">First party content size <button onclick="toggleRow(this, 'firstPartyContentSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.firstParty.contentSize)"}} ({{js "this.p1.firstParty.contentSize>0?Math.round((this.p1.firstParty.contentSize / this.p1.contentSize)*100):0"}}%)</td>
-          <td>{{js "formatBytes(this.p2.firstParty.contentSize)"}} ({{js "this.p2.firstParty.contentSize>0?Math.round((this.p2.firstParty.contentSize / this.p2.contentSize)*100):0"}}%)</td>
-        </tr>
-        {{#each p1.firstParty.contentTypes}}
-        <tr class="userShowable firstPartyContentSize">
-          <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
-          <td>{{js "formatBytes(this.contentSize)"}}</td>
-          <td>{{getAsBytes @root.p2.firstParty.contentTypes @key 'contentSize'}}</td>
-        </tr>
-        {{/each}}
-        <tr>
-          <td class="tabletext">Third party requests <button onclick="toggleRow(this, 'thirdPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{p1.thirdParty.requests}} ({{js "this.p1.thirdParty.requests>0?Math.round((this.p1.thirdParty.requests / this.p1.requests)*100):0"}}%)</td>
-          <td>{{p2.thirdParty.requests}} ({{js "this.p2.thirdParty.requests>0?Math.round((this.p2.thirdParty.requests / this.p2.requests)*100):0"}}%)</td>
-        </tr>
-        {{#each p1.thirdParty.contentTypes}}
-        <tr class="userShowable thirdPartyRequests">
-          <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
-          <td>{{this.requests}}</td>
-          <td>{{get @root.p2.thirdParty.contentTypes @key 'requests'}}</td>
-        </tr>
-        {{/each}}
-        <tr>
-          <td class="tabletext">Third party transfer size <button onclick="toggleRow(this, 'thirdPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.thirdParty.transferSize)"}} ({{js "this.p1.thirdParty.transferSize>0?Math.round((this.p1.thirdParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
-          <td>{{js "formatBytes(this.p2.thirdParty.transferSize)"}} ({{js "this.p2.thirdParty.transferSize>0?Math.round((this.p2.thirdParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
-        </tr>
-        {{#each p1.thirdParty.contentTypes}}
-        <tr class="userShowable thirdPartyTransferSize">
-          <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
-          <td>{{js "formatBytes(this.transferSize)"}}</td>
-          <td>{{getAsBytes @root.p2.thirdParty.contentTypes @key 'transferSize'}}</td>
-        </tr>
-        {{/each}}
-        <tr>
-          <td class="tabletext">Third party content size <button onclick="toggleRow(this, 'thirdPartyContentSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-          <td>{{js "formatBytes(this.p1.thirdParty.contentSize)"}} ({{js "this.p1.thirdParty.contentSize>0?Math.round((this.p1.thirdParty.contentSize / this.p1.contentSize)*100):0"}}%)</td>
-          <td>{{js "formatBytes(this.p2.thirdParty.contentSize)"}} ({{js "this.p2.thirdParty.contentSize>0?Math.round((this.p2.thirdParty.contentSize / this.p2.contentSize)*100):0"}}%)</td>
-        </tr>
-        {{#each p1.thirdParty.contentTypes}}
-        <tr class="userShowable thirdPartyContentSize">
-          <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
-          <td>{{js "formatBytes(this.contentSize)"}}</td>
-          <td>{{getAsBytes @root.p2.thirdParty.contentTypes @key 'contentSize'}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </script>
-
-  <script id="resultHeaderTemplate" type="text/template7">
-    <div class="header-links">
-      <a href="#pageXrayContent">Metrics</a> -
-      <a href="#waterfallHeader">Waterfall</a> -
-      {{#if p1.visualMetrics}}{{#if p1.visualMetrics.VisualProgress}}
-        <a href="#visualProgressHeader">Visual Progress</a> -
-      {{/if}}{{/if}}
-      {{#if p1.thirdParty.contentTypes}}
-        <a href="#firstPartyHeader">1st vs 3rd party</a> -
-      {{/if}}
-      {{#js_compare "this.p1.url === this.p2.url"}}
-        <a href="#requestDifffHeader">Request diff</a> -
-      {{/js_compare}}
-      <a href="#domainsHeader">Domains</a>
-    </div>
-  </script>
-
-  <script id="waterfallTemplate" type="text/template7">
-    <div class="rangeWrapper">{{config.har1.label}}&nbsp;
-    <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{config.har2.label}}</div>
-  </script>
-
-  <script id="domainsTemplate" type="text/template7">
-    <h3 id="domainsHeader">Domains</h3>
-    <div id="comment-domains" class="comment"></div>
-    <div class="col-1-1">
-      <table>
-        <thead>
-          <tr>
-            <th class="tabletext">Domain</th>
-            <th class="no-break">{{config.har1.label}} Request</th>
-            <th class="no-break">{{config.har2.label}} Request</th>
-            <th class="no-break">{{config.har1.label}} Size</th>
-            <th class="no-break">{{config.har2.label}} Size</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#domains}}
-          <tr>
-            <td class="tabletext">{{name}} <button onclick="toggleRow(this, 'domainDetails{{name}}', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
-            <td class="no-break">{{#if firstPage}}{{firstPage.requests}}{{/if}}</td>
-            <td class="no-break">{{#if secondPage}}{{secondPage.requests}}{{/if}}</td>
-            <td class="no-break">{{#if firstPage}}{{js "formatBytes(this.firstPage.transferSize)"}}{{/if}}</td>
-            <td class="no-break">{{#if secondPage}}{{js "formatBytes(this.secondPage.transferSize)"}}{{/if}}</td>
-          </tr>
-          <tr class="userShowable domainDetails{{name}}">
-            <td colspan="2" class="tabletext">
-              &nbsp;<b>Total time spent HAR 1</b><br/>{{#if firstPage}}{{#each firstPage.timings}} &nbsp;&nbsp;{{@key}} : {{this.toFixed(0)}} <br/> {{/each}}{{/if}}
-            </td>
-            <td colspan="3" class="tabletext">
-              &nbsp;<b>Total time spent HAR 2</b><br/>{{#if secondPage}}{{#each secondPage.timings}} &nbsp;&nbsp;{{@key}} : {{this.toFixed(0)}} <br/> {{/each}}{{/if}}
-            </td>
-          </tr>
-          {{/domains}}
-        </tbody>
-      </table>
-    </div>
-  </script>
-
-  <script id="requestDiffTemplate" type="text/template7">
-    {{#if requestDiff}}
-      <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
-      <div id="comment-requestDiff" class="comment">
+    <script id="visualProgressTemplate" type="text/template7">
+      <h3 id="visualProgressHeader">Visual Progress</h3>
+      <div id="comment-visualProgress" class="comment"></div>
+      <div id="visualProgress" class="ct-chart ct-major-tenth"></div>
+      <div id="visualProgressLegendHolder">
+        <ul class="resource-legend">
+          <li class="legend-url1" title="{{p1.url}}">{{config.har1.label}}</li>
+          <li class="legend-url2" title="{{p2.url}}">{{config.har2.label}}</li>
+        </ul>
       </div>
-      {{#js_compare "this.requestDiff.length > 0 "}}
-        <div class="col-1-1">
-          <table class="requestDiffTable">
+    </script>
+
+    <script id="pageXrayTemplate" type="text/template7">
+      <div>
+        <table class="pageXrayTable">
           <thead>
             <tr>
-              <th class="tabletext">URL</td>
-              <th class="tabletext">{{config.har1.label}}</td>
-              <th class="tabletext">{{config.har2.label}}</td>
-              <th class="tabletext">Diff</td>
+              <th class="tabletext tableXrayMetric">Metric <button onclick="regenerate(true);" class="submit submit-smaller">Switch</button></th>
+                <th class="tableXrayHarMetric">{{config.har1.label}}
+                <input type="file" id="har1upload" class="inputfile"/>
+                <label for="har1upload">Upload</label>
+              </th>
+                <th class="tableXrayHar2Metric"> {{config.har2.label}}
+                <input type="file" id="har2upload" class="inputfile"/>
+                <label for="har2upload">Upload</label>
+              </th>
             </tr>
           </thead>
           <tbody>
-          {{#each requestDiff}}
+            {{#js_compare "this.runs1.length > 1 || this.runs2.length > 1"}}
             <tr>
-                <td class="tabletext"><a href="{{url}}">{{js "formatURL(this.url)"}}</a></td>
-                <td class="tabletext">{{js "formatBytes(this.har1)"}}</td>
-                <td class="tabletext">{{js "formatBytes(this.har2)"}}</td>
-                    {{#js_compare "this.har1 && this.har2"}}
-                      {{#js_compare "this.diff < 0"}}
-                        <td class="tabletext green">{{js "formatBytes(this.diff)"}}</td>
-                      {{else}}
-                        <td class="tabletext red">+{{js "formatBytes(this.diff)"}}</td>
-                      {{/js_compare}}
-                    {{else}}
-                      {{#js_compare "this.har1"}}
-                      <td class="tabletext green">Removed</td>
-                      {{else}}
-                      <td class="tabletext red">New</td>
-                    {{/js_compare}}
-                    {{/js_compare}}
+              <td class="tabletext">Run</td>
+              <td>
+                {{#js_compare "this.runs1.length > 1"}}
+                <select name="runs1" onchange="regenerate();" id="run1Option">
+                  {{#each this.runs1}}
+                      <option value="{{id}}" {{selected}} >{{show}}</option>
+                  {{/each}}
+                </select> {{/js_compare}}
+              </td>
+              <td>
+                {{#js_compare "this.runs2.length > 1"}}
+                <select name="runs2" onchange="regenerate();" id="run2Option">
+                  {{#each this.runs2}}
+                      <option value="{{id}}" {{selected}} >{{show}}</option>
+                  {{/each}}
+                </select> {{/js_compare}}
+              </td>
             </tr>
+            {{/js_compare}}
+            <tr>
+              <td class="tabletext">URL</td>
+              <td><a href="{{p1.url}}" title="{{p1.meta.title}}">{{p1.url}}</a></td>
+              <td><a href="{{p2.url}}" title="{{p2.meta.title}}">{{p2.url}}</a></td>
+            </tr>
+            <tr>
+              <td class="tabletext">Date</td>
+              <td> {{js "formatDate(this.p1.meta.startedDateTime)"}} </td>
+              <td> {{js "formatDate(this.p2.meta.startedDateTime)"}} </td>
+            </tr>
+            <tr>
+              <td class="tabletext">Browser</td>
+              <td> {{#if p1.meta.browser}} {{p1.meta.browser.name}} {{p1.meta.browser.version}} {{/if}}</td>
+              <td> {{#if p2.meta.browser}} {{p2.meta.browser.name}} {{p2.meta.browser.version}} {{/if}}</td>
+            </tr>
+            {{#if p1.meta.connectivity}} {{#if p2.meta.connectivity}}
+            <tr>
+              <td class="tabletext">Connectivity</td>
+              <td> {{p1.meta.connectivity}} </td>
+              <td> {{p2.meta.connectivity}} </td>
+            </tr>
+            {{/if}} {{/if}}
+            <tr>
+              <td class="tabletext">Total</td>
+              <td> {{p1.requests}} ({{js "formatBytes(this.p1.transferSize)"}} / {{js "formatBytes(this.p1.contentSize)"}})
+              </td>
+              <td> {{p2.requests}} ({{js "formatBytes(this.p2.transferSize)"}} / {{js "formatBytes(this.p2.contentSize)"}})
+              </td>
+            </tr>
+            <tr>
+              <td class="tabletext">HTML</td>
+              <td> {{p1.contentTypes.html.requests}} ({{js "formatBytes(this.p1.contentTypes.html.transferSize)"}} / {{js "formatBytes(this.p1.contentTypes.html.contentSize)"}})
+              </td>
+              <td> {{p2.contentTypes.html.requests}} ({{js "formatBytes(this.p2.contentTypes.html.transferSize)"}} / {{js "formatBytes(this.p2.contentTypes.html.contentSize)"}})
+              </td>
+            </tr>
+            <tr>
+              <td class="tabletext">CSS</td>
+              <td> {{p1.contentTypes.css.requests}} ({{js "formatBytes(this.p1.contentTypes.css.transferSize)"}} / {{js "formatBytes(this.p1.contentTypes.css.contentSize)"}})
+              </td>
+              <td> {{p2.contentTypes.css.requests}} ({{js "formatBytes(this.p2.contentTypes.css.transferSize)"}} / {{js "formatBytes(this.p2.contentTypes.css.contentSize)"}})
+              </td>
+            </tr>
+            <tr>
+              <td class="tabletext">JavaScript</td>
+              <td> {{p1.contentTypes.javascript.requests}} ({{js "formatBytes(this.p1.contentTypes.javascript.transferSize)"}} / {{js "formatBytes(this.p1.contentTypes.javascript.contentSize)"}})
+              </td>
+              <td> {{p2.contentTypes.javascript.requests}} ({{js "formatBytes(this.p2.contentTypes.javascript.transferSize)"}} / {{js "formatBytes(this.p2.contentTypes.javascript.contentSize)"}})
+              </td>
+            </tr>
+            <tr>
+              <td class="tabletext">Image</td>
+              <td> {{p1.contentTypes.image.requests}} ({{js "formatBytes(this.p1.contentTypes.image.transferSize)"}})</td>
+              <td> {{p2.contentTypes.image.requests}} ({{js "formatBytes(this.p2.contentTypes.image.transferSize)"}})</td>
+            </tr>
+            {{#js_compare "this.p1.visualMetric || this.p2.visualMetrics"}}
+            <tr>
+              <td class="tabletext">First Visual Change</td>
+              <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
+              <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
+            </tr>
+            {{#if p1.visualMetrics.LargestImage}} {{#if p2.visualMetrics.LargestImage}}
+            <tr>
+              <td class="tabletext">Largest Image</td>
+              <td> {{js "formatTime(this.p1.visualMetrics.LargestImage)"}}</td>
+              <td> {{js "formatTime(this.p2.visualMetrics.LargestImage)"}}</td>
+            </tr>
+            {{/if}} {{/if}}
+            {{#if p1.visualMetrics.Logo}} {{#if p2.visualMetrics.Logo}}
+            <tr>
+              <td class="tabletext">Logo</td>
+              <td>{{js "formatTime(this.p1.visualMetrics.Logo)"}}</td>
+              <td>{{js "formatTime(this.p2.visualMetrics.Logo)"}}</td>
+            </tr>
+            {{/if}} {{/if}}
+            {{#if p1.visualMetrics.Heading}} {{#if p2.visualMetrics.Heading}}
+            <tr>
+              <td class="tabletext">Heading</td>
+              <td> {{js "formatTime(this.p1.visualMetrics.Heading)"}}</td>
+              <td> {{js "formatTime(this.p2.visualMetrics.Heading)"}}</td>
+            </tr>
+            {{/if}} {{/if}}
+            <tr>
+              <td class="tabletext">Speed Index</td>
+              <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.SpeedIndex)"}} {{/if}}</td>
+              <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.SpeedIndex)"}} {{/if}}</td>
+            </tr>
+            <tr>
+              <td class="tabletext">Last Visual Change</td>
+              <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.LastVisualChange)"}} {{/if}}</td>
+              <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.LastVisualChange)"}} {{/if}}</td>
+            </tr>
+            {{#if p1.visualMetrics.VisualReadiness}} {{#if p2.visualMetrics.VisualReadiness}}
+            <tr>
+              <td class="tabletext">Visual Readiness</td>
+              <td>{{js "formatTime(this.p1.visualMetrics.VisualReadiness)"}}</td>
+              <td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
+            </tr>
+            {{/if}} {{/if}}
+            {{/js_compare}} {{#if p1.meta.screenshot}} {{#if p2.meta.screenshot}}
+            <tr>
+              <td class="tabletext">Screenshot</td>
+              <td>
+                <a href="{{p1.meta.screenshot}}"><img src="{{p1.meta.screenshot}}" width="200"/></a>
+              </td>
+              <td>
+                <a href="{{p2.meta.screenshot}}"><img src="{{p2.meta.screenshot}}" width="200"/></a>
+              </td>
+            </tr>
+            {{/if}} {{/if}} {{#if p1.meta.video}} {{#if p2.meta.video}}
+            <tr>
+              <td class="tabletext">Video</td>
+              <td>
+                <video width="200" controls poster="{{p1.meta.screenshot}}">
+                  <source src="{{p1.meta.video}}" type="video/mp4">
+                </video>
+              </td>
+              <td>
+                <video width="200" controls poster="{{p2.meta.screenshot}}">
+                  <source src="{{p2.meta.video}}" type="video/mp4">
+                </video>
+              </td>
+            </tr>
+            {{/if}} {{/if}} {{#if p1.meta.result}} {{#if p2.meta.result}}
+            <tr>
+              <td class="tabletext">Extra</td>
+              <td>
+                <a href="{{p1.meta.result}}" target="_blank" rel="noopener noreferrer">Result page</a>
+              </td>
+              <td>
+                <a href="{{p2.meta.result}}" target="_blank" rel="noopener noreferrer">Result page</a>
+              </td>
+            </tr>
+            {{/if}} {{/if}}
+              {{#if cpuCategories1}} {{#if cpuCategories2}}
+              <tr>
+                  <td class="tabletext" colspan="3"> CPU time spent by category <button onclick="toggleRow(this, 'cpuCategoryInfo', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button>
+                  </td>
+                  </tr>
+              <tr class="userShowable cpuCategoryInfo">
+                  <td class="tabletext">
+                    </td>
+                  <td>
+                  <ul>
+                    {{#each cpuCategories1}}
+                        <li>{{name}} : {{value}}</li>
+                    {{/each}}
+                  </ul>
+                </td>
+                <td>
+                    <ul>
+                    {{#each cpuCategories2}}
+                        <li>{{name}} : {{value}}</li>
+                    {{/each}}
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td class="tabletext" colspan="3">CPU Events <button onclick="toggleRow(this, 'cpuExtraInfo', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+              </tr>
+              <tr class="userShowable cpuExtraInfo">
+                <td class="tabletext">
+                </td>
+                <td>
+                  <ul>
+                    {{#each cpuEvents1}}
+                        <li>{{name}} : {{value.toFixed(3)}}</li>
+                    {{/each}}
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    {{#each cpuEvents2}}
+                        <li>{{name}} : {{value.toFixed(3)}}</li>
+                    {{/each}}
+                  </ul>
+                </td>
+              </tr>
+              {{/if}} {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </script>
+
+    <script id="thirdPartyTemplate" type="text/template7">
+      <h3 id="firstPartyHeader">First Party vs Third Party content</h3>
+      {{#js_compare "this.p1.firstPartyRegEx === this.p2.firstPartyRegEx"}}
+          <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter.</p>
+        {{else}}
+        <p class="small">Using <b>{{p1.firstPartyRegEx}}</b> as <i>--firstParty</i> parameter for {{config.har1.label}} and <b>{{p2.firstPartyRegEx}}</b> for {{config.har2.label}}.</p>
+      {{/js_compare}}
+
+      <div id="comment-firstParty" class="comment"></div>
+      <table>
+        <thead>
+          <tr>
+            <th class="tabletext">Metric</th>
+            <th> {{config.har1.label}}</th>
+            <th> {{config.har2.label}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tabletext">First party requests <button onclick="toggleRow(this, 'firstPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td>{{p1.firstParty.requests}} ({{js "this.p1.firstParty.requests>0?Math.round((this.p1.firstParty.requests / this.p1.requests)*100):0"}}%)</td>
+            <td>{{p2.firstParty.requests}} ({{js "this.p2.firstParty.requests>0?Math.round((this.p2.firstParty.requests / this.p2.requests)*100):0"}}%)</td>
+          </tr>
+          {{#each p1.firstParty.contentTypes}}
+          <tr class="userShowable firstPartyRequests">
+            <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
+            <td>{{this.requests}}</td>
+            <td>{{get @root.p2.firstParty.contentTypes @key 'requests'}}</td>
+          </tr>
           {{/each}}
           <tr>
-            <td class="tabletext"><b>Total</b></td>
-            <td class="tabletext"><b>{{js "formatBytes(this.total.har1)"}}</b></td>
-            <td class="tabletext"><b>{{js "formatBytes(this.total.har2)"}}</b></td>
-            {{#js_compare "this.total.diff < 0"}}
-              <td class="tabletext green"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
-            {{else}}
-              <td class="tabletext red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
-            {{/js_compare}}
+            <td class="tabletext">First party transfer size <button onclick="toggleRow(this, 'firstPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td>{{js "formatBytes(this.p1.firstParty.transferSize)"}}
+          ({{js "this.p1.firstParty.transferSize>0?Math.round((this.p1.firstParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
+            <td>{{js "formatBytes(this.p2.firstParty.transferSize)"}} ({{js "this.p2.firstParty.transferSize>0?Math.round((this.p2.firstParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
           </tr>
+          {{#each p1.firstParty.contentTypes}}
+          <tr class="userShowable firstPartyTransferSize">
+            <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
+            <td>{{js "formatBytes(this.transferSize)"}}</td>
+            <td>{{getAsBytes @root.p2.firstParty.contentTypes @key 'transferSize'}}</td>
+          </tr>
+          {{/each}}
+          <tr>
+            <td class="tabletext">First party content size <button onclick="toggleRow(this, 'firstPartyContentSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td>{{js "formatBytes(this.p1.firstParty.contentSize)"}} ({{js "this.p1.firstParty.contentSize>0?Math.round((this.p1.firstParty.contentSize / this.p1.contentSize)*100):0"}}%)</td>
+            <td>{{js "formatBytes(this.p2.firstParty.contentSize)"}} ({{js "this.p2.firstParty.contentSize>0?Math.round((this.p2.firstParty.contentSize / this.p2.contentSize)*100):0"}}%)</td>
+          </tr>
+          {{#each p1.firstParty.contentTypes}}
+          <tr class="userShowable firstPartyContentSize">
+            <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
+            <td>{{js "formatBytes(this.contentSize)"}}</td>
+            <td>{{getAsBytes @root.p2.firstParty.contentTypes @key 'contentSize'}}</td>
+          </tr>
+          {{/each}}
+          <tr>
+            <td class="tabletext">Third party requests <button onclick="toggleRow(this, 'thirdPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td>{{p1.thirdParty.requests}} ({{js "this.p1.thirdParty.requests>0?Math.round((this.p1.thirdParty.requests / this.p1.requests)*100):0"}}%)</td>
+            <td>{{p2.thirdParty.requests}} ({{js "this.p2.thirdParty.requests>0?Math.round((this.p2.thirdParty.requests / this.p2.requests)*100):0"}}%)</td>
+          </tr>
+          {{#each p1.thirdParty.contentTypes}}
+          <tr class="userShowable thirdPartyRequests">
+            <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
+            <td>{{this.requests}}</td>
+            <td>{{get @root.p2.thirdParty.contentTypes @key 'requests'}}</td>
+          </tr>
+          {{/each}}
+          <tr>
+            <td class="tabletext">Third party transfer size <button onclick="toggleRow(this, 'thirdPartyTransferSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td>{{js "formatBytes(this.p1.thirdParty.transferSize)"}} ({{js "this.p1.thirdParty.transferSize>0?Math.round((this.p1.thirdParty.transferSize / this.p1.transferSize)*100):0"}}%)</td>
+            <td>{{js "formatBytes(this.p2.thirdParty.transferSize)"}} ({{js "this.p2.thirdParty.transferSize>0?Math.round((this.p2.thirdParty.transferSize / this.p2.transferSize)*100):0"}}%)</td>
+          </tr>
+          {{#each p1.thirdParty.contentTypes}}
+          <tr class="userShowable thirdPartyTransferSize">
+            <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
+            <td>{{js "formatBytes(this.transferSize)"}}</td>
+            <td>{{getAsBytes @root.p2.thirdParty.contentTypes @key 'transferSize'}}</td>
+          </tr>
+          {{/each}}
+          <tr>
+            <td class="tabletext">Third party content size <button onclick="toggleRow(this, 'thirdPartyContentSize', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+            <td>{{js "formatBytes(this.p1.thirdParty.contentSize)"}} ({{js "this.p1.thirdParty.contentSize>0?Math.round((this.p1.thirdParty.contentSize / this.p1.contentSize)*100):0"}}%)</td>
+            <td>{{js "formatBytes(this.p2.thirdParty.contentSize)"}} ({{js "this.p2.thirdParty.contentSize>0?Math.round((this.p2.thirdParty.contentSize / this.p2.contentSize)*100):0"}}%)</td>
+          </tr>
+          {{#each p1.thirdParty.contentTypes}}
+          <tr class="userShowable thirdPartyContentSize">
+            <td class="tabletext">&nbsp;&nbsp;{{@key}}</td>
+            <td>{{js "formatBytes(this.contentSize)"}}</td>
+            <td>{{getAsBytes @root.p2.thirdParty.contentTypes @key 'contentSize'}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </script>
+
+    <script id="resultHeaderTemplate" type="text/template7">
+      <div class="header-links">
+        <a href="#pageXrayContent">Metrics</a> -
+        <a href="#waterfallHeader">Waterfall</a> -
+        {{#if p1.visualMetrics}}{{#if p1.visualMetrics.VisualProgress}}
+          <a href="#visualProgressHeader">Visual Progress</a> -
+        {{/if}}{{/if}}
+        {{#if p1.thirdParty.contentTypes}}
+          <a href="#firstPartyHeader">1st vs 3rd party</a> -
+        {{/if}}
+        {{#js_compare "this.p1.url === this.p2.url"}}
+          <a href="#requestDifffHeader">Request diff</a> -
+        {{/js_compare}}
+        <a href="#domainsHeader">Domains</a>
+      </div>
+    </script>
+
+    <script id="waterfallTemplate" type="text/template7">
+      <div class="rangeWrapper">{{config.har1.label}}&nbsp;
+      <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{config.har2.label}}</div>
+    </script>
+
+    <script id="domainsTemplate" type="text/template7">
+      <h3 id="domainsHeader">Domains</h3>
+      <div id="comment-domains" class="comment"></div>
+      <div class="col-1-1">
+        <table>
+          <thead>
+            <tr>
+              <th class="tabletext">Domain</th>
+              <th class="no-break">{{config.har1.label}} Request</th>
+              <th class="no-break">{{config.har2.label}} Request</th>
+              <th class="no-break">{{config.har1.label}} Size</th>
+              <th class="no-break">{{config.har2.label}} Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#domains}}
+            <tr>
+              <td class="tabletext">{{name}} <button onclick="toggleRow(this, 'domainDetails{{name}}', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
+              <td class="no-break">{{#if firstPage}}{{firstPage.requests}}{{/if}}</td>
+              <td class="no-break">{{#if secondPage}}{{secondPage.requests}}{{/if}}</td>
+              <td class="no-break">{{#if firstPage}}{{js "formatBytes(this.firstPage.transferSize)"}}{{/if}}</td>
+              <td class="no-break">{{#if secondPage}}{{js "formatBytes(this.secondPage.transferSize)"}}{{/if}}</td>
+            </tr>
+            <tr class="userShowable domainDetails{{name}}">
+              <td colspan="2" class="tabletext">
+                &nbsp;<b>Total time spent HAR 1</b><br/>{{#if firstPage}}{{#each firstPage.timings}} &nbsp;&nbsp;{{@key}} : {{this.toFixed(0)}} <br/> {{/each}}{{/if}}
+              </td>
+              <td colspan="3" class="tabletext">
+                &nbsp;<b>Total time spent HAR 2</b><br/>{{#if secondPage}}{{#each secondPage.timings}} &nbsp;&nbsp;{{@key}} : {{this.toFixed(0)}} <br/> {{/each}}{{/if}}
+              </td>
+            </tr>
+            {{/domains}}
           </tbody>
-          </table>
-          <table>
+        </table>
+      </div>
+    </script>
+
+    <script id="requestDiffTemplate" type="text/template7">
+      {{#if requestDiff}}
+        <h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>
+        <div id="comment-requestDiff" class="comment">
+        </div>
+        {{#js_compare "this.requestDiff.length > 0 "}}
+          <div class="col-1-1">
+            <table class="requestDiffTable">
             <thead>
-                <tr>
-                  <th class="tabletext">Summary of request/response difference</td>
-                  <th>Size</td>
-                </tr>
+              <tr>
+                <th class="tabletext">URL</td>
+                <th class="tabletext">{{config.har1.label}}</td>
+                <th class="tabletext">{{config.har2.label}}</td>
+                <th class="tabletext">Diff</td>
+              </tr>
             </thead>
             <tbody>
+            {{#each requestDiff}}
               <tr>
-                <td class="tabletext">New ({{total.new}})</td>
-                <td class="red">{{js "formatBytes(this.total.newBytes)"}}</td>
+                  <td class="tabletext"><a href="{{url}}">{{js "formatURL(this.url)"}}</a></td>
+                  <td class="tabletext">{{js "formatBytes(this.har1)"}}</td>
+                  <td class="tabletext">{{js "formatBytes(this.har2)"}}</td>
+                      {{#js_compare "this.har1 && this.har2"}}
+                        {{#js_compare "this.diff < 0"}}
+                          <td class="tabletext green">{{js "formatBytes(this.diff)"}}</td>
+                        {{else}}
+                          <td class="tabletext red">+{{js "formatBytes(this.diff)"}}</td>
+                        {{/js_compare}}
+                      {{else}}
+                        {{#js_compare "this.har1"}}
+                        <td class="tabletext green">Removed</td>
+                        {{else}}
+                        <td class="tabletext red">New</td>
+                      {{/js_compare}}
+                      {{/js_compare}}
               </tr>
-              <tr>
-                  <td class="tabletext">Removed ({{total.removed}})</td>
-                  <td class="green">-{{js "formatBytes(this.total.removedBytes)"}}</td>
-              </tr>
-              <tr>
-                  <td class="tabletext">Increased ({{total.increased}})</td>
-                  <td class="red">{{js "formatBytes(this.total.increasedBytes)"}}</td>
-              </tr>
-              <tr>
-                  <td class="tabletext">Decreased ({{total.decreased}})</td>
-                  <td class="green">{{js "formatBytes(this.total.decreasedBytes)"}}</td>
-              </tr>
-              <tr>
-                  <td class="tabletext"><b>Total</b></td>
-                  {{#js_compare "this.total.diff < 0"}}
-                    <td class="green"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
-                  {{else}}
-                    <td class="red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
-                  {{/js_compare}}
-              </tr>
+            {{/each}}
+            <tr>
+              <td class="tabletext"><b>Total</b></td>
+              <td class="tabletext"><b>{{js "formatBytes(this.total.har1)"}}</b></td>
+              <td class="tabletext"><b>{{js "formatBytes(this.total.har2)"}}</b></td>
+              {{#js_compare "this.total.diff < 0"}}
+                <td class="tabletext green"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
+              {{else}}
+                <td class="tabletext red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
+              {{/js_compare}}
+            </tr>
             </tbody>
-          </table>
-        </div>
-      {{else}}
-        <p>There are no difference in size of the requests/responses.</p>
-      {{/js_compare}}
-    {{/if}}
-  </script>
+            </table>
+            <table>
+              <thead>
+                  <tr>
+                    <th class="tabletext">Summary of request/response difference</td>
+                    <th>Size</td>
+                  </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="tabletext">New ({{total.new}})</td>
+                  <td class="red">{{js "formatBytes(this.total.newBytes)"}}</td>
+                </tr>
+                <tr>
+                    <td class="tabletext">Removed ({{total.removed}})</td>
+                    <td class="green">-{{js "formatBytes(this.total.removedBytes)"}}</td>
+                </tr>
+                <tr>
+                    <td class="tabletext">Increased ({{total.increased}})</td>
+                    <td class="red">{{js "formatBytes(this.total.increasedBytes)"}}</td>
+                </tr>
+                <tr>
+                    <td class="tabletext">Decreased ({{total.decreased}})</td>
+                    <td class="green">{{js "formatBytes(this.total.decreasedBytes)"}}</td>
+                </tr>
+                <tr>
+                    <td class="tabletext"><b>Total</b></td>
+                    {{#js_compare "this.total.diff < 0"}}
+                      <td class="green"><b>{{js "formatBytes(this.total.diff)"}}</b></td>
+                    {{else}}
+                      <td class="red"><b>+{{js "formatBytes(this.total.diff)"}}</b></td>
+                    {{/js_compare}}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        {{else}}
+          <p>There are no difference in size of the requests/responses.</p>
+        {{/js_compare}}
+      {{/if}}
+    </script>
 
-  <!--
+    <!--
 -->
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      createMainDropZone('zone');
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        createMainDropZone("zone");
 
-      function getAndSet(paramName, elementId) {
-        const paramValue = getParam(paramName);
-        if (paramValue) {
-          const el= document.getElementById(elementId);
-          el.value = paramValue;
+        function getAndSet(paramName, elementId) {
+          const paramValue = getParam(paramName);
+          if (paramValue) {
+            const el = document.getElementById(elementId);
+            el.value = paramValue;
+          }
         }
-      }
-      getAndSet('har1','harurl');
-      getAndSet('har2','harurl2');
-      if (getParam('har1') != undefined && getParam('har2') != undefined) {
-        showLoading();
-        loadHARsFromConfig({har1: {url: getParam('har1')}, har2: {url: getParam('har2')} });
-      } else if ((getParam('har1') != undefined || getParam('har2') != undefined) && getParam('compare')) {
-        showLoading();
-        loadHARsFromConfig({har1: {url: getParam('har1') || getParam('har2')}, har2:{}});
-      } else if (getParam('gist') !== undefined) {
-        showLoading();
-        loadFilesFromGist(getParam('gist'));
-      } else if (getParam('config') !==undefined) {
-        showLoading();
-        loadFilesFromConfig(getParam('config'));
-      }
+        getAndSet("har1", "harurl");
+        getAndSet("har2", "harurl2");
+        if (getParam("har1") != undefined && getParam("har2") != undefined) {
+          showLoading();
+          loadHARsFromConfig({
+            har1: { url: getParam("har1") },
+            har2: { url: getParam("har2") }
+          });
+        } else if (
+          (getParam("har1") != undefined || getParam("har2") != undefined) &&
+          getParam("compare")
+        ) {
+          showLoading();
+          loadHARsFromConfig({
+            har1: { url: getParam("har1") || getParam("har2") },
+            har2: {}
+          });
+        } else if (getParam("gist") !== undefined) {
+          showLoading();
+          loadFilesFromGist(getParam("gist"));
+        } else if (getParam("config") !== undefined) {
+          showLoading();
+          loadFilesFromConfig(getParam("config"));
+        }
 
-    document.addEventListener("paste", function(e) {
-        const paste = e.clipboardData.getData('Text');
-        // Is it a HAR or a gist?
-        try {
-        const har = JSON.parse(paste);
-        showLoading();
-        if (har.log) {
-          generate(
-            {
-            har1: {
-              har: har,
-              run: 0,
-              label: 'HAR1'
-            },
-            har2: {
-              har: har,
-              run: har.log.pages.length > 1 ? 1 : 0,
-              label: 'HAR2'
+        document.addEventListener("paste", function(e) {
+          const paste = e.clipboardData.getData("Text");
+          // Is it a HAR or a gist?
+          try {
+            const har = JSON.parse(paste);
+            showLoading();
+            if (har.log) {
+              generate({
+                har1: {
+                  har: har,
+                  run: 0,
+                  label: "HAR1"
+                },
+                har2: {
+                  har: har,
+                  run: har.log.pages.length > 1 ? 1 : 0,
+                  label: "HAR2"
+                }
+              });
+            } else {
+              readConfig(har);
             }
-          })
-        }
-        else {
-          readConfig(har);
-        }
-      } catch (e) {
-        if (paste.startsWith('https://gist.github.com/')) {
-          const gistId = paste.substring(paste.lastIndexOf('/')+1, paste.length);
-          showLoading();
-          loadFilesFromGist(gistId);
-
-        } else if (paste.endsWith('.json')) {
-          showLoading();
-          loadFilesFromConfig(paste);
-        }
-        // Guess it's a gist id
-        else if (!paste.startsWith('http')) {
-          showLoading();
-          loadFilesFromGist(paste);
-        }
-        // Ok let the the user paste the URL into the field
-      }
+          } catch (e) {
+            if (paste.startsWith("https://gist.github.com/")) {
+              const gistId = paste.substring(
+                paste.lastIndexOf("/") + 1,
+                paste.length
+              );
+              showLoading();
+              loadFilesFromGist(gistId);
+            } else if (paste.endsWith(".json")) {
+              showLoading();
+              loadFilesFromConfig(paste);
+            }
+            // Guess it's a gist id
+            else if (!paste.startsWith("http")) {
+              showLoading();
+              loadFilesFromGist(paste);
+            }
+            // Ok let the the user paste the URL into the field
+          }
+        });
       });
-    });
-  </script>
+    </script>
 
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/compare-144.png">
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/ico/compare-114.png">
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/ico/compare-72.png">
-  <link rel="shortcut icon" href="img/ico/compare.ico">
-</head>
+    <link
+      rel="apple-touch-icon-precomposed"
+      sizes="144x144"
+      href="img/ico/compare-144.png"
+    />
+    <link
+      rel="apple-touch-icon-precomposed"
+      sizes="114x114"
+      href="img/ico/compare-114.png"
+    />
+    <link
+      rel="apple-touch-icon-precomposed"
+      sizes="72x72"
+      href="img/ico/compare-72.png"
+    />
+    <link rel="shortcut icon" href="img/ico/compare.ico" />
+  </head>
 
-<body>
-  <div id="choosehars">
-    <header class="header">
-      <div class="wip">BETA</div>
+  <body>
+    <div id="choosehars">
+      <header class="header">
+        <div class="wip">BETA</div>
+        <div class="grid grid-pad">
+          <div class="col-1-1">
+            <div class="logo">
+              <a href="https://compare.sitespeed.io/">
+                <img src="img/compare.png" width="77" class="img-logo" />
+              </a>
+            </div>
+            <h1 class="title">Compare</h1>
+            <p class="subtitle">
+              Understand regressions by comparing your HAR files.
+            </p>
+          </div>
+        </div>
+      </header>
       <div class="grid grid-pad">
         <div class="col-1-1">
-          <div class="logo">
-            <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="77" class="img-logo">
-            </a>
-          </div>
-          <h1 class="title">Compare</h1>
-          <p class="subtitle">Understand regressions by comparing your HAR files.</p>
+          <fieldset id="zone" class="dropzone">
+            <p>
+              Drop HAR files here (max two) or click to upload. You can add .har
+              and .har.gz files.
+            </p>
+          </fieldset>
+          <p class="smallish">
+            Or add the URL to your HAR files and press <b>compare</b>:
+          </p>
+          <input
+            class="input-field"
+            id="harurl"
+            type="URL"
+            placeholder="URL HAR 1"
+            required
+          />
+          <input
+            class="input-field"
+            id="harurl2"
+            type="URL"
+            placeholder="URL HAR 2"
+            required
+          />
+          <p class="smallish">
+            You can also use a
+            <a href="https://github.com/sitespeedio/compare#configuration"
+              >configuration file</a
+            >
+            or a
+            <a href="https://github.com/sitespeedio/compare#github-gist"
+              >Github gist</a
+            >.
+          </p>
+          <p class="smallish">
+            <a href="https://github.com/sitespeedio/compare#compare-har-files"
+              >Read the full documentation</a
+            >
+          </p>
+          <button
+            type="button"
+            class="submit"
+            onclick="loadHARsFromConfig({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});"
+          >
+            Compare
+          </button>
+          <div id="message" class="message"></div>
         </div>
       </div>
-    </header>
-    <div class="grid grid-pad">
-      <div class="col-1-1">
-        <fieldset id="zone" class="dropzone">
-          <p>Drop HAR files here (max two) or click to upload. You can add .har and .har.gz files.</p>
-        </fieldset>
-        <p class="smallish">
-          Or add the URL to your HAR files and press <b>compare</b>:
-        </p>
-        <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required>
-        <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required>
-        <p class="smallish">You can also use a <a href="https://github.com/sitespeedio/compare#configuration">configuration
-            file</a> or a <a href="https://github.com/sitespeedio/compare#github-gist">Github gist</a>.</p>
-        <p class="smallish">
-          <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
-        </p>
-        <button type="button" class="submit" onclick="loadHARsFromConfig({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});">Compare</button>
-        <div id="message" class="message"></div>
-      </div>
     </div>
-  </div>
 
-  <div id="result" class="result">
-    <header class="header-result">
+    <div id="result" class="result">
+      <header class="header-result">
+        <div class="grid grid-pad grid-result">
+          <div class="col-1-1">
+            <div class="logo">
+              <a href="https://compare.sitespeed.io/">
+                <img src="img/compare.png" width="34" class="img-logo" />
+              </a>
+            </div>
+            <div id="resultHeaderContent"></div>
+          </div>
+        </div>
+      </header>
       <div class="grid grid-pad grid-result">
         <div class="col-1-1">
-          <div class="logo">
-            <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="34" class="img-logo">
-            </a>
+          <div id="comment-intro" class="comment"></div>
+          <div id="pageXrayContent"></div>
+          <h3 id="waterfallHeader">Waterfall</h3>
+          <div id="comment-waterfall" class="comment"></div>
+          <div id="waterfallContent"></div>
+          <div id="waterfallLegendHolder"></div>
+          <div class="harwrapper">
+            <div id="har1" class="har1"></div>
+            <div id="har2" class="har2"></div>
           </div>
-          <div id="resultHeaderContent">
-          </div>
+          <div id="visualProgressContent"></div>
+          <div id="requestDiffContent"></div>
+          <div id="thirdPartyContent"></div>
+          <div id="domainsContent"></div>
+          <button
+            type="button"
+            onclick="errorMessage('');showUpload();"
+            class="submit"
+          >
+            Upload again
+          </button>
         </div>
-      </div>
-    </header>
-    <div class="grid grid-pad grid-result">
-      <div class="col-1-1">
-        <div id="comment-intro" class="comment">
-        </div>
-        <div id="pageXrayContent">
-        </div>
-        <h3 id="waterfallHeader">Waterfall</h3>
-        <div id="comment-waterfall" class="comment"></div>
-        <div id="waterfallContent">
-        </div>
-        <div id="waterfallLegendHolder"></div>
-        <div class="harwrapper">
-          <div id="har1" class="har1"></div>
-          <div id="har2" class="har2"></div>
-        </div>
-        <div id="visualProgressContent">
-        </div>
-        <div id="requestDiffContent">
-          </div>
-        <div id="thirdPartyContent">
-        </div>
-        <div id="domainsContent">
-        </div>
-        <button type="button" onclick="errorMessage('');showUpload();" class="submit">Upload again</button>
       </div>
     </div>
-  </div>
-  <div id="loading" class="loading result">
-    <header class="header">
-      <div class="wip">BETA</div>
+    <div id="loading" class="loading result">
+      <header class="header">
+        <div class="wip">BETA</div>
+        <div class="grid grid-pad">
+          <div class="col-1-1">
+            <div class="logo">
+              <a href="https://compare.sitespeed.io/">
+                <img src="img/compare.png" width="77" class="img-logo" />
+              </a>
+            </div>
+            <h1 class="title">Compare</h1>
+            <p class="subtitle">
+              Understand regressions by comparing your HAR files.
+            </p>
+          </div>
+        </div>
+      </header>
       <div class="grid grid-pad">
         <div class="col-1-1">
-          <div class="logo">
-            <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="77" class="img-logo">
-            </a>
-          </div>
-          <h1 class="title">Compare</h1>
-          <p class="subtitle">Understand regressions by comparing your HAR files.</p>
+          <div class="loader">Loading...</div>
         </div>
       </div>
-    </header>
-    <div class="grid grid-pad">
-      <div class="col-1-1">
-        <div class="loader">Loading...</div>
-      </div>
     </div>
-  </div>
-  <footer>
-    <div class="grid grid-pad">
-      <div class="col-1-1">
-        &copy;
-        <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> 2019 - Built using
-        <a href="https://github.com/micmro/PerfCascade">PerfCascade</a> and
-        <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and
-        <a href="https://github.com/sitespeedio/compare/blob/master/CREDIT.md">other great Open Source tools</a>.
-        <br/> Code licensed
-        <a href="https://github.com/sitespeedio/compare/blob/master/LICENSE">MIT</a>.
-        <a href="https://github.com/sitespeedio/compare/blob/master/CHANGELOG.md">Changelog</a>. Help us
-        <a href="https://github.com/sitespeedio/compare">make it better!</a>
+    <footer>
+      <div class="grid grid-pad">
+        <div class="col-1-1">
+          &copy;
+          <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> 2019
+          - Built using
+          <a href="https://github.com/micmro/PerfCascade">PerfCascade</a> and
+          <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and
+          <a href="https://github.com/sitespeedio/compare/blob/master/CREDIT.md"
+            >other great Open Source tools</a
+          >. <br />
+          Code licensed
+          <a href="https://github.com/sitespeedio/compare/blob/master/LICENSE"
+            >MIT</a
+          >.
+          <a
+            href="https://github.com/sitespeedio/compare/blob/master/CHANGELOG.md"
+            >Changelog</a
+          >. Help us
+          <a href="https://github.com/sitespeedio/compare">make it better!</a>
+        </div>
       </div>
+    </footer>
+    <div class="update-available">
+      <p>Update available</p>
+      <button class="update-reload" type="button">reload</button>
+      <button class="update-dismiss" type="button">dismiss</button>
     </div>
-  </footer>
-  <div class="update-available">
-    <p>Update available</p>
-    <button class="update-reload" type="button">reload</button>
-    <button class="update-dismiss" type="button">dismiss</button>
-  </div>
-  <script>
-    function getParam(name) {
-      if (
-        (name = new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)').exec(
-          location.search
-        ))
-      )
-        return decodeURIComponent(name[1]);
-    }
-  </script>
-  <script type="module">
-    import {Workbox} from '/workbox-v4.0.0/workbox-window.prod.mjs';
+    <script>
+      function getParam(name) {
+        if (
+          (name = new RegExp(
+            "[?&]" + encodeURIComponent(name) + "=([^&]*)"
+          ).exec(location.search))
+        )
+          return decodeURIComponent(name[1]);
+      }
+    </script>
+    <script type="module">
+      import { Workbox } from "/workbox-v4.0.0/workbox-window.prod.mjs";
 
-    if ('serviceWorker' in navigator) {
-      const wb = new Workbox('/service-worker.js');
+      if ("serviceWorker" in navigator) {
+        const wb = new Workbox("/service-worker.js");
 
-      wb.addEventListener('installed', (event) => {
-        if (event.isUpdate) {
-          updateInit();
-        }
-      });
+        wb.addEventListener("installed", event => {
+          if (event.isUpdate) {
+            updateInit();
+          }
+        });
 
-      wb.register();
-    }
-  </script>
-</body>
+        wb.register();
+      }
+    </script>
+  </body>
 </html>
