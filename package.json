@@ -31,8 +31,8 @@
   "homepage": "https://compare.sitespeed.io",
   "devDependencies": {
     "autoprefixer": "^9.3.1",
-    "browser-sync": "^2.26.3",
-    "cssnano": "^4.1.7",
+    "browser-sync": "^2.26.5",
+    "cssnano": "^4.1.10",
     "del": "^3.0.0",
     "eslint": "~4.5.0",
     "eslint-config-prettier": "~2.3.0",
