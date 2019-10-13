@@ -25,7 +25,7 @@ function getFilmstrip(pageXray1, pageXray2) {
 
   const filmstrip1 = [];
   const filmstrip2 = [];
-  let pos = 1;
+  let pos = 0;
 
   for (let i = 0; i <= maxTiming * 10; i += 1) {
     if (pos + 1 < f1.length && f1[pos + 1].time <= i / 10) {

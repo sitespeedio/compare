@@ -305,45 +305,43 @@
               <tr>
                   <td></td>
                   {{#each filmstrip1}}
-                 <td class="smallish"> 
-                  {{#each timings}} {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} {{duration}} {{else}} {{value}} {{/if}}<br/>  {{/each}}
-                 </td>
-                 {{/each}}
-                </tr> 
-            <tr>
-                <td>{{config.har1.label}} </td>
-              {{#each filmstrip1}}
-              
-              <td>
-                <img src="{{img}}"/>
-              </td>
-              {{/each}}
-             <tr>
-               <td></td>
-                {{#each filmstrip1}}
-               <td> 
-                {{time}} 
-               </td>
-               {{/each}}
+                    <td class="smallish"> 
+                      {{#each timings}} {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} {{duration}} {{else}} {{value}} {{/if}}<br/>  {{/each}}
+                    </td>
+                  {{/each}}
               </tr> 
-          
-
               <tr>
-                  <td>{{config.har2.label}} </td>
-                  {{#each filmstrip2}}
+                <td>{{config.har1.label}} </td>
+                {{#each filmstrip1}}
                   <td>
-                    <img src="{{img}}"/>
+                    <a href="{{img}}"><img src="{{img}}"/></a>
+                  </td>
+                {{/each}}
+              </tr>
+              <tr>
+                <td></td>
+                {{#each filmstrip1}}
+                  <td> 
+                    {{time}} 
+                  </td>
+                {{/each}}
+              </tr> 
+              <tr>
+                <td>{{config.har2.label}} </td>
+                {{#each filmstrip2}}
+                  <td>
+                    <a href="{{img}}"><img src="{{img}}"/></a>
                   </td>
                   {{/each}}
-                  <tr>
-                    <td></td>
-                      {{#each filmstrip2}}
+                </tr>
+                <tr>
+                  <td></td>
+                    {{#each filmstrip2}}
                       <td class="smallish">  
                       {{#each timings}} {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} {{duration}} {{else}} {{value}} {{/if}} <br/>  {{/each}}
-                     </td>
-                     {{/each}}
-                    </tr> 
-
+                      </td>
+                    {{/each}}
+                </tr> 
             </table>
       </div>
     </div>
