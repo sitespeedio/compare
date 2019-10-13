@@ -10,3 +10,28 @@
 #carousel .slide {
   display: inline-block;
 }
+
+.bottom-slide {
+  font-size: 80%;
+  font-weight: 400;
+  margin-top: .25rem;
+  color: $dark-grey;
+  text-align: center;
+  padding: 0px;
+  vertical-align: top;
+}
+
+.top-slide {
+  font-size: 80%;
+  font-weight: 400;
+  margin-top: .25rem;
+  color: $dark-grey;
+  text-align: center;
+  padding: 0px;
+  vertical-align: bottom;
+}
+
+.ss {
+  margin: 0;
+  padding: 0;
+}
