@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate  getUniqueRequests */
+/* global getLastTiming, removeAndHide, perfCascade, createUpload, getAllDomains, hideUpload, changeOpacity, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
@@ -154,6 +154,23 @@ function generate(config) {
     'resultHeaderContent'
   );
 
+  if (
+    pageXray1.meta &&
+    pageXray1.meta.filmstrip &&
+    (pageXray2.meta && pageXray2.meta.filmstrip)
+  ) {
+    const filmstrip = getFilmstrip(pageXray1, pageXray2);
+    parseTemplate(
+      'filmstripTemplate',
+      {
+        config,
+        filmstrip1: filmstrip.filmstrip1,
+        filmstrip2: filmstrip.filmstrip2
+      },
+      'filmstripContent'
+    );
+  }
+
   parseTemplate(
     'waterfallTemplate',
     {
@@ -161,7 +178,6 @@ function generate(config) {
     },
     'waterfallContent'
   );
-
   // Hack for settimng correct opacity
   document.getElementById('range').value = 0;
   changeOpacity(0, 'har1', 'har2');
