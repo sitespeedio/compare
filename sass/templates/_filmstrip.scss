@@ -12,23 +12,27 @@
 }
 
 .bottom-slide {
-  font-size: 80%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  font-size: 75%;
   line-height: 100%;
   font-weight: 400;
   margin-top: .25rem;
   color: $dark-grey;
-  text-align: center;
+  text-align: left;
   padding: 0px;
   vertical-align: top;
 }
 
 .top-slide {
-  font-size: 80%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  font-size: 75%;
   line-height: 100%;
   font-weight: 400;
-  margin-top: .25rem;
+  margin-bottom: .25rem;
   color: $dark-grey;
-  text-align: center;
+  text-align: left;
   padding: 0px;
   vertical-align: bottom;
 }
