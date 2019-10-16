@@ -306,16 +306,15 @@
                   <td></td>
                   {{#each filmstrip1}}
                     <td class="top-slide"> 
-                      {{#each timings}} <p class="ss">{{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} {{duration}} {{else}} {{value}} {{/if} }</p>
-                      {{/each}}
+                      {{#each timings}} <p class="ss"> {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} <b> {{duration}} </b> {{else}} <b> {{value}} </b> {{/if}} </p> {{/each}}
                     </td>
                   {{/each}}
               </tr> 
               <tr>
                 <td>{{config.har1.label}} </td>
                 {{#each filmstrip1}}
-                  <td>
-                    <a href="{{img}}"><img src="{{img}}"></a>
+                  <td style="text-align:center">
+                    <a href="{{img}}"><img src="{{img}}" style="max-height:250px"></a>
                   </td>
                 {{/each}}
               </tr>
@@ -330,8 +329,8 @@
               <tr>
                 <td>{{config.har2.label}} </td>
                 {{#each filmstrip2}}
-                  <td>
-                    <a href="{{img}}"><img src="{{img}}"/></a>
+                  <td style="text-align:center">
+                    <a href="{{img}}"><img src="{{img}}" style="max-height:250px"/></a>
                   </td>
                 {{/each}}
               </tr>
@@ -339,7 +338,7 @@
                 <td></td>
                   {{#each filmstrip2}}
                     <td class="bottom-slide">  
-                      {{#each timings}} <p class="ss"> {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} {{duration}} {{else}} {{value}} {{/if}} </p> {{/each}}
+                      {{#each timings}} <p class="ss"> {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} <b> {{duration}} </b> {{else}} <b> {{value}} </b> {{/if}} </p> {{/each}}
                     </td>
                   {{/each}}
               </tr> 
