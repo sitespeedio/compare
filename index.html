@@ -213,6 +213,31 @@
               <td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
             </tr>
             {{/if}} {{/if}}
+
+            {{#if p1.cpu.longTasks.totalBlockingTime}} {{#if p2.cpu.longTasks.totalBlockingTime}}
+            <tr>
+              <td class="tabletext">Total Blocking Time</td>
+              <td>{{js "formatTime(this.p1.cpu.longTasks.totalBlockingTime)"}}</td>
+              <td>{{js "formatTime(this.p2.cpu.longTasks.totalBlockingTime)"}}</td>
+            </tr>
+            {{/if}} {{/if}}
+
+            {{#if p1.cpu.longTasks.maxPotentialFid}} {{#if p2.cpu.longTasks.maxPotentialFid}}
+            <tr>
+              <td class="tabletext">Max Potential FID</td>
+              <td>{{js "formatTime(this.p1.cpu.longTasks.maxPotentialFid)"}}</td>
+              <td>{{js "formatTime(this.p2.cpu.longTasks.maxPotentialFid)"}}</td>
+            </tr>
+            {{/if}} {{/if}}
+
+            {{#if p1.cpu.longTasks.tasks}} {{#if p2.cpu.longTasks.tasks}}
+            <tr>
+              <td class="tabletext">Total CPU Long Tasks</td>
+              <td>{{this.p1.cpu.longTasks.tasks}}</td>
+              <td>{{this.p2.cpu.longTasks.tasks}}</td>
+            </tr>
+            {{/if}} {{/if}}
+
             {{/js_compare}} {{#if p1.meta.screenshot}} {{#if p2.meta.screenshot}}
             <tr>
               <td class="tabletext">Screenshot</td>
@@ -305,11 +330,11 @@
               <tr>
                   <td></td>
                   {{#each filmstrip1}}
-                    <td class="top-slide"> 
+                    <td class="top-slide">
                       {{#each timings}} <p class="ss"> {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} <b> {{duration}} </b> {{else}} <b> {{value}} </b> {{/if}} </p> {{/each}}
                     </td>
                   {{/each}}
-              </tr> 
+              </tr>
               <tr>
                 <td>{{config.har1.label}} </td>
                 {{#each filmstrip1}}
@@ -321,11 +346,11 @@
               <tr>
                 <td></td>
                 {{#each filmstrip1}}
-                  <td> 
-                    {{time}} 
+                  <td>
+                    {{time}}
                   </td>
                 {{/each}}
-              </tr> 
+              </tr>
               <tr>
                 <td>{{config.har2.label}} </td>
                 {{#each filmstrip2}}
@@ -337,11 +362,11 @@
               <tr>
                 <td></td>
                   {{#each filmstrip2}}
-                    <td class="bottom-slide">  
+                    <td class="bottom-slide">
                       {{#each timings}} <p class="ss"> {{#if name}} {{name}} {{else}} {{metric}} {{/if}} : {{#if duration}} <b> {{duration}} </b> {{else}} <b> {{value}} </b> {{/if}} </p> {{/each}}
                     </td>
                   {{/each}}
-              </tr> 
+              </tr>
             </table>
       </div>
     </div>
