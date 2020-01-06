@@ -191,18 +191,22 @@ function loadHARsFromConfig(config) {
     }
     harPromise2 = loadJson(reworkedConfig2.url);
   }
+  let label1 = (new URL(reworkedConfig.url)).pathname;
+  let label2 = (new URL(reworkedConfig2.url)).pathname;
+  label1 = label1.replace(/.*\//, "");
+  label2 = label2.replace(/.*\//, "");
   Promise.all([harPromise, harPromise2])
     .then(([har1, har2]) =>
       generate({
         har1: {
           har: har1,
           run: reworkedConfig.run || config.har1.run || 0,
-          label: config.har1.label || 'HAR1'
+          label: config.har1.label || label1
         },
         har2: {
           har: har2,
           run: reworkedConfig2.run || config.har2.run || 0,
-          label: config.har2.label || 'HAR2'
+          label: config.har2.label || label2
         },
         comments: config.comments || undefined,
         title: config.title || 'Compare HAR files',

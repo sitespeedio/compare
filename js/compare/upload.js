@@ -21,12 +21,12 @@ function createMainDropZone(id) {
             har1: {
               har: har1,
               run: 0,
-              label: 'HAR1'
+              label: files[0].name
             },
             har2: {
               har: har2,
               run: 0,
-              label: 'HAR2'
+              label: files[1].name
             }
           })
         )
@@ -46,7 +46,7 @@ function createMainDropZone(id) {
             har1: {
               har: har,
               run: 0,
-              label: 'HAR1'
+              label: files[0].name
             },
             har2: {
               har: har,
