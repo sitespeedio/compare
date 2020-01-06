@@ -191,10 +191,10 @@ function loadHARsFromConfig(config) {
     }
     harPromise2 = loadJson(reworkedConfig2.url);
   }
-  let label1 = (new URL(reworkedConfig.url)).pathname;
-  let label2 = (new URL(reworkedConfig2.url)).pathname;
-  label1 = label1.replace(/.*\//, "");
-  label2 = label2.replace(/.*\//, "");
+  let label1 = new URL(reworkedConfig.url).pathname;
+  let label2 = new URL(reworkedConfig2.url).pathname;
+  label1 = label1.replace(/.*\//, '');
+  label2 = label2.replace(/.*\//, '');
   Promise.all([harPromise, harPromise2])
     .then(([har1, har2]) =>
       generate({
