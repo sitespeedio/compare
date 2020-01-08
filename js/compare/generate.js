@@ -157,7 +157,10 @@ function generate(config) {
   if (
     pageXray1.meta &&
     pageXray1.meta.filmstrip &&
-    (pageXray2.meta && pageXray2.meta.filmstrip)
+    pageXray1.meta.filmstrip.length > 0 &&
+    pageXray2.meta &&
+    pageXray2.meta.filmstrip &&
+    pageXray2.meta.filmstrip.length > 0
   ) {
     const filmstrip = getFilmstrip(pageXray1, pageXray2);
     parseTemplate(
