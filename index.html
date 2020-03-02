@@ -213,7 +213,8 @@
               <td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
             </tr>
             {{/if}} {{/if}}
-	    {{#if p1.cpu}} {{#if p2.cpu}}
+      {{#if p1.cpu}} {{#if p2.cpu}}
+        {{#if p1.cpu.longTasks}} {{#if p2.cpu.longTasks}}
             {{#if p1.cpu.longTasks.totalBlockingTime}} {{#if p2.cpu.longTasks.totalBlockingTime}}
             <tr>
               <td class="tabletext">Total Blocking Time</td>
@@ -236,6 +237,7 @@
               <td>{{this.p1.cpu.longTasks.tasks}}</td>
               <td>{{this.p2.cpu.longTasks.tasks}}</td>
             </tr>
+            {{/if}} {{/if}}
             {{/if}} {{/if}}
             {{/if}} {{/if}}
             {{/js_compare}} {{#if p1.meta.screenshot}} {{#if p2.meta.screenshot}}
