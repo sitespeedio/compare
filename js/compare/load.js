@@ -167,7 +167,7 @@ function loadFilesFromGist(id) {
 }
 
 function loadHARsFromConfig(config) {
-  // The runs/pages are zer based since it's an array but
+  // The runs/pages are zero based since it's an array but
   // in configuration we wanna use 1 based since it makes more sense
   if (config.har1.run) {
     config.har1.run = config.har1.run - 1;
