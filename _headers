@@ -2,7 +2,8 @@
 	X-Content-Type-Options: nosniff
 	x-frame-options: SAMEORIGIN
 	X-XSS-Protection: 1; mode=block
-  Referrer-Policy: strict-origin
+  	Referrer-Policy: strict-origin
+	Strict-Transport-Security: max-age=31536000; includeSubDomains
 
 /*.js
 	      Cache-Control: public, max-age=360000
