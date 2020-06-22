@@ -1,7 +1,7 @@
 # Compare HAR files
 Make it easier to find regressions by comparing your [HAR](http://www.softwareishard.com/blog/har-12-spec/) files. Test it out https://compare.sitespeed.io or look at the video: https://youtu.be/dCThwpglIeE
 
-![Logo](https://raw.githubusercontent.com/sitespeedio/compare/master/img/compare.png)
+![Logo](https://raw.githubusercontent.com/sitespeedio/compare/main/img/compare.png)
 
 ## First: Shout out!
 We couldn't built compare without the support or inspiration from the following people:
@@ -11,7 +11,7 @@ We couldn't built compare without the support or inspiration from the following 
 If you like our project, please give them also some extra love :)
 
 ## Comparing
-![Compare two different HAR files](https://raw.githubusercontent.com/sitespeedio/compare/master/docs/img/compare.png)
+![Compare two different HAR files](https://raw.githubusercontent.com/sitespeedio/compare/main/docs/img/compare.png)
 
 ## How it works
 As long as your HAR files follow the [HAR specification](http://www.softwareishard.com/blog/har-12-spec/) you can use them in Compare. Standard HARs will give you some basic functionality and HARs from WebPageTest and sitespeed.io will give you more.
@@ -29,7 +29,7 @@ If you deploy your result from your sitespeed.io run to a server and use **--res
 
 If you also run with **--firstParty** (adding a regex that show which assets that are first/third parties) we will will show data grouped by party.
 
-![First Party vs Third Party!](https://raw.githubusercontent.com/sitespeedio/compare/master/docs/img/firstparty.png)
+![First Party vs Third Party!](https://raw.githubusercontent.com/sitespeedio/compare/main/docs/img/firstparty.png)
 
 ## How to use it
 You can either upload two HAR files (drag/drop) or give the URL to two URLs hosted online. If your HAR got multiple pages/runs, you can use just one HAR file.
