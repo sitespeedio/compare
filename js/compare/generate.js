@@ -193,18 +193,22 @@ function generate(config) {
       config,
       runs1: runs1,
       runs2: runs2,
-      cpuCategories1: pageXray1.cpu
-        ? objectPropertiesToArray(pageXray1.cpu.categories)
-        : undefined,
-      cpuCategories2: pageXray2.cpu
-        ? objectPropertiesToArray(pageXray2.cpu.categories)
-        : undefined,
-      cpuEvents1: pageXray1.cpu
-        ? objectPropertiesToArray(pageXray1.cpu.events)
-        : undefined,
-      cpuEvents2: pageXray2.cpu
-        ? objectPropertiesToArray(pageXray2.cpu.events)
-        : undefined
+      cpuCategories1:
+        pageXray1.cpu && pageXray1.cpu.categories
+          ? objectPropertiesToArray(pageXray1.cpu.categories)
+          : undefined,
+      cpuCategories2:
+        pageXray2.cpu && pageXray2.cpu.categories
+          ? objectPropertiesToArray(pageXray2.cpu.categories)
+          : undefined,
+      cpuEvents1:
+        pageXray1.cpu && pageXray1.cpu.events
+          ? objectPropertiesToArray(pageXray1.cpu.events)
+          : undefined,
+      cpuEvents2:
+        pageXray2.cpu && pageXray2.cpu.events
+          ? objectPropertiesToArray(pageXray2.cpu.events)
+          : undefined
     },
     'pageXrayContent'
   );
