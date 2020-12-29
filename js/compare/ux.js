@@ -95,7 +95,6 @@ function formatTime(ms) {
 }
 
 function formatBytes(bytes) {
-  console.log('hepp');
   const KB = 1024;
   const MB = 1024 * 1024;
 
