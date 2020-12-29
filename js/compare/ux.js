@@ -86,18 +86,29 @@ function formatURL(url) {
 
 function formatTime(ms) {
   if (ms !== undefined) {
-    return ms + ' ms';
+    if (ms < 1000) {
+      return ms + ' ms';
+    } else {
+      return Number(ms / 1000).toFixed(3) + ' s';
+    }
   } else return '';
 }
 
 function formatBytes(bytes) {
-  if (bytes === 0) {
-    return '0 B';
-  } else if (bytes === undefined) {
-    return '';
-  }
+  const KB = 1024;
+  const MB = 1024 * 1024;
 
-  return Math.round(bytes / 1000) + ' kb';
+  if (!bytes || bytes < 0 || bytes === 'N/A') {
+    return 'N/A';
+  } else if (bytes === 0) {
+    return '0 b';
+  } else if (bytes < KB) {
+    return Number(bytes) + ' B';
+  } else if (bytes < MB) {
+    return Number(bytes / KB).toFixed(1) + ' KB';
+  } else {
+    return Number(bytes / MB).toFixed(1) + ' MB';
+  }
 }
 function changeOpacity(val, id1, id2) {
   const el1 = document.getElementById(id1);
