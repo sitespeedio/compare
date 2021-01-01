@@ -429,6 +429,11 @@
           </tr>
           {{/each}}
           <tr>
+            <td class="tabletext">First party cookies</td>
+            <td>{{p1.firstParty.cookies}}</td>
+            <td></td>
+          </tr>
+          <tr>
             <td class="tabletext">Third party requests <button onclick="toggleRow(this, 'thirdPartyRequests', this.childNodes[0]);" class="submit submit-smaller"><i class="arrow right"></i></button></td>
             <td>{{p1.thirdParty.requests}} ({{js "this.p1.thirdParty.requests>0?Math.round((this.p1.thirdParty.requests / this.p1.requests)*100):0"}}%)</td>
             <td>{{p2.thirdParty.requests}} ({{js "this.p2.thirdParty.requests>0?Math.round((this.p2.thirdParty.requests / this.p2.requests)*100):0"}}%)</td>
@@ -464,6 +469,11 @@
             <td>{{getAsBytes @root.p2.thirdParty.contentTypes @key 'contentSize'}}</td>
           </tr>
           {{/each}}
+          <tr>
+            <td class="tabletext">Third party cookies</td>
+            <td>{{p1.thirdParty.cookies}}</td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
     </script>
@@ -819,7 +829,7 @@
     <div class="grid grid-pad">
       <div class="col-1-1">
         &copy;
-        <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> and contributors 2020
+        <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> and contributors 2021
         - Built using
         <a href="https://github.com/micmro/PerfCascade">PerfCascade</a> and
         <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and
