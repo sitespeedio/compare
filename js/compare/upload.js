@@ -21,12 +21,18 @@ function createMainDropZone(id) {
             har1: {
               har: har1,
               run: 0,
-              label: files[0].name.length > 20 ? files[0].name.substr(0, 20) + '...' : files[0].name
+              label:
+                files[0].name.length > 20
+                  ? files[0].name.substr(0, 20) + '...'
+                  : files[0].name
             },
             har2: {
               har: har2,
               run: 0,
-              label: files[1].name.length > 20 ? files[1].name.substr(0, 20) + '...' : files[1].name
+              label:
+                files[1].name.length > 20
+                  ? files[1].name.substr(0, 20) + '...'
+                  : files[1].name
             }
           })
         )
