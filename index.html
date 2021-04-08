@@ -169,12 +169,13 @@
               <td> {{p1.contentTypes.image.requests}} ({{js "formatBytes(this.p1.contentTypes.image.transferSize)"}})</td>
               <td> {{p2.contentTypes.image.requests}} ({{js "formatBytes(this.p2.contentTypes.image.transferSize)"}})</td>
             </tr>
-            {{#js_compare "this.p1.visualMetric || this.p2.visualMetrics"}}
+            {{#if p1.visualMetrics.FirstVisualChange}} {{#if p2.visualMetrics.FirstVisualChange}}
             <tr>
               <td class="tabletext">First Visual Change</td>
               <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
               <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.FirstVisualChange)"}} {{/if}}</td>
             </tr>
+            {{/if}} {{/if}}
             {{#if p1.visualMetrics.LargestImage}} {{#if p2.visualMetrics.LargestImage}}
             <tr>
               <td class="tabletext">Largest Image</td>
@@ -196,16 +197,20 @@
               <td> {{js "formatTime(this.p2.visualMetrics.Heading)"}}</td>
             </tr>
             {{/if}} {{/if}}
+            {{#if p1.visualMetrics.SpeedIndex}} {{#if p2.visualMetrics.SpeedIndex}}
             <tr>
               <td class="tabletext">Speed Index</td>
               <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.SpeedIndex)"}} {{/if}}</td>
               <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.SpeedIndex)"}} {{/if}}</td>
             </tr>
+            {{/if}} {{/if}}
+            {{#if p1.visualMetrics.LastVisualChange}} {{#if p2.visualMetrics.LastVisualChange}}
             <tr>
               <td class="tabletext">Last Visual Change</td>
               <td> {{#if p1.visualMetrics}} {{js "formatTime(this.p1.visualMetrics.LastVisualChange)"}} {{/if}}</td>
               <td> {{#if p2.visualMetrics}} {{js "formatTime(this.p2.visualMetrics.LastVisualChange)"}} {{/if}}</td>
             </tr>
+            {{/if}} {{/if}}
             {{#if p1.visualMetrics.VisualReadiness}} {{#if p2.visualMetrics.VisualReadiness}}
             <tr>
               <td class="tabletext">Visual Readiness</td>
@@ -213,6 +218,28 @@
               <td>{{js "formatTime(this.p2.visualMetrics.VisualReadiness)"}}</td>
             </tr>
             {{/if}} {{/if}}
+      {{#if p1.googleWebVitals}} {{#if p2.googleWebVitals}}
+        <tr>
+          <td class="tabletext">First Contentful Paint</td>
+          <td>{{js "formatTime(this.p1.googleWebVitals.firstContentfulPaint)"}}</td>
+          <td>{{js "formatTime(this.p2.googleWebVitals.firstContentfulPaint)"}}</td>
+        </tr>
+        <tr>
+          <td class="tabletext">Largest Contentful Paint</td>
+          <td>{{js "formatTime(this.p1.googleWebVitals.largestContentfulPaint)"}}</td>
+          <td>{{js "formatTime(this.p2.googleWebVitals.largestContentfulPaint)"}}</td>
+        </tr>
+        <tr>
+          <td class="tabletext">Total Blocking Time</td>
+          <td>{{js "formatTime(this.p1.googleWebVitals.totalBlockingTime)"}}</td>
+          <td>{{js "formatTime(this.p2.googleWebVitals.totalBlockingTime)"}}</td>
+        </tr>
+        <tr>
+          <td class="tabletext">Cumulative Layout Shift</td>
+          <td>{{this.p1.googleWebVitals.cumulativeLayoutShift}}</td>
+          <td>{{this.p2.googleWebVitals.cumulativeLayoutShift}}</td>
+        </tr>
+      {{/if}} {{/if}}
       {{#if p1.cpu}} {{#if p2.cpu}}
         {{#if p1.cpu.longTasks}} {{#if p2.cpu.longTasks}}
             {{#if p1.cpu.longTasks.totalBlockingTime}} {{#if p2.cpu.longTasks.totalBlockingTime}}
