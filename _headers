@@ -3,6 +3,7 @@
 	x-frame-options: SAMEORIGIN
 	X-XSS-Protection: 1; mode=block
   	Referrer-Policy: strict-origin
+	Permissions-Policy: interest-cohort=()
 	Strict-Transport-Security: max-age=31536000; includeSubDomains
 
 /*.js
