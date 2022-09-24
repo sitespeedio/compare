@@ -11,7 +11,7 @@
 
 function generateVisualProgress(visualProgress1, visualProgress2, id) {
   let maxTime = 0;
-  const series = [visualProgress1, visualProgress2].map(progressList => {
+  const series = [visualProgress1, visualProgress2].map((progressList) => {
     let previousProgress = -1;
 
     return Object.keys(progressList).reduce((coordinates, milliSecond) => {
@@ -24,7 +24,7 @@ function generateVisualProgress(visualProgress1, visualProgress2, id) {
         }
         coordinates.push({
           x: time,
-          y: currentProgress
+          y: currentProgress,
         });
       }
       return coordinates;
@@ -34,18 +34,18 @@ function generateVisualProgress(visualProgress1, visualProgress2, id) {
   // let them end on the same spot.
   series[0].push({
     x: maxTime,
-    y: 100
+    y: 100,
   });
 
   series[1].push({
     x: maxTime,
-    y: 100
+    y: 100,
   });
 
   new Chartist.Line(
     '#' + id,
     {
-      series
+      series,
     },
     {
       showArea: true,
@@ -54,20 +54,20 @@ function generateVisualProgress(visualProgress1, visualProgress2, id) {
         top: 10,
         right: 0,
         bottom: 30,
-        left: 10
+        left: 10,
       },
       axisX: {
         type: Chartist.AutoScaleAxis,
         onlyInteger: false,
         scaleMinSpace: 100,
-        referenceValue: 1
+        referenceValue: 1,
       },
       lineSmooth: Chartist.Interpolation.step({
         postpone: true,
-        fillHoles: false
+        fillHoles: false,
       }),
       axisY: {
-        onlyInteger: true
+        onlyInteger: true,
       },
       plugins: [
         Chartist.plugins.ctAxisTitle({
@@ -76,28 +76,28 @@ function generateVisualProgress(visualProgress1, visualProgress2, id) {
             axisClass: 'ct-axis-title',
             offset: {
               x: 0,
-              y: 50
+              y: 50,
             },
-            textAnchor: 'middle'
+            textAnchor: 'middle',
           },
           axisY: {
             axisTitle: 'Visual progress %',
             axisClass: 'ct-axis-title',
             offset: {
               x: 0,
-              y: -4
+              y: -4,
             },
             textAnchor: 'middle',
-            flipTitle: false
-          }
+            flipTitle: false,
+          },
         }),
         Chartist.plugins.tooltip({
-          transformTooltipTextFnc: function(text) {
+          transformTooltipTextFnc: function (text) {
             const m = text.split(',');
             return m[0] + 's ' + m[1] + '%';
-          }
-        })
-      ]
+          },
+        }),
+      ],
     }
   );
 }

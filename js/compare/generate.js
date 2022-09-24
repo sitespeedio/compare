@@ -15,13 +15,13 @@ function regenerate(switchHar) {
     har1: {
       har: switchHar ? window.har.har2.har : window.har.har1.har,
       run: switchHar ? runIndex2 : runIndex,
-      label: switchHar ? window.har.har2.label : window.har.har1.label
+      label: switchHar ? window.har.har2.label : window.har.har1.label,
     },
     har2: {
       har: switchHar ? window.har.har1.har : window.har.har2.har,
       run: switchHar ? runIndex : runIndex2,
-      label: switchHar ? window.har.har1.label : window.har.har2.label
-    }
+      label: switchHar ? window.har.har1.label : window.har.har2.label,
+    },
   });
 }
 
@@ -48,7 +48,7 @@ function addWaterfall(
     leftColumnWidth: 30,
     selectedPage: selectedPage,
     legendHolder: legendHolderEl,
-    fixedLengthMs: maxTime
+    fixedLengthMs: maxTime,
   });
 
   const outputHolder = document.getElementById(waterfallDivId);
@@ -67,7 +67,7 @@ function addVisualProgress(pageXray1, pageXray2, config) {
       {
         p1: pageXray1,
         p2: pageXray2,
-        config
+        config,
       },
       'visualProgressContent'
     );
@@ -130,14 +130,14 @@ function generate(config) {
     runs1.push({
       id: i,
       selected: config.har1.run == i ? 'selected' : '',
-      show: i + 1
+      show: i + 1,
     });
   }
   for (let i = 0; i < config.har2.har.log.pages.length; i++) {
     runs2.push({
       id: i,
       selected: config.har2.run == i ? 'selected' : '',
-      show: i + 1
+      show: i + 1,
     });
   }
 
@@ -149,7 +149,7 @@ function generate(config) {
     'resultHeaderTemplate',
     {
       p1: pageXray1,
-      p2: pageXray2
+      p2: pageXray2,
     },
     'resultHeaderContent'
   );
@@ -168,7 +168,7 @@ function generate(config) {
       {
         config,
         filmstrip1: filmstrip.filmstrip1,
-        filmstrip2: filmstrip.filmstrip2
+        filmstrip2: filmstrip.filmstrip2,
       },
       'filmstripContent'
     );
@@ -177,7 +177,7 @@ function generate(config) {
   parseTemplate(
     'waterfallTemplate',
     {
-      config
+      config,
     },
     'waterfallContent'
   );
@@ -208,7 +208,7 @@ function generate(config) {
       cpuEvents2:
         pageXray2.cpu && pageXray2.cpu.events
           ? objectPropertiesToArray(pageXray2.cpu.events)
-          : undefined
+          : undefined,
     },
     'pageXrayContent'
   );
@@ -237,7 +237,7 @@ function generate(config) {
       {
         p1: pageXray1,
         p2: pageXray2,
-        config
+        config,
       },
       'thirdPartyContent'
     );
@@ -248,7 +248,7 @@ function generate(config) {
     'domainsTemplate',
     {
       domains: allDomains,
-      config
+      config,
     },
     'domainsContent'
   );
@@ -268,7 +268,7 @@ function generate(config) {
       {
         requestDiff,
         total,
-        config
+        config,
       },
       'requestDiffContent'
     );
