@@ -19,7 +19,7 @@ $update-width: 344;
     width: $update-width * 1px;
     bottom: 24px;
     left: 50%;
-    margin-left: calc($update-width / 2) * -1px;
+    margin-left: ($update-width / 2) * -1px;
     border-radius: 2px;
   }
 

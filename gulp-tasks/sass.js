@@ -4,7 +4,7 @@
  * Based on: https://goede.site/setting-up-gulp-4-for-automatic-sass-compilation-and-css-injection
  */
 const gulp = require('gulp');
-const sass = require('gulp-sass')(require('sass'));
+const sass = require('gulp-sass');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
