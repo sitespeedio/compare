@@ -102,9 +102,9 @@ function getTotalDiff(requestDiff) {
   return total;
 }
 
-function getUniqueRequests(har1, run1, har2, run2) {
-  const urls1 = getURLs(har1, run1);
-  const urls2 = getURLs(har2, run2);
+function getUniqueRequests(har1, run1, har2, run2, options) {
+  const urls1 = getURLs(har1, run1, options.stripVersion);
+  const urls2 = getURLs(har2, run2, options.stripVersion);
   const all = [];
   const minDiffInBytes = 1000;
   for (let url of Object.keys(urls1)) {
@@ -143,7 +143,7 @@ function getUniqueRequests(har1, run1, har2, run2) {
   return all;
 }
 
-function getURLs(har, run) {
+function getURLs(har, run, stripVersion) {
   const harEntries = har.log.entries;
   const pageId = har.log.pages[run].id;
   const cleaned = harEntries.filter((entry) => {
@@ -158,7 +158,11 @@ function getURLs(har, run) {
   });
   const urls = {};
   for (let entry of cleaned) {
-    urls[entry.request.url] = entry.response.bodySize;
+    let url = entry.request.url;
+    if (stripVersion) {
+      url = url.replace(/version=[A-Za-z0-9]+/i, '');
+    }
+    urls[url] = entry.response.bodySize;
   }
   return urls;
 }

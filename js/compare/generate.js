@@ -260,7 +260,8 @@ function generate(config) {
       config.har1.har,
       config.har1.run,
       config.har2.har,
-      config.har2.run
+      config.har2.run,
+      config
     );
     const total = getTotalDiff(requestDiff);
     parseTemplate(

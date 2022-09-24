@@ -207,6 +207,7 @@ function loadHARsFromConfig(config) {
         comments: config.comments || undefined,
         title: config.title || 'Compare HAR files',
         firstParty: config.firstParty || undefined,
+        stripVersion: config.stripVersion || false,
       })
     )
     .catch((e) => {
