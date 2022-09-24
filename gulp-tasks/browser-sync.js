@@ -7,7 +7,7 @@ const browserSync = require('browser-sync').create('Compare server');
 const changed = require('gulp-changed');
 
 // import local sass module for watch task
-const sass = require('gulp-sass')(require('sass'));
+const sass = require('./sass');
 const generateSW = require('./generate-service-worker');
 const gulpPaths = require('../gulp-paths');
 

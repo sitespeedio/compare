@@ -12,7 +12,7 @@ const swSetup = {
   // only allow caching of files under 1MB
   maximumFileSizeToCacheInBytes: 1 * 1024 * 1024,
   // use the a local copy of workbox (no the CDN)
-  // importWorkboxFrom: 'local',
+  importWorkboxFrom: 'local',
   // what directory / files to precache
   globDirectory: gulpPaths.paths.dist.build,
   globPatterns: ['**\/*.html'],

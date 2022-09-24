@@ -11,14 +11,14 @@ function parseTemplate(templateId, data, divId) {
 }
 
 function registerTemplateHelpers() {
-  Template7.registerHelper('get', function (obj, key, name) {
+  Template7.registerHelper('get', function(obj, key, name) {
     if (!obj[key]) {
       return 0;
     }
     return obj[key][name];
   });
 
-  Template7.registerHelper('getAsBytes', function (obj, key, name) {
+  Template7.registerHelper('getAsBytes', function(obj, key, name) {
     if (!obj[key]) {
       return 0;
     }
