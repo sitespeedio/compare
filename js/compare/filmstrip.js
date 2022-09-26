@@ -11,7 +11,7 @@ function getFilmstrip(pageXray1, pageXray2) {
     return {
       img: o.file,
       time: (t / 10).toFixed(1),
-      timings: timings
+      timings: timings,
     };
   }
 

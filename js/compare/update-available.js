@@ -6,7 +6,7 @@
 const elementCache = {
   dialog: document.querySelector('.update-available'),
   reloadButton: document.querySelector('.update-reload'),
-  dismissButton: document.querySelector('.update-dismiss')
+  dismissButton: document.querySelector('.update-dismiss'),
 };
 
 function showUpdateDialog() {
@@ -14,12 +14,12 @@ function showUpdateDialog() {
 }
 
 function addUpdateEvents() {
-  elementCache.dismissButton.addEventListener('click', evt => {
+  elementCache.dismissButton.addEventListener('click', (evt) => {
     evt.preventDefault();
     elementCache.dialog.classList.remove('update-visible');
   });
 
-  elementCache.reloadButton.addEventListener('click', evt => {
+  elementCache.reloadButton.addEventListener('click', (evt) => {
     evt.preventDefault();
     window.location.reload();
   });
