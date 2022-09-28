@@ -39,12 +39,11 @@ function showLoading() {
 function objectPropertiesToArray(object) {
   const array = [];
   for (let key in object) {
-    // eslint-disable-next-line no-prototype-builtins
     if (object.hasOwnProperty(key)) {
       array.push({ name: key, value: object[key] });
     }
   }
-  return array.sort(function (a, b) {
+  return array.sort(function(a, b) {
     if (a.name < b.name) return -1;
     if (a.name > b.name) return 1;
     return 0;
@@ -128,8 +127,9 @@ function changeOpacity(val, id1, id2) {
 }
 
 function toggleRow(element, className, toggler) {
-  const rows =
-    element.parentNode.parentNode.parentNode.getElementsByClassName(className);
+  const rows = element.parentNode.parentNode.parentNode.getElementsByClassName(
+    className
+  );
 
   for (let i = 0; i < rows.length; i++) {
     const status = rows[i].currentStyle

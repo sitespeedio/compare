@@ -60,12 +60,12 @@ function getSitespeedIoHarURLAndRun(url) {
 
   return {
     url: harURL,
-    run: run,
+    run: run
   };
 }
 
 function fetchHar(url) {
-  return fetch(url).then((response) => {
+  return fetch(url).then(response => {
     if (!response.ok)
       throw new Error(
         'Failed to fetch har from ' + url + '. Error: ' + response.statusText
@@ -92,7 +92,7 @@ function readHar(file) {
 }
 
 function loadJson(url) {
-  return fetch(url).then((response) => {
+  return fetch(url).then(response => {
     if (!response.ok)
       throw new Error(
         'Failed to fetch JSON from ' + url + '. Error: ' + response.statusText
@@ -124,7 +124,7 @@ function readConfig(config) {
 
 function loadFilesFromConfig(url) {
   loadJson(url)
-    .then((unparsedConfig) => {
+    .then(unparsedConfig => {
       let content;
       try {
         content = JSON.parse(unparsedConfig);
@@ -133,7 +133,7 @@ function loadFilesFromConfig(url) {
       }
       return readConfig(content);
     })
-    .catch((e) => {
+    .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
       /* eslint-disable no-console */
@@ -146,7 +146,7 @@ function loadFilesFromGist(id) {
   const url = 'https://api.github.com/gists/' + id;
 
   loadJson(url)
-    .then((gist) => {
+    .then(gist => {
       // We only support one file at the moment
       const key = Object.keys(gist.files)[0];
       let content;
@@ -157,7 +157,7 @@ function loadFilesFromGist(id) {
       }
       return readConfig(content);
     })
-    .catch((e) => {
+    .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
       /* eslint-disable no-console */
@@ -197,20 +197,20 @@ function loadHARsFromConfig(config) {
         har1: {
           har: har1,
           run: reworkedConfig.run || config.har1.run || 0,
-          label: config.har1.label || 'HAR1',
+          label: config.har1.label || 'HAR1'
         },
         har2: {
           har: har2,
           run: reworkedConfig2.run || config.har2.run || 0,
-          label: config.har2.label || 'HAR2',
+          label: config.har2.label || 'HAR2'
         },
         comments: config.comments || undefined,
         title: config.title || 'Compare HAR files',
         firstParty: config.firstParty || undefined,
-        stripVersion: config.stripVersion || false,
+        stripVersion: config.stripVersion || false
       })
     )
-    .catch((e) => {
+    .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
       /* eslint-disable no-console */

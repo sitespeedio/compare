@@ -11,7 +11,7 @@ function getLastTiming(har, run) {
 
   let doneTime = 0;
   harEntries
-    .filter((entry) => {
+    .filter(entry => {
       // filter inline data
       if (
         entry.request.url.indexOf('data:') === 0 ||
@@ -21,14 +21,14 @@ function getLastTiming(har, run) {
       }
       return entry.pageref === pageId;
     })
-    .forEach((entry) => {
+    .forEach(entry => {
       const startRelative =
         new Date(entry.startedDateTime).getTime() - pageStartTime;
       doneTime = Math.max(doneTime, startRelative + entry.time);
     });
 
   // Take care of the case when a timing is later than latest response
-  Object.keys(har.log.pages[run].pageTimings).forEach((key) => {
+  Object.keys(har.log.pages[run].pageTimings).forEach(key => {
     if (har.log.pages[run].pageTimings[key] > doneTime) {
       doneTime = har.log.pages[run].pageTimings[key];
     }
@@ -74,7 +74,7 @@ function getTotalDiff(requestDiff) {
     increased: 0,
     increasedBytes: 0,
     decreased: 0,
-    decreasedBytes: 0,
+    decreasedBytes: 0
   };
   for (let diff of requestDiff) {
     if (diff.har1) total.har1 += diff.har1;
@@ -121,13 +121,13 @@ function getUniqueRequests(har1, run1, har2, run2, options) {
         url: url,
         har1: urls1[url],
         har2: urls2[url],
-        diff: urls2[url] - urls1[url],
+        diff: urls2[url] - urls1[url]
       });
     } else {
       all.push({
         url: url,
         diff: -urls1[url],
-        har1: urls1[url],
+        har1: urls1[url]
       });
     }
   }
@@ -136,7 +136,7 @@ function getUniqueRequests(har1, run1, har2, run2, options) {
       all.push({
         url: url,
         diff: urls2[url],
-        har2: urls2[url],
+        har2: urls2[url]
       });
     }
   }
@@ -146,7 +146,7 @@ function getUniqueRequests(har1, run1, har2, run2, options) {
 function getURLs(har, run, stripVersion) {
   const harEntries = har.log.entries;
   const pageId = har.log.pages[run].id;
-  const cleaned = harEntries.filter((entry) => {
+  const cleaned = harEntries.filter(entry => {
     // filter inline data
     if (
       entry.request.url.indexOf('data:') === 0 ||
