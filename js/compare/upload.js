@@ -1,4 +1,4 @@
-/* global readHar, errorMessage, generate, showUpload, showLoading, removeAndHide, FileDrop */
+/* global readHar, errorMessage, generate, showUpload, fd, showLoading, removeAndHide, FileDrop */
 /* exported createMainDropZone, createUpload  */
 
 /**
@@ -11,6 +11,7 @@ function createMainDropZone(id) {
   zone.multiple(true);
 
   zone.event('send', function(files) {
+    const stripVersion = fd.byID('stripVersion').checked ? true : false;
     if (files.length > 2) {
       errorMessage('You can only compare max two HAR files at a time!');
     } else if (files.length === 2) {
@@ -33,7 +34,8 @@ function createMainDropZone(id) {
                 files[1].name.length > 20
                   ? files[1].name.substr(0, 20) + '...'
                   : files[1].name
-            }
+            },
+            stripVersion: stripVersion
           })
         )
         .catch(e => {
@@ -58,7 +60,8 @@ function createMainDropZone(id) {
               har: har,
               run: har.log.pages.length > 1 ? 1 : 0,
               label: 'HAR2'
-            }
+            },
+            stripVersion: stripVersion
           });
         })
         .catch(e => {
@@ -80,6 +83,7 @@ function createMainDropZone(id) {
 function createUpload(id) {
   const upload = document.getElementById(id);
 
+  const stripVersion = fd.byID('stripVersion').checked ? true : false;
   upload.addEventListener('change', function() {
     const files = this.files;
     if (files.length > 1) {
@@ -108,7 +112,8 @@ function createUpload(id) {
               har: har2,
               run: run2,
               label: label2
-            }
+            },
+            stripVersion: stripVersion
           });
         })
         .catch(e => {
