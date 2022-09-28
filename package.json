@@ -51,12 +51,13 @@
     "gulp-rev": "~8.0.0",
     "gulp-rev-delete-original": "^0.2.3",
     "gulp-rev-rewrite": "^1.1.1",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "5.1.0",
     "gulp-sass-lint": "^1.4.0",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-usemin": "~0.3.28",
     "prettier": "~1.5.3",
     "require-dir": "^1.1.0",
+    "sass": "1.51.0",
     "workbox-build": "4.0.0"
   },
   "scripts": {
