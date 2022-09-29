@@ -169,6 +169,23 @@
               <td> {{p1.contentTypes.image.requests}} ({{js "formatBytes(this.p1.contentTypes.image.transferSize)"}})</td>
               <td> {{p2.contentTypes.image.requests}} ({{js "formatBytes(this.p2.contentTypes.image.transferSize)"}})</td>
             </tr>
+            {{#if p1.renderBlocking}}  {{#if p2.renderBlocking}}  
+              <tr>
+                <td class="tabletext">Render blocking</td>
+                <td> {{p1.renderBlocking.blocking}} </td>
+                <td> {{p2.renderBlocking.blocking}} </td>
+              </tr>
+              <tr>
+                <td class="tabletext">Potentially blocking</td>
+                <td> {{p1.renderBlocking.potentiallyBlocking}} </td>
+                <td> {{p2.renderBlocking.potentiallyBlocking}} </td>
+              </tr>
+              <tr>
+                <td class="tabletext">In body parser blocking</td>
+                <td> {{p1.renderBlocking.in_body_parser_blocking }} </td>
+                <td> {{p2.renderBlocking.in_body_parser_blocking }} </td>
+              </tr>
+            {{/if}} {{/if}}
             {{#if p1.visualMetrics}} 
               {{#if p1.visualMetrics.FirstVisualChange}} {{#if p2.visualMetrics.FirstVisualChange}}
               <tr>
