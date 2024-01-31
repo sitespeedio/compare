@@ -543,7 +543,7 @@
 
   <script id="waterfallTemplate" type="text/template7">
       <div class="rangeWrapper">{{config.har1.label}}&nbsp;
-      <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" onchange="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{config.har2.label}}</div>
+      <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" oninput="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{config.har2.label}}</div>
     </script>
 
   <script id="domainsTemplate" type="text/template7">
