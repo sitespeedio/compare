@@ -36,3 +36,10 @@
   padding: 20px;
   color: $red;
 }
+
+#waterfallContent {
+  position: sticky;
+  top: 10px;
+  background: wheat;
+  z-index: 100;
+}

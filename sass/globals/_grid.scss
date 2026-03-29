@@ -1,7 +1,7 @@
 // Grid customisation
 .grid-result {
   padding-top: 0;
-  overflow-y: auto;
+  overflow: unset;
 }
 
 @media (min-width: 1550px) {
