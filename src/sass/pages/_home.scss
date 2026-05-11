@@ -1,0 +1,83 @@
+//
+// HOME — drop / URL-paste page
+// ============================
+// Single column with a generous drop-target card and a URL input
+// underneath. Centred at desktop widths, full-width on phones.
+//
+
+.dropzone {
+  max-width: 640px;
+  margin: 32px auto 0;
+  padding: 36px 28px;
+  text-align: center;
+  background: $color--surface-card;
+  border: 2px dashed $color--border-strong;
+  border-radius: $radius--lg;
+  box-shadow: $shadow--sm;
+  transition: border-color $motion--fast, background-color $motion--fast;
+
+  h2 {
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    color: $color--text-secondary;
+    margin: 0 0 16px 0;
+  }
+}
+
+.fd-zone {
+  position: relative;
+  overflow: hidden;
+
+  &.over {
+    border-color: $color--blue;
+    background: $color--blue-tint;
+  }
+}
+
+.result,
+.loading {
+  display: none;
+}
+
+.input-field {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 20px auto 0;
+  padding: 10px 14px;
+  font-family: $font--sans;
+  font-size: 1rem;
+  color: $color--text;
+  background: $color--surface-card;
+  border: 1px solid $color--border-strong;
+  border-radius: $radius--sm;
+  transition: border-color $motion--fast, box-shadow $motion--fast;
+
+  &::placeholder { color: $color--text-muted; }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: $color--blue;
+    box-shadow: 0 0 0 3px $color--blue-tint;
+  }
+}
+
+// Error / status strip — visually absent until something actually
+// writes text into it (otherwise the empty box shows beneath the
+// Compare button).
+.message {
+  text-align: center;
+  margin: 16px auto 0;
+  max-width: 640px;
+  color: $color--error;
+}
+
+.message:not(:empty) {
+  padding: 16px;
+  background: $color--error-bg;
+  border: 1px solid $color--error-border;
+  border-radius: $radius--sm;
+}

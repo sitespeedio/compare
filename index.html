@@ -30,11 +30,8 @@
   <meta name="description"
     content="Compare and view the difference between your HAR files. Upload or add the URL to your files (.har and .har.gz) and compare them." />
   <meta name="author" content="Peter Hedenskog, Tobias Lidskog, Jonathan Lee, and sitespeed.io contributors" />
-  <meta name="theme-color" content="#e1f6fd" />
+  <meta name="theme-color" content="#0095d2" />
   <link href="manifest.json" rel="manifest" />
-
-  <link href="css/vendor.css" media="all" rel="stylesheet" />
-  <link href="css/all.css" media="all" rel="stylesheet" />
 
   <script type="text/javascript">
     window.fd = {
@@ -42,32 +39,33 @@
     };
   </script>
 
-  <!-- build:js js/combined.js -->
-  <script src="js/dependencies/template7.min.js" defer></script>
-  <script src="js/dependencies/pagexray.min.js" defer></script>
-  <script src="js/dependencies/perf-cascade.min.js" defer></script>
-  <script src="js/dependencies/gunzip.min.js" defer></script>
-  <script src="js/dependencies/filedrop-min.js" defer></script>
-  <script src="js/dependencies/chartist.min.js" defer></script>
-  <script src="js/dependencies/chartist-plugin-axistitle.min.js" defer></script>
-  <script src="js/dependencies/chartist-plugin-tooltip.min.js" defer></script>
-  <script src="js/compare/upload.js" defer></script>
-  <script src="js/compare/har.js" defer></script>
-  <script src="js/compare/gzip.js" defer></script>
-  <script src="js/compare/ux.js" defer></script>
-  <script src="js/compare/load.js" defer></script>
-  <script src="js/compare/filmstrip.js" defer></script>
-  <script src="js/compare/generate.js" defer></script>
-  <script src="js/compare/generateVisualProgress.js" defer></script>
-  <script src="js/compare/template7.js" defer></script>
-  <script src="js/compare/compare.js" defer></script>
-  <script src="js/compare/update-available.js" defer></script>
-  <!-- endbuild -->
+  <!-- Vite entry: imports the SCSS bundle, vendor CSS, and the
+       waterfall-tools wrapper (which exposes window.compareWaterfall
+       for the classic compare scripts below). -->
+  <script type="module" src="/src/main.js"></script>
+
+  <!-- Classic compare scripts. Live in public/ so Vite serves them
+       verbatim. defer keeps them in document order, so the globals
+       they share (parseTemplate, generate, etc.) resolve in sequence. -->
+  <script src="/js/dependencies/template7.min.js" defer></script>
+  <script src="/js/dependencies/pagexray.min.js" defer></script>
+  <script src="/js/dependencies/gunzip.min.js" defer></script>
+  <script src="/js/dependencies/filedrop-min.js" defer></script>
+  <script src="/js/compare/upload.js" defer></script>
+  <script src="/js/compare/har.js" defer></script>
+  <script src="/js/compare/gzip.js" defer></script>
+  <script src="/js/compare/ux.js" defer></script>
+  <script src="/js/compare/load.js" defer></script>
+  <script src="/js/compare/filmstrip.js" defer></script>
+  <script src="/js/compare/generate.js" defer></script>
+  <script src="/js/compare/generateVisualProgress.js" defer></script>
+  <script src="/js/compare/template7.js" defer></script>
+  <script src="/js/compare/compare.js" defer></script>
 
   <script id="visualProgressTemplate" type="text/template7">
       <h3 id="visualProgressHeader">Visual Progress</h3>
       <div id="comment-visualProgress" class="comment"></div>
-      <div id="visualProgress" class="ct-chart ct-major-tenth"></div>
+      <div id="visualProgress" class="vp-chart"></div>
       <div id="visualProgressLegendHolder">
         <ul class="resource-legend">
           <li class="legend-url1" title="{{p1.url}}">{{config.har1.label}}</li>
@@ -541,11 +539,6 @@
       </div>
     </script>
 
-  <script id="waterfallTemplate" type="text/template7">
-      <div class="rangeWrapper">{{config.har1.label}}&nbsp;
-      <input id="range" type="range" min="0.0" max="1.0" step="0.1" value="0.0" oninput="changeOpacity(this.value, 'har1', 'har2')">&nbsp;{{config.har2.label}}</div>
-    </script>
-
   <script id="domainsTemplate" type="text/template7">
       <h3 id="domainsHeader">Domains</h3>
       <div id="comment-domains" class="comment"></div>
@@ -677,7 +670,26 @@
 -->
 
   <script>
+    // One-time cleanup for browsers that previously installed the
+    // compare service worker. The SW + workbox stack was removed, so
+    // any clients still controlled by an old SW would keep serving
+    // stale assets indefinitely. Unregister + drop its caches so the
+    // very next reload after this change is fresh. Cheap no-op for
+    // anyone who never had an SW.
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        regs.forEach(function (r) { r.unregister(); });
+      }).catch(function () {});
+    }
+    if ("caches" in window) {
+      caches.keys().then(function (keys) {
+        keys.forEach(function (k) { caches.delete(k); });
+      }).catch(function () {});
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
+      const footerYear = document.getElementById("footerYear");
+      if (footerYear) footerYear.textContent = new Date().getFullYear();
       createMainDropZone("zone");
 
       function getAndSet(paramName, elementId) {
@@ -832,20 +844,27 @@
     <div class="grid grid-pad grid-result">
       <div class="col-1-1">
         <div id="comment-intro" class="comment"></div>
-        <div id="pageXrayContent"></div>
-        <div id="filmstripContent"></div>
-        <h3 id="waterfallHeader">Waterfall</h3>
-        <div id="comment-waterfall" class="comment"></div>
-        <div id="waterfallContent"></div>
-        <div id="waterfallLegendHolder"></div>
-        <div class="harwrapper">
-          <div id="har1" class="har1"></div>
-          <div id="har2" class="har2"></div>
-        </div>
-        <div id="visualProgressContent"></div>
-        <div id="requestDiffContent"></div>
-        <div id="thirdPartyContent"></div>
-        <div id="domainsContent"></div>
+        <div id="pageXrayContent" class="card"></div>
+        <div id="filmstripContent" class="card"></div>
+        <section class="card">
+          <h3 id="waterfallHeader" class="card-title">Waterfall</h3>
+          <div id="comment-waterfall" class="comment"></div>
+          <div class="rangeWrapper">
+            <span class="har-label" id="har1Label"></span>
+            <input id="harBlendSlider" type="range" min="0" max="1" step="0.05" value="0"
+                   oninput="blendWaterfalls(this.value)"
+                   aria-label="Blend between the two waterfalls">
+            <span class="har-label" id="har2Label"></span>
+          </div>
+          <div class="harwrapper">
+            <div id="har1" class="har-canvas har-canvas--base"></div>
+            <div id="har2" class="har-canvas har-canvas--overlay"></div>
+          </div>
+        </section>
+        <div id="visualProgressContent" class="card"></div>
+        <div id="requestDiffContent" class="card"></div>
+        <div id="thirdPartyContent" class="card"></div>
+        <div id="domainsContent" class="card"></div>
         <button type="button" onclick="errorMessage('');showUpload();" class="submit">
           Upload again
         </button>
@@ -879,9 +898,9 @@
     <div class="grid grid-pad">
       <div class="col-1-1">
         &copy;
-        <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> and contributors 2022
+        <a href="https://www.sitespeed.io/aboutus/">sitespeed.io team</a> and contributors <span id="footerYear">2026</span>
         - Built using
-        <a href="https://github.com/micmro/PerfCascade">PerfCascade</a> and
+        <a href="https://github.com/pmeenan/waterfall-tools">waterfall-tools</a> and
         <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and
         <a href="https://github.com/sitespeedio/compare/blob/master/CREDIT.md">other great Open Source tools</a>. <br />
         Code licensed
@@ -891,11 +910,6 @@
       </div>
     </div>
   </footer>
-  <div class="update-available">
-    <p>Update available</p>
-    <button class="update-reload" type="button">reload</button>
-    <button class="update-dismiss" type="button">dismiss</button>
-  </div>
   <script>
     function getParam(name) {
       if (
@@ -904,21 +918,6 @@
         ).exec(location.search))
       )
         return decodeURIComponent(name[1]);
-    }
-  </script>
-  <script type="module">
-    import { Workbox } from "/workbox-v4.0.0/workbox-window.prod.mjs";
-
-    if ("serviceWorker" in navigator) {
-      const wb = new Workbox("/service-worker.js");
-
-      wb.addEventListener("installed", event => {
-        if (event.isUpdate) {
-          updateInit();
-        }
-      });
-
-      wb.register();
     }
   </script>
 </body>

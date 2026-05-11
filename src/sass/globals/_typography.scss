@@ -1,0 +1,77 @@
+//
+// TYPOGRAPHY
+// ==========
+// Type scale + small helper classes used across templates. Stays out
+// of layout — components handle vertical rhythm themselves.
+//
+
+h1, h2, h3, h4 {
+  margin: 0 0 0.5rem 0;
+  font-weight: $font--weight--semibold;
+  color: $color--text;
+  line-height: 1.25;
+}
+
+h1 { font-size: 1.75rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.5rem;  letter-spacing: -0.005em; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.05rem; }
+
+p {
+  margin: 0 0 1rem 0;
+}
+
+.smallish,
+.small {
+  font-size: 0.85rem;
+  font-weight: $font--weight--regular;
+  color: $color--text-secondary;
+  margin-top: 0.25rem;
+}
+
+.smallish {
+  text-align: center;
+  padding: 0;
+}
+
+.muted {
+  color: $color--text-muted;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.mono {
+  font-family: $font--mono;
+}
+
+.tabletext {
+  text-align: left;
+  padding: 8px 12px;
+  vertical-align: top;
+}
+
+.comment {
+  text-align: center;
+  margin: 1.5rem auto 0;
+  color: $color--text-secondary;
+  font-size: 0.95rem;
+}
+
+// Status chips — reusable inline labels for ok/warning/error.
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: $radius--pill;
+  font-size: 0.8rem;
+  font-weight: $font--weight--medium;
+  border: 1px solid transparent;
+
+  &.chip--ok      { color: $color--ok;      background: $color--ok-bg;      border-color: $color--ok-border; }
+  &.chip--warning { color: $color--warning; background: $color--warning-bg; border-color: $color--warning-border; }
+  &.chip--error   { color: $color--error;   background: $color--error-bg;   border-color: $color--error-border; }
+  &.chip--info    { color: $color--info;    background: $color--info-bg;    border-color: $color--info-border; }
+}

@@ -1,0 +1,43 @@
+//
+// LAYOUT
+// ======
+// CSS-Grid based content wrapper. Replaces the old simplegrid override
+// (the vendored simplegrid.css gets removed alongside chartist).
+//
+
+.grid,
+.grid-result {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.grid-result {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 0;
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .grid,
+  .grid-result {
+    padding: 0 16px;
+  }
+
+  .grid-2col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

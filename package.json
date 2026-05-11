@@ -2,6 +2,7 @@
   "name": "@sitespeed.io/compare",
   "version": "1.0.0",
   "description": "Compare HAR files.",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sitespeedio/compare.git"
@@ -33,38 +34,12 @@
   },
   "homepage": "https://compare.sitespeed.io",
   "devDependencies": {
-    "autoprefixer": "10.4.12",
-    "browser-sync": "2.27.10",
-    "cssnano": "5.1.13",
-    "del": "6.0.0",
-    "eslint": "~4.18.2",
-    "eslint-config-prettier": "~2.3.0",
-    "eslint-plugin-prettier": "~2.1.2",
-    "gulp": "4.0.2",
-    "gulp-changed": "4.0.3",
-    "gulp-clean-css": "4.3.0",
-    "gulp-concat-css": "^3.1.0",
-    "gulp-dest": "~0.2.3",
-    "gulp-htmlmin": "5.0.1",
-    "gulp-mode": "1.1.0",
-    "gulp-postcss": "9.0.1",
-    "gulp-rev": "~8.0.0",
-    "gulp-rev-delete-original": "^0.2.3",
-    "gulp-rev-rewrite": "3.0.3",
-    "gulp-sass": "5.1.0",
-    "gulp-sass-lint": "^1.4.0",
-    "gulp-sourcemaps": "3.0.0",
-    "gulp-usemin": "0.3.30",
-    "prettier": "~1.5.3",
-    "require-dir": "1.2.0",
-    "sass": "1.51.0",
-    "workbox-build": "4.0.0"
+    "sass": "^1.83.0",
+    "vite": "^6.0.0"
   },
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
-    "build": "gulp --production",
-    "develop": "gulp develop --development"
+    "build": "vite build",
+    "develop": "vite",
+    "preview": "vite preview"
   }
 }
