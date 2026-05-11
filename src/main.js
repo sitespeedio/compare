@@ -4,5 +4,5 @@
 // separately via <script defer> from index.html.
 
 import './vendor-css/loader.css';
-import './sass/all.scss';
+import './css/main.css';
 import './waterfall-tools-overrides.js';

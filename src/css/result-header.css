@@ -1,0 +1,38 @@
+/*
+ * RESULT HEADER
+ * =============
+ * Section-jump nav that sits inside the sticky `.header-result`.
+ */
+
+.header-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0 0;
+  padding: 0;
+
+  li { margin: 0; }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    transition: color var(--motion-fast), background var(--motion-fast),
+                border-color var(--motion-fast);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-blue-dark);
+      background: var(--color-blue-tint);
+      border-color: var(--color-info-border);
+      text-decoration: none;
+    }
+  }
+}

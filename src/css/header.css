@@ -1,15 +1,15 @@
-//
-// HEADER
-// ======
-// Flat brand band at the top of the page. Sticky on the result view
-// (`.header-result`) so the page metadata stays visible while
-// scrolling through the waterfalls.
-//
+/*
+ * HEADER
+ * ======
+ * Flat brand band at the top of the page. Sticky on the result view
+ * (`.header-result`) so the page metadata stays visible while
+ * scrolling through the waterfalls.
+ */
 
 .header,
 .header-result {
-  background: $color--surface-card;
-  border-bottom: 1px solid $color--border;
+  background: var(--color-surface-card);
+  border-bottom: 1px solid var(--color-border);
   padding: 18px 20px;
   position: relative;
   overflow-x: hidden;
@@ -20,7 +20,7 @@
   top: 0;
   z-index: 50;
   padding: 12px 20px;
-  box-shadow: $shadow--sm;
+  box-shadow: var(--shadow-sm);
 }
 
 .logo {
@@ -38,33 +38,35 @@
 .title {
   text-align: center;
   font-size: 1.75rem;
-  font-weight: $font--weight--semibold;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.01em;
   margin: 0;
-  color: $color--text;
+  color: var(--color-text);
 }
 
 .subtitle {
   text-align: center;
-  font-weight: $font--weight--regular;
+  font-weight: var(--font-weight-regular);
   font-size: 1rem;
-  color: $color--text-secondary;
+  color: var(--color-text-secondary);
   margin: 4px 0 0 0;
 }
 
-// Work-in-progress ribbon — retained, restyled to sit more quietly on
-// the new lighter surface.
+/*
+ * Work-in-progress ribbon — retained, restyled to sit more quietly
+ * on the new lighter surface.
+ */
 .wip {
   position: absolute;
   right: -42px;
   top: 14px;
   transform: rotate(45deg);
-  background-color: $color--blue;
-  color: $color--surface-card;
+  background-color: var(--color-blue);
+  color: var(--color-surface-card);
   width: 160px;
   text-align: center;
   font-size: 0.75rem;
-  font-weight: $font--weight--semibold;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 4px 0;
@@ -76,15 +78,7 @@
     padding: 14px 16px;
   }
 
-  .img-logo {
-    width: 32px;
-  }
-
-  .title {
-    font-size: 1.25rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-  }
+  .img-logo { width: 32px; }
+  .title    { font-size: 1.25rem; }
+  .subtitle { font-size: 0.9rem; }
 }
