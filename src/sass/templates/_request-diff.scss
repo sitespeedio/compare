@@ -1,0 +1,21 @@
+//
+// REQUEST DIFF
+// ============
+// Per-request size-change table. Positive/negative deltas read off the
+// status palette so they're consistent with chips elsewhere.
+//
+
+.requestDiffTable {
+  table-layout: fixed;
+
+  td {
+    font-size: 0.85rem;
+  }
+
+  tr:hover td {
+    background: $color--blue-tint;
+  }
+}
+
+td.green { color: $color--ok; }
+td.red   { color: $color--error; }

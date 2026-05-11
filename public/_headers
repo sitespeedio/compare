@@ -1,0 +1,20 @@
+/*
+	X-Content-Type-Options: nosniff
+	x-frame-options: SAMEORIGIN
+	X-XSS-Protection: 1; mode=block
+  	Referrer-Policy: strict-origin
+	Permissions-Policy: interest-cohort=()
+	Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+/*.js
+	      Cache-Control: public, max-age=2592000
+# Always fetch the kill-switch SW fresh so existing visitors pick up
+# the unregistration ASAP.
+/service-worker.js
+	      Cache-Control: no-cache, no-store, must-revalidate
+/*.css
+        Cache-Control: public, max-age=2592000
+/*.png
+        Cache-Control: public, max-age=2592000
+/*.ico
+        Cache-Control: public, max-age=2592000
