@@ -17,8 +17,11 @@ function removeAndHide() {
   removeChildren('har1');
   removeChildren('har2');
   removeChildren('pageXrayContent');
+  removeChildren('filmstripContent');
   removeChildren('thirdPartyContent');
   removeChildren('visualProgressContent');
+  removeChildren('requestDiffContent');
+  removeChildren('domainsContent');
   hide('result');
   hide('loading');
 }
@@ -118,8 +121,16 @@ function blendWaterfalls(value) {
   const v = Math.min(1, Math.max(0, Number(value) || 0));
   const har1 = document.getElementById('har1');
   const har2 = document.getElementById('har2');
-  if (har1) har1.style.opacity = 1 - v;
-  if (har2) har2.style.opacity = v;
+  if (har1) {
+    har1.style.opacity = 1 - v;
+    // Whichever HAR is more visible gets the mouse — its hover handler
+    // shows the request URL tooltip set up in waterfall-tools-overrides.
+    har1.style.pointerEvents = v > 0.5 ? 'none' : 'auto';
+  }
+  if (har2) {
+    har2.style.opacity = v;
+    har2.style.pointerEvents = v > 0.5 ? 'auto' : 'none';
+  }
 }
 
 function toggleRow(element, className, toggler) {

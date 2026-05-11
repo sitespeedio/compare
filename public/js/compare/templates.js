@@ -256,39 +256,42 @@ function pageXrayTemplate(d) {
 }
 
 //
-// filmstripTemplate
+// filmstripTemplate — two horizontal frame rails (HAR1 above HAR2),
+// each labeled, each scrollable. Frames are lazy-loaded so a 20-frame
+// run doesn't bombard the network on page load.
 //
 function filmstripTemplate(d) {
-  const config = d.config, fs1 = d.filmstrip1 || [], fs2 = d.filmstrip2 || [];
+  const config = d.config;
+  const fs1 = (d.filmstrip && d.filmstrip.frames1) || [];
+  const fs2 = (d.filmstrip && d.filmstrip.frames2) || [];
 
-  function timingsCell(frame, cls) {
-    return '<td class="' + cls + '">' + each(frame.timings, function (t) {
-      const label = t.name || t.metric;
-      const value = t.duration != null ? t.duration : t.value;
-      return '<p class="ss"> ' + h(label) + ' : <b> ' + h(value) + ' </b></p>';
-    }) + '</td>';
+  function row(label, frames) {
+    if (frames.length === 0) {
+      return '<div class="filmstrip-row">' +
+               '<div class="filmstrip-label">' + h(label) + '</div>' +
+               '<p class="muted">No filmstrip data available.</p>' +
+             '</div>';
+    }
+    return '<div class="filmstrip-row">' +
+             '<div class="filmstrip-label">' + h(label) + '</div>' +
+             '<div class="filmstrip-rail">' +
+               each(frames, function (f) {
+                 return '<figure class="filmstrip-frame">' +
+                          '<a href="' + h(f.img) + '" target="_blank" rel="noopener">' +
+                            '<img src="' + h(f.img) + '" alt="" loading="lazy" decoding="async">' +
+                          '</a>' +
+                          '<figcaption>' + h(f.time) + ' s</figcaption>' +
+                        '</figure>';
+               }) +
+             '</div>' +
+           '</div>';
   }
 
-  let html = '<h3 id="filmstripHeader">Filmstrip</h3>';
-  html += '<div id="carousel"><div class="slide"><table>';
-  // Row 1 — HAR1 timings
-  html += '<tr><td></td>' + each(fs1, function (f) { return timingsCell(f, 'top-slide'); }) + '</tr>';
-  // Row 2 — HAR1 images
-  html += '<tr><td>' + h(config.har1.label) + ' </td>' +
-          each(fs1, function (f) {
-            return '<td style="text-align:center"><a href="' + h(f.img) + '"><img src="' + h(f.img) + '" style="max-height:250px"></a></td>';
-          }) + '</tr>';
-  // Row 3 — frame times
-  html += '<tr><td></td>' + each(fs1, function (f) { return '<td>' + h(f.time) + '</td>'; }) + '</tr>';
-  // Row 4 — HAR2 images
-  html += '<tr><td>' + h(config.har2.label) + ' </td>' +
-          each(fs2, function (f) {
-            return '<td style="text-align:center"><a href="' + h(f.img) + '"><img src="' + h(f.img) + '" style="max-height:250px"/></a></td>';
-          }) + '</tr>';
-  // Row 5 — HAR2 timings
-  html += '<tr><td></td>' + each(fs2, function (f) { return timingsCell(f, 'bottom-slide'); }) + '</tr>';
-  html += '</table></div></div>';
-  return html;
+  return '<h3 id="filmstripHeader" class="card-title">Filmstrip</h3>' +
+         '<div class="filmstrip">' +
+           row(config.har1.label, fs1) +
+           row(config.har2.label, fs2) +
+         '</div>';
 }
 
 //

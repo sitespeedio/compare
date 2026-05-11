@@ -39,29 +39,43 @@ function addWaterfall(har, selectedPage, waterfallDivId, maxTime) {
   });
 }
 
-function addVisualProgress(pageXray1, pageXray2, config) {
-  if (
-    pageXray1.visualMetrics &&
-    pageXray1.visualMetrics.VisualProgress &&
-    pageXray2.visualMetrics &&
-    pageXray2.visualMetrics.VisualProgress
-  ) {
-    parseTemplate(
-      'visualProgressTemplate',
-      {
-        p1: pageXray1,
-        p2: pageXray2,
-        config
-      },
-      'visualProgressContent'
-    );
+// Down-sample a filmstrip down to a small set of evenly-spaced frames
+// for the under-chart thumbnail strip; the dense version still lives
+// in the dedicated Filmstrip section below.
+function sampleFrames(frames, count) {
+  if (!frames || frames.length === 0) return [];
+  if (frames.length <= count) return frames.slice();
+  const step = (frames.length - 1) / (count - 1);
+  const out = [];
+  for (let i = 0; i < count; i++) out.push(frames[Math.round(i * step)]);
+  return out;
+}
 
-    generateVisualProgress(
-      pageXray1.visualMetrics.VisualProgress,
-      pageXray2.visualMetrics.VisualProgress,
-      'visualProgress'
-    );
-  }
+function addVisualProgress(pageXray1, pageXray2, config, filmstrip) {
+  if (
+    !pageXray1.visualMetrics ||
+    !pageXray1.visualMetrics.VisualProgress ||
+    !pageXray2.visualMetrics ||
+    !pageXray2.visualMetrics.VisualProgress
+  ) return;
+
+  parseTemplate(
+    'visualProgressTemplate',
+    { p1: pageXray1, p2: pageXray2, config },
+    'visualProgressContent'
+  );
+
+  generateVisualProgress(
+    pageXray1.visualMetrics.VisualProgress,
+    pageXray2.visualMetrics.VisualProgress,
+    'visualProgress',
+    {
+      thumbnails1: filmstrip ? sampleFrames(filmstrip.frames1, 6) : [],
+      thumbnails2: filmstrip ? sampleFrames(filmstrip.frames2, 6) : [],
+      label1:      config.har1.label,
+      label2:      config.har2.label
+    }
+  );
 }
 
 /**
@@ -138,22 +152,16 @@ function generate(config) {
     'resultHeaderContent'
   );
 
-  if (
-    pageXray1.meta &&
-    pageXray1.meta.filmstrip &&
-    pageXray1.meta.filmstrip.length > 0 &&
-    pageXray2.meta &&
-    pageXray2.meta.filmstrip &&
-    pageXray2.meta.filmstrip.length > 0
-  ) {
-    const filmstrip = getFilmstrip(pageXray1, pageXray2);
+  const filmstrip = getFilmstrip(
+    config.har1.har,
+    config.har1.run,
+    config.har2.har,
+    config.har2.run
+  );
+  if (filmstrip) {
     parseTemplate(
       'filmstripTemplate',
-      {
-        config,
-        filmstrip1: filmstrip.filmstrip1,
-        filmstrip2: filmstrip.filmstrip2
-      },
+      { config: config, filmstrip: filmstrip },
       'filmstripContent'
     );
   }
@@ -202,7 +210,7 @@ function generate(config) {
   addWaterfall(config.har1.har, config.har1.run, 'har1', slowestHarTiming);
   addWaterfall(config.har2.har, config.har2.run, 'har2', slowestHarTiming);
 
-  addVisualProgress(pageXray1, pageXray2, config);
+  addVisualProgress(pageXray1, pageXray2, config, filmstrip);
 
   if (Object.keys(pageXray1.firstParty).length > 0) {
     parseTemplate(

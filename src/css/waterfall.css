@@ -46,7 +46,27 @@
   position: absolute;
   inset: 0;
   opacity: 0;
+  /* pointer-events is set per-frame by blendWaterfalls() in ux.js so
+     hover follows whichever HAR is currently more visible. */
   pointer-events: none;
+}
+
+/* Floating tooltip used by the waterfall-tools onHover hook. Lives at
+   document.body so it can pop over the card without being clipped by
+   the .harwrapper overflow. */
+.waterfall-tooltip {
+  position: fixed;
+  z-index: 1000;
+  max-width: 480px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--color-surface-card);
+  background: rgba(17, 24, 39, 0.92);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  word-break: break-all;
 }
 
 /* Slider styling — same brand-blue thumb as the rest of the UI. */
