@@ -5,6 +5,10 @@
 // only where they need to — most styling rides on these.
 //
 
+// Minimal cross-browser reset. Modern browsers diverge less than they
+// used to, so we no longer pull in normalize.css — these few rules
+// cover the bits that still drift (form-element fonts, image inline-
+// baseline, button defaults).
 *,
 *::before,
 *::after {
@@ -13,6 +17,22 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 body {
