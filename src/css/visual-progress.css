@@ -2,8 +2,8 @@
  * VISUAL PROGRESS CHART
  * =====================
  * Hand-rolled inline-SVG curve (built in JS at runtime). Two series —
- * HAR1 in brand blue, HAR2 in dark blue — sit inside a card alongside
- * a legend chip per series.
+ * HAR1 in brand blue, HAR2 in dark blue — and an optional pair of
+ * thumbnail strips below, aligned to the same time axis.
  */
 
 .vp-chart {
@@ -14,7 +14,7 @@
   svg {
     display: block;
     width: 100%;
-    height: 220px;
+    height: 240px;
     overflow: visible;
   }
 
@@ -51,6 +51,74 @@
   }
 }
 
+/* Thumbnail strips under the chart — absolute positioning lets us
+   align each thumb's center to its time on the same axis as the SVG
+   above, so the visual change at each milestone is easy to spot. */
+.vp-thumb-row {
+  display: grid;
+  grid-template-columns: minmax(70px, 90px) 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.vp-thumb-label {
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.vp-thumb-rail {
+  position: relative;
+  height: 84px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.vp-thumb {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+
+  a {
+    display: block;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-card);
+    transition: border-color var(--motion-fast),
+                box-shadow var(--motion-fast),
+                transform var(--motion-fast);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--color-info-border);
+      box-shadow: var(--shadow-md);
+      transform: translate(-50%, -1px) translateX(50%);
+    }
+  }
+
+  img {
+    display: block;
+    width: 80px;
+    height: auto;
+    max-height: 60px;
+    object-fit: cover;
+  }
+}
+
+.vp-thumb-time {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
 .resource-legend {
   display: flex;
   flex-wrap: wrap;
@@ -75,4 +143,13 @@
 
   .legend-url1::before { background: var(--color-blue); }
   .legend-url2::before { background: var(--color-blue-dark); }
+}
+
+@media (max-width: 640px) {
+  .vp-thumb-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .vp-thumb img { width: 60px; max-height: 45px; }
+  .vp-thumb-rail { height: 70px; }
 }

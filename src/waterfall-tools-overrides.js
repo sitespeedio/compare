@@ -59,11 +59,59 @@ export async function renderCompareWaterfall(har, container, opts = {}) {
     }
   }
 
+  // Hover handler — waterfall-tools fires this with a {request} on
+  // mouse-over of a row and null on mouse-leave. The request object
+  // is waterfall-tools' normalised entry (url, method, status, etc.
+  // at the top level — not a raw HAR entry).
+  options.onHover = function (target) {
+    if (target && target.request) {
+      const url = target.request.url || target.request.documentURL || '';
+      showWaterfallTooltip(url, target.event);
+    } else {
+      hideWaterfallTooltip();
+    }
+  };
+
   // Clear any previous canvas — generate() can be called multiple
   // times for the same container (e.g. when the run dropdown changes).
   container.innerHTML = '';
 
   return wt.renderTo(container, options);
+}
+
+// Tooltip singleton — lives at document body so it can float over the
+// waterfall card without being clipped by its overflow.
+let tooltipEl;
+function ensureTooltip() {
+  if (tooltipEl) return tooltipEl;
+  tooltipEl = document.createElement('div');
+  tooltipEl.className = 'waterfall-tooltip';
+  tooltipEl.style.display = 'none';
+  document.body.appendChild(tooltipEl);
+  return tooltipEl;
+}
+
+function showWaterfallTooltip(text, event) {
+  if (!text) return hideWaterfallTooltip();
+  const el = ensureTooltip();
+  el.textContent = text;
+  el.style.display = 'block';
+  // Position next to the cursor, but flip to the left side when the
+  // tooltip would overflow the right edge of the viewport.
+  const offset = 14;
+  const rect = el.getBoundingClientRect();
+  const cx = (event && event.clientX) || 0;
+  const cy = (event && event.clientY) || 0;
+  let left = cx + offset;
+  if (left + rect.width > window.innerWidth - 8) {
+    left = Math.max(8, cx - offset - rect.width);
+  }
+  el.style.left = left + 'px';
+  el.style.top = (cy + offset) + 'px';
+}
+
+function hideWaterfallTooltip() {
+  if (tooltipEl) tooltipEl.style.display = 'none';
 }
 
 // Expose for the classic-script consumers in js/compare/*.js.
