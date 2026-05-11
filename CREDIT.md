@@ -1,9 +1,9 @@
 Compare is built with the following Open Source tools:
 
-* [PerfCascade](https://github.com/micmro/PerfCascade) 
-* [PageXray](https://github.com/sitespeedio/pagexray)
-* [Simple Grid](http://thisisdallas.github.io/Simple-Grid/)
-* [FileDropJS](http://filedropjs.org/)
-* [Chartist.js](https://gionkunz.github.io/chartist-js/)
-* [Template7](http://idangero.us/template7/)
-* [zlib.js](https://github.com/imaya/zlib.js)
+* [waterfall-tools](https://github.com/pmeenan/waterfall-tools) — network waterfall rendering
+* [PageXray](https://github.com/sitespeedio/pagexray) — HAR analysis
+* [Template7](https://framework7.io/docs/template7) — client-side templating
+* [FileDropJS](http://filedropjs.org/) — drag-and-drop file upload
+* [zlib.js](https://github.com/imaya/zlib.js) — gzip decoding for .har.gz files
+* [normalize.css](https://necolas.github.io/normalize.css/) — cross-browser CSS baseline
+* [Vite](https://vitejs.dev/) + [Sass](https://sass-lang.com/) — build tooling
