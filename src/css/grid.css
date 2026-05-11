@@ -1,9 +1,8 @@
-//
-// LAYOUT
-// ======
-// CSS-Grid based content wrapper. Replaces the old simplegrid override
-// (the vendored simplegrid.css gets removed alongside chartist).
-//
+/*
+ * LAYOUT
+ * ======
+ * CSS-Grid based content wrapper. Replaces the old simplegrid override.
+ */
 
 .grid,
 .grid-result {

@@ -1,0 +1,102 @@
+/*
+ * WATERFALL
+ * =========
+ * Two waterfalls (HAR1 + HAR2) stacked in the same area on a shared
+ * time axis. A slider blends between them via CSS opacity.
+ */
+
+.rangeWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 0 14px 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+
+  .har-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+  }
+}
+
+.harwrapper {
+  position: relative;
+}
+
+.har-canvas {
+  width: 100%;
+
+  canvas {
+    display: block;
+    width: 100%;
+  }
+}
+
+/*
+ * Base waterfall sits in normal flow so its rendered canvas drives
+ * the wrapper's height. The overlay waterfall is positioned over it
+ * and its opacity is controlled by the slider.
+ */
+.har-canvas--base {
+  position: relative;
+}
+
+.har-canvas--overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Slider styling — same brand-blue thumb as the rest of the UI. */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 240px;
+  height: 22px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+
+  &:focus { outline: none; }
+
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: var(--radius-pill);
+  }
+  &::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: var(--radius-pill);
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--color-blue);
+    border: 2px solid var(--color-surface-card);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+  }
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-blue);
+    border: 2px solid var(--color-surface-card);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:focus-visible {
+    &::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--color-blue-tint); }
+    &::-moz-range-thumb     { box-shadow: 0 0 0 4px var(--color-blue-tint); }
+  }
+}

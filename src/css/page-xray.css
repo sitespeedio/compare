@@ -1,0 +1,89 @@
+/*
+ * PAGE X-RAY TABLE
+ * ================
+ * Side-by-side metric breakdown — the dominant table on the result
+ * view. Table itself inherits the base table styling from elements.css;
+ * this file tunes its hover, column widths and the file-upload chip
+ * used to swap HARs.
+ */
+
+.userShowable {
+  display: none;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.pageXrayTable {
+  table-layout: fixed;
+
+  tr {
+    transition: background-color var(--motion-fast);
+
+    &:hover td {
+      background: var(--color-blue-tint);
+      color: var(--color-text);
+
+      a { color: var(--color-blue-dark); }
+    }
+  }
+}
+
+.tableXrayMetric {
+  width: 24%;
+  text-align: left;
+}
+
+.tableXrayHarMetric,
+.tableXrayHar2Metric {
+  width: 38%;
+}
+
+/*
+ * Pretty file-upload chip — styled to look like a small secondary
+ * button. The native <input type="file"> stays visually hidden but
+ * remains keyboard-accessible because the label is a real
+ * <label for=...>.
+ */
+.inputfile {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+
+  + label {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--motion-fast), color var(--motion-fast),
+                border-color var(--motion-fast);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-blue-tint);
+      color: var(--color-blue-dark);
+      border-color: var(--color-info-border);
+    }
+  }
+
+  &:focus-visible + label {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  select { max-width: 100%; }
+}

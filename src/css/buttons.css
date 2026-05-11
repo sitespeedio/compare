@@ -1,0 +1,88 @@
+/*
+ * BUTTONS
+ * =======
+ * Primary action used on the home page (.submit) and a quiet ghost
+ * variant (.submit-smaller) used inline next to table cells.
+ */
+
+.submit {
+  display: block;
+  margin: 16px auto;
+  padding: 12px 22px;
+  background-color: var(--color-blue);
+  color: var(--color-surface-card);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.01em;
+  border: 1px solid var(--color-blue);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--motion-fast), transform var(--motion-fast),
+              box-shadow var(--motion-fast);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--color-blue-dark);
+    border-color: var(--color-blue-dark);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+/*
+ * Quiet ghost variant — used inline next to table cells (the
+ * disclosure toggles next to "First party requests", "CPU time spent
+ * by category" etc., and the "Switch" header action). Overrides the
+ * solid primary styling above so these read as secondary affordances
+ * rather than competing with the main Compare button.
+ */
+.submit-smaller {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-medium);
+  vertical-align: middle;
+  line-height: 1.4;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+  box-shadow: none;
+  letter-spacing: normal;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--color-blue-tint);
+    color: var(--color-blue-dark);
+    border-color: var(--color-info-border);
+    box-shadow: none;
+  }
+}
+
+/* Outline variant for secondary actions. */
+.submit--secondary {
+  background-color: transparent;
+  color: var(--color-blue-dark);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--color-blue-tint);
+    color: var(--color-blue-dark);
+    border-color: var(--color-info-border);
+  }
+}

@@ -191,25 +191,33 @@ function loadHARsFromConfig(config) {
     }
     harPromise2 = loadJson(reworkedConfig2.url);
   }
+  // When the URL is `?compare=1&har1=...` (single HAR, no har2.url),
+  // reuse the same HAR for both slots but point at different page
+  // indices — same UX as dropping a single HAR onto the drop zone.
+  const sameHar = !config.har2.url;
   Promise.all([harPromise, harPromise2])
-    .then(([har1, har2]) =>
-      generate({
+    .then(([har1, har2]) => {
+      const har1Run = reworkedConfig.run || config.har1.run || 0;
+      const har2Run = sameHar
+        ? (har1.log.pages.length > 1 ? 1 : 0)
+        : (reworkedConfig2.run || config.har2.run || 0);
+      return generate({
         har1: {
           har: har1,
-          run: reworkedConfig.run || config.har1.run || 0,
+          run: har1Run,
           label: config.har1.label || 'HAR1'
         },
         har2: {
           har: har2,
-          run: reworkedConfig2.run || config.har2.run || 0,
+          run: har2Run,
           label: config.har2.label || 'HAR2'
         },
         comments: config.comments || undefined,
         title: config.title || 'Compare HAR files',
         firstParty: config.firstParty || undefined,
         stripVersion: config.stripVersion || false
-      })
-    )
+      });
+    })
     .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
