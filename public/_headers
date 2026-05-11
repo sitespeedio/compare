@@ -8,8 +8,10 @@
 
 /*.js
 	      Cache-Control: public, max-age=2592000
+# Always fetch the kill-switch SW fresh so existing visitors pick up
+# the unregistration ASAP.
 /service-worker.js
-	      Cache-Control: no-cache
+	      Cache-Control: no-cache, no-store, must-revalidate
 /*.css
         Cache-Control: public, max-age=2592000
 /*.png

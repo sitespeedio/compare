@@ -1,0 +1,10 @@
+# Netlify build configuration. Keeping this in the repo so the
+# publish directory + Node version are reproducible alongside the
+# code rather than living only in the Netlify UI.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
