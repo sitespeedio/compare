@@ -2,19 +2,33 @@
 	X-Content-Type-Options: nosniff
 	x-frame-options: SAMEORIGIN
 	X-XSS-Protection: 1; mode=block
-  	Referrer-Policy: strict-origin
+	Referrer-Policy: strict-origin
 	Permissions-Policy: interest-cohort=()
 	Strict-Transport-Security: max-age=31536000; includeSubDomains
 
+# Stable-URL classic scripts (and any other unhashed JS/CSS) — revalidate
+# on every load so a deploy reaches existing visitors immediately instead
+# of waiting on a 30-day browser cache. The cost is one tiny 304 per
+# script per page load.
 /*.js
-	      Cache-Control: public, max-age=2592000
+	Cache-Control: public, max-age=0, must-revalidate
+/*.css
+	Cache-Control: public, max-age=0, must-revalidate
+
+# Vite-emitted bundles are content-hashed (the filename changes when
+# the content changes), so they're safe to cache forever. The
+# `immutable` hint tells browsers not to bother revalidating at all.
+# These rules come after the generic `/*.js` and `/*.css` blocks so
+# they win for the assets/ subtree.
+/assets/*
+	Cache-Control: public, max-age=31536000, immutable
+
 # Always fetch the kill-switch SW fresh so existing visitors pick up
 # the unregistration ASAP.
 /service-worker.js
-	      Cache-Control: no-cache, no-store, must-revalidate
-/*.css
-        Cache-Control: public, max-age=2592000
+	Cache-Control: no-cache, no-store, must-revalidate
+
 /*.png
-        Cache-Control: public, max-age=2592000
+	Cache-Control: public, max-age=2592000
 /*.ico
-        Cache-Control: public, max-age=2592000
+	Cache-Control: public, max-age=2592000
