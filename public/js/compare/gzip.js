@@ -1,71 +1,17 @@
-/* global Zlib */
-/* exported readHar, isFileGzipped, isFileZipped, readGZipFile */
+/* exported readHar, isFileGzipped, isFileZipped, readGZipFile, gzipArrayBufferToJSON */
 
-/**
- * Help functions to read gzipped files
- */
+// gzip helpers — the heavy lifting is done by the browser-native
+// DecompressionStream (Compression Streams API). zlib.js used to live
+// here as a polyfill back when this was Safari < 16.4 territory; the
+// native API is now available everywhere we care about (Chrome 80+,
+// Firefox 113+, Safari 16.4+).
 
-function gzipArrayBufferToJSON(arrayBuffer) {
-  /* utf.js - UTF-8 <=> UTF-16 convertion
-   *
-   * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
-   * Version: 1.0
-   * LastModified: Dec 25 1999
-   * This library is free.  You can redistribute it and/or modify it.
-   */
-
-  function Utf8ArrayToStr(array) {
-    let out, i, len, c;
-    let char2, char3;
-
-    out = '';
-    len = array.length;
-    i = 0;
-    while (i < len) {
-      c = array[i++];
-      switch (c >> 4) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-          // 0xxxxxxx
-          out += String.fromCharCode(c);
-          break;
-        case 12:
-        case 13:
-          // 110x xxxx   10xx xxxx
-          char2 = array[i++];
-          out += String.fromCharCode(((c & 0x1f) << 6) | (char2 & 0x3f));
-          break;
-        case 14:
-          // 1110 xxxx  10xx xxxx  10xx xxxx
-          char2 = array[i++];
-          char3 = array[i++];
-          out += String.fromCharCode(
-            ((c & 0x0f) << 12) | ((char2 & 0x3f) << 6) | ((char3 & 0x3f) << 0)
-          );
-          break;
-      }
-    }
-
-    return out;
-  }
-
-  const byteArray = new Uint8Array(arrayBuffer);
-  const gunzip = new Zlib.Gunzip(byteArray);
-  const decompressedArray = gunzip.decompress();
-  let string = '';
-  // only way to make it work on Safari iOS?
-  try {
-    string = new TextDecoder('utf-8').decode(decompressedArray);
-  } catch (e) {
-    string = Utf8ArrayToStr(decompressedArray);
-  }
-  return JSON.parse(string);
+async function gzipArrayBufferToJSON(arrayBuffer) {
+  const stream = new Blob([arrayBuffer])
+    .stream()
+    .pipeThrough(new DecompressionStream('gzip'));
+  const text = await new Response(stream).text();
+  return JSON.parse(text);
 }
 
 function isFileGzipped(url) {
@@ -85,12 +31,11 @@ function readGZipFile(file) {
         new Error('Error reading ' + file.name + ' : ' + reader.error.name)
       );
     reader.onload = () => {
-      try {
-        const har = gzipArrayBufferToJSON(reader.result);
-        resolve(har);
-      } catch (e) {
-        reject(new Error('Error reading ' + file.name + ' : ' + e.message));
-      }
+      gzipArrayBufferToJSON(reader.result)
+        .then(resolve)
+        .catch(e =>
+          reject(new Error('Error reading ' + file.name + ' : ' + e.message))
+        );
     };
 
     reader.readAsArrayBuffer(file.nativeFile ? file.nativeFile : file);

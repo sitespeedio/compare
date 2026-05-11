@@ -42,14 +42,34 @@
   }
 }
 
+// Quiet ghost variant — used inline next to table cells (the
+// disclosure toggles next to "First party requests", "CPU time spent
+// by category" etc., and the "Switch" header action). Overrides the
+// solid primary styling above so these read as secondary affordances
+// rather than competing with the main Compare button.
 .submit-smaller {
-  display: inline-block;
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
   margin: 0;
   font-size: 0.8rem;
   font-weight: $font--weight--medium;
   vertical-align: middle;
   line-height: 1.4;
+  background-color: transparent;
+  color: $color--text-secondary;
+  border-color: $color--border;
+  box-shadow: none;
+  letter-spacing: normal;
+
+  &:hover,
+  &:focus-visible {
+    background-color: $color--blue-tint;
+    color: $color--blue-dark;
+    border-color: $color--info-border;
+    box-shadow: none;
+  }
 }
 
 // Outline variant for secondary actions.

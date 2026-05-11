@@ -33,15 +33,9 @@
   <meta name="theme-color" content="#0095d2" />
   <link href="manifest.json" rel="manifest" />
 
-  <script type="text/javascript">
-    window.fd = {
-      logging: false
-    };
-  </script>
-
-  <!-- Vite entry: imports the SCSS bundle, vendor CSS, and the
-       waterfall-tools wrapper (which exposes window.compareWaterfall
-       for the classic compare scripts below). -->
+  <!-- Vite entry: imports the SCSS bundle and the waterfall-tools
+       wrapper (which exposes window.compareWaterfall for the classic
+       compare scripts below). -->
   <script type="module" src="/src/main.js"></script>
 
   <!-- Classic compare scripts. Live in public/ so Vite serves them
@@ -49,8 +43,6 @@
        they share (parseTemplate, generate, etc.) resolve in sequence. -->
   <script src="/js/dependencies/template7.min.js" defer></script>
   <script src="/js/dependencies/pagexray.min.js" defer></script>
-  <script src="/js/dependencies/gunzip.min.js" defer></script>
-  <script src="/js/dependencies/filedrop-min.js" defer></script>
   <script src="/js/compare/upload.js" defer></script>
   <script src="/js/compare/har.js" defer></script>
   <script src="/js/compare/gzip.js" defer></script>
