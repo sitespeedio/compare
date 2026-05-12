@@ -10,18 +10,17 @@
 //    `<base>/data/filmstrip/<run>/ms_<paddedMs>.jpg`. We detect this
 //    by looking at `_meta.screenshot` (always present when sitespeed
 //    was run with --video / --visualMetrics) and derive the base from
-//    it. Sitespeed.io's filmstrip plugin writes files on a fixed
-//    100 ms cadence anchored to FirstVisualChange and LastVisualChange
-//    — NOT one per VisualProgress change point. Specifically it
-//    writes:
-//      - ms 0 (the pre-load frame)
-//      - FirstVisualChange (only when not on a 100 ms boundary)
-//      - every 100 ms multiple strictly between FVC and LVC
-//      - LastVisualChange (only when not on a 100 ms boundary)
-//    VisualProgress is sampled at video-frame cadence (~30 fps),
-//    so most change points fall between filmstrip frames and have
-//    no file on disk. Deriving the strip from VP change points
-//    therefore produced a steady stream of 404s.
+//    it. Sitespeed.io's filmstrip plugin writes one JPG per
+//    VisualProgress sample, named after that sample's exact ms, so
+//    the sorted VisualProgress keys are the authoritative list of
+//    frames on disk. A fixed 100 ms cadence in FVC..LVC was tempting
+//    but produced 404s whenever VisualProgress went flat between two
+//    boundaries (e.g. a run where VP jumps 2967 → 3267 with nothing
+//    in between — ms_003000/003100/003200.jpg simply don't exist).
+//    Spacing is then restored downstream by `padFrames`, which
+//    resamples the change-point list onto a uniform 100 ms grid so
+//    "nothing happened for 2 s" reads visually different from
+//    "everything changed in 50 ms".
 //
 // 2. Older WPT HARs that embed a `filmstrip` array on the page —
 //    handled the legacy way via pageXray.meta.filmstrip when that's
@@ -40,49 +39,25 @@ function getFilmstripForPage(har, pageIndex) {
 
   // sitespeed.io path — derive the filmstrip URL base from the
   // screenshot URL (e.g. .../data/screenshots/1/afterPageCompleteCheck.jpg
-  // → .../data/filmstrip/1/ms_NNNNNN.jpg) and construct the frame
-  // timestamps to match what the filmstrip plugin actually wrote.
+  // → .../data/filmstrip/1/ms_NNNNNN.jpg) and take the frame
+  // timestamps straight from VisualProgress — one entry per
+  // on-disk JPG.
   const meta = page._meta || {};
   const vm = page._visualMetrics;
-  if (meta.screenshot && vm &&
-      typeof vm.FirstVisualChange === 'number' &&
-      typeof vm.LastVisualChange === 'number') {
+  const vp = vm && vm.VisualProgress;
+  if (meta.screenshot && vp) {
     const m = meta.screenshot.match(/^(.+\/data)\/screenshots\/(\d+)\//);
     if (m) {
       const dataBase = m[1];
       const runId = m[2];
-      const fvc = vm.FirstVisualChange;
-      const lvc = vm.LastVisualChange;
-      const vp = vm.VisualProgress || {};
 
-      const times = [0];
-      if (fvc > 0 && fvc % 100 !== 0) times.push(fvc);
-      // First 100 ms boundary strictly after FVC, then step to the
-      // last boundary strictly before LVC. The `< lvc` guard is what
-      // matches sitespeed.io's behaviour when LVC sits exactly on a
-      // boundary (the file is the LVC one, not an extra boundary
-      // frame).
-      const firstBoundary = Math.floor(fvc / 100) * 100 + 100;
-      for (let t = firstBoundary; t < lvc; t += 100) {
-        times.push(t);
-      }
-      if (lvc > 0 && (lvc % 100 !== 0 || lvc > (times[times.length - 1] || 0))) {
-        if (lvc !== times[times.length - 1]) times.push(lvc);
-      }
-
-      // VisualProgress is sampled finer than the filmstrip; for each
-      // filmstrip timestamp pick the most recent VP entry at or
-      // before it as the "rendered %" tag. Drives the divergence
-      // colouring in the column view.
-      const vpKeys = Object.keys(vp).map(Number).sort(function (a, b) { return a - b; });
-      function progressAt(ms) {
-        let best = null;
-        for (let i = 0; i < vpKeys.length; i++) {
-          if (vpKeys[i] <= ms) best = vp[vpKeys[i]];
-          else break;
-        }
-        return best;
-      }
+      const times = Object.keys(vp)
+        .map(Number)
+        .filter(function (n) { return Number.isFinite(n); })
+        .sort(function (a, b) { return a - b; });
+      // VP should always include 0 (pre-load frame). Prepend defensively
+      // so the strip always starts there, even if a HAR omits it.
+      if (times.length === 0 || times[0] !== 0) times.unshift(0);
 
       return times.map(function (ms) {
         return {
@@ -90,7 +65,7 @@ function getFilmstripForPage(har, pageIndex) {
           time: (ms / 1000).toFixed(2),
           img: dataBase + '/filmstrip/' + runId + '/ms_' +
                String(ms).padStart(6, '0') + '.jpg',
-          progress: progressAt(ms)
+          progress: typeof vp[ms] === 'number' ? vp[ms] : null
         };
       });
     }
