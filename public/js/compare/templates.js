@@ -128,14 +128,19 @@ function pageXrayTemplate(d) {
   html += '<caption class="sr-only">Page X-ray comparison: ' +
           h(config.har1.label) + ' versus ' + h(config.har2.label) + '</caption>';
   html += '<thead><tr>';
-  html += '<th class="tabletext tableXrayMetric" scope="col">Metric ' +
-            '<button onclick="regenerate(true);" class="submit submit-smaller" ' +
-                    'aria-label="Swap HAR1 and HAR2">Switch</button> ' +
-            '<button id="diffOnlyToggle" type="button" ' +
-                    'onclick="toggleDiffOnly(this);" ' +
-                    'class="chip-toggle" ' +
-                    'aria-pressed="' + diffOnlyPressed + '">' +
-              'Only differences</button></th>';
+  html += '<th class="tabletext tableXrayMetric" scope="col">' +
+            '<div class="tableXrayMetric-stack">' +
+              '<span class="tableXrayMetric-label">Metric</span>' +
+              '<span class="tableXrayMetric-actions">' +
+                '<button onclick="regenerate(true);" class="submit submit-smaller" ' +
+                        'aria-label="Swap HAR1 and HAR2">Switch</button>' +
+                '<button id="diffOnlyToggle" type="button" ' +
+                        'onclick="toggleDiffOnly(this);" ' +
+                        'class="chip-toggle" ' +
+                        'aria-pressed="' + diffOnlyPressed + '">' +
+                  'Only differences</button>' +
+              '</span>' +
+            '</div></th>';
   html += '<th class="tableXrayHarMetric" scope="col">' + h(config.har1.label) +
             '<input type="file" id="har1upload" class="inputfile"/>' +
             '<label for="har1upload">Upload</label></th>';

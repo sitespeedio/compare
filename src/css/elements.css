@@ -200,6 +200,14 @@ hr {
 }
 
 .card-title {
+  /* Flex container so inline action chips (e.g. "Side by side" on
+     the Waterfall card) sit at a sensible distance from the title
+     text and align vertically to the middle — not the baseline of
+     a smaller chip against a larger h3. */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
   margin: 0 0 12px 0;
   font-size: 1.125rem;
   font-weight: var(--font-weight-semibold);
