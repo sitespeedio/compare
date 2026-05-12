@@ -138,6 +138,67 @@ hr {
   display: none;
 }
 
+/* Visually-hidden but exposed to assistive tech. Used for the table
+   <caption>, the skip-link target hint, and any heading/label that's
+   meaningful for screen readers but visually redundant. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
+
+/* Skip-to-content link — hidden offscreen until focused, then docks
+   at the top of the viewport so keyboard users can bypass the BETA
+   ribbon and header on every page load. */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 12px;
+  z-index: 200;
+  padding: 8px 16px;
+  background: var(--color-surface-card);
+  color: var(--color-blue-dark);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: top var(--motion-fast);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 12px;
+  text-decoration: none;
+}
+
+/* Universal visible focus ring for keyboard users. Components that
+   already define their own focus styling override this; the rule
+   just guarantees nothing is silently un-focusable. */
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Respect users who prefer reduced motion — disable hover translates,
+   slider-thumb transitions, and any other animation. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .card-title {
   margin: 0 0 12px 0;
   font-size: 1.125rem;

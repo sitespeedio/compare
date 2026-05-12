@@ -1,0 +1,114 @@
+/*
+ * LIGHTBOX
+ * ========
+ * Click a screenshot or filmstrip frame to open it large in an
+ * in-page overlay instead of being kicked to a new tab. Closes on
+ * background click, the Esc key, or the explicit close button.
+ *
+ * The overlay sits above everything (z-index 1000), traps focus on the
+ * close button, and respects prefers-reduced-motion via the universal
+ * rule in elements.css.
+ */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.92);
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity var(--motion-fast);
+}
+
+.lightbox--open {
+  display: flex;
+  opacity: 1;
+}
+
+.lightbox-figure {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  margin: 0;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.lightbox-img {
+  display: block;
+  max-width: 95vw;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  background: var(--color-surface-card);
+}
+
+.lightbox-caption {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  text-align: center;
+  max-width: 80vw;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-surface-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--motion-fast), transform var(--motion-fast);
+}
+.lightbox-close:hover,
+.lightbox-close:focus-visible {
+  background: var(--color-blue-tint);
+  transform: scale(1.06);
+}
+
+/*
+ * Thumbnail trigger — wraps the <img> so keyboard activation just
+ * works via native <button> semantics. The button itself stays
+ * invisible; the hover affordance lives on the inner image.
+ */
+.lightbox-trigger {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: 0;
+  cursor: zoom-in;
+  display: inline-block;
+  line-height: 0;
+  border-radius: var(--radius-sm);
+}
+.lightbox-trigger:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+.lightbox-trigger img {
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+}
+.lightbox-trigger:hover img,
+.lightbox-trigger:focus-visible img {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-md);
+}
