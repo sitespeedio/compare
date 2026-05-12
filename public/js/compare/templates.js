@@ -644,7 +644,7 @@ function domainsTemplate(d) {
 //
 function requestDiffTemplate(d) {
   if (!d.requestDiff) return '';
-  let html = '<h3 id="requestDifffHeader">Request/response difference (larger than 1 kb)</h3>';
+  let html = '<h3 id="requestDifffHeader">Request/response transfer size difference (larger than 1 KB)</h3>';
   html += '<div id="comment-requestDiff" class="comment"></div>';
 
   if (!d.requestDiff.length) {

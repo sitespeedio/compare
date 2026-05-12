@@ -53,6 +53,7 @@
   <script src="/js/compare/generate.js" defer></script>
   <script src="/js/compare/generateVisualProgress.js" defer></script>
   <script src="/js/compare/templates.js" defer></script>
+  <script src="/js/compare/share.js" defer></script>
   <script src="/js/compare/compare.js" defer></script>
 
 
@@ -91,11 +92,16 @@
       }
       getAndSet("har1", "harurl");
       getAndSet("har2", "harurl2");
+      // Carry stripVersion through share links — `?stripVersion=1`
+      // mirrors the start-page checkbox so a shared URL renders the
+      // same comparison the sender saw.
+      const stripVersionFromUrl = getParam("stripVersion") === "1";
       if (getParam("har1") != undefined && getParam("har2") != undefined) {
         showLoading();
         loadHARsFromConfig({
           har1: { url: getParam("har1") },
-          har2: { url: getParam("har2") }
+          har2: { url: getParam("har2") },
+          stripVersion: stripVersionFromUrl
         });
       } else if (
         (getParam("har1") != undefined || getParam("har2") != undefined) &&
@@ -104,7 +110,8 @@
         showLoading();
         loadHARsFromConfig({
           har1: { url: getParam("har1") || getParam("har2") },
-          har2: {}
+          har2: {},
+          stripVersion: stripVersionFromUrl
         });
       } else if (getParam("gist") !== undefined) {
         showLoading();
@@ -116,25 +123,27 @@
 
       document.addEventListener("paste", function (e) {
         const paste = e.clipboardData.getData("Text");
-        // Is it a HAR or a gist?
+        // Is it a HAR, a bundle, or a gist?
         try {
-          const har = JSON.parse(paste);
+          const parsed = JSON.parse(paste);
           showLoading();
-          if (har.log) {
+          if (isBundle(parsed)) {
+            loadFromBundle(parsed);
+          } else if (parsed.log) {
             generate({
               har1: {
-                har: har,
+                har: parsed,
                 run: 0,
                 label: "HAR1"
               },
               har2: {
-                har: har,
-                run: har.log.pages.length > 1 ? 1 : 0,
+                har: parsed,
+                run: parsed.log.pages.length > 1 ? 1 : 0,
                 label: "HAR2"
               }
             });
           } else {
-            readConfig(har);
+            readConfig(parsed);
           }
         } catch (e) {
           if (paste.startsWith("https://gist.github.com/")) {
@@ -229,6 +238,7 @@
             </a>
           </div>
           <nav id="resultHeaderContent" aria-label="Page sections"></nav>
+          <div id="shareControls" class="share-controls" aria-live="polite"></div>
         </div>
       </div>
     </header>

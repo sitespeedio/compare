@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, createUpload, getAllDomains, hideUpload, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip, compareWaterfall */
+/* global getLastTiming, removeAndHide, createUpload, getAllDomains, hideUpload, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip, compareWaterfall, renderShareControls */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
@@ -11,17 +11,28 @@ function regenerate(switchHar) {
   const e2 = document.getElementById('run2Option');
   const runIndex = e ? e.options[e.selectedIndex].value : 0;
   const runIndex2 = e2 ? e2.options[e2.selectedIndex].value : 0;
+  const prev = window.har || {};
+  // Carry per-HAR metadata (url) and top-level config (title,
+  // firstParty, stripVersion, comments) across a Switch / run change.
+  // Without this, the share UI would flip from "Copy share link" to
+  // "Download bundle" the moment the user toggled anything.
   generate({
     har1: {
-      har: switchHar ? window.har.har2.har : window.har.har1.har,
+      har: switchHar ? prev.har2.har : prev.har1.har,
       run: switchHar ? runIndex2 : runIndex,
-      label: switchHar ? window.har.har2.label : window.har.har1.label
+      label: switchHar ? prev.har2.label : prev.har1.label,
+      url: switchHar ? prev.har2.url : prev.har1.url
     },
     har2: {
-      har: switchHar ? window.har.har1.har : window.har.har2.har,
+      har: switchHar ? prev.har1.har : prev.har2.har,
       run: switchHar ? runIndex : runIndex2,
-      label: switchHar ? window.har.har1.label : window.har.har2.label
-    }
+      label: switchHar ? prev.har1.label : prev.har2.label,
+      url: switchHar ? prev.har1.url : prev.har2.url
+    },
+    title: prev.title,
+    firstParty: prev.firstParty,
+    stripVersion: prev.stripVersion,
+    comments: prev.comments
   });
 }
 
@@ -293,4 +304,11 @@ function generate(config) {
 
   createUpload('har1upload');
   createUpload('har2upload');
+
+  // Render/refresh the share affordance now that window.har is set.
+  // Guarded so a missing share.js (e.g. embedded usage) is a no-op
+  // rather than a hard error.
+  if (typeof renderShareControls === 'function') {
+    renderShareControls();
+  }
 }
