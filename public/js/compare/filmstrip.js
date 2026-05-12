@@ -31,26 +31,38 @@ function getFilmstripForPage(har, pageIndex) {
 
   // sitespeed.io path — derive the filmstrip URL base from the
   // screenshot URL (e.g. .../data/screenshots/1/afterPageCompleteCheck.jpg
-  // → .../data/filmstrip/1/ms_NNNNNN.jpg)
+  // → .../data/filmstrip/1/ms_NNNNNN.jpg) and read the actual frame
+  // timestamps from _visualMetrics.VisualProgress. Sitespeed.io emits
+  // exactly one filmstrip JPG per visual-progress *change point*, named
+  // after that ms — so the set of distinct-percentage timestamps in
+  // VisualProgress is the authoritative list of frames on disk.
   const meta = page._meta || {};
   const vm = page._visualMetrics;
-  if (meta.screenshot && vm) {
+  if (meta.screenshot && vm && vm.VisualProgress) {
     const m = meta.screenshot.match(/^(.+\/data)\/screenshots\/(\d+)\//);
     if (m) {
       const dataBase = m[1];
       const runId = m[2];
-      const firstVis = Number(vm.FirstVisualChange) || 0;
-      const lastVis = Number(vm.LastVisualChange) || 0;
+      const vp = vm.VisualProgress;
 
-      const times = [0];
-      // Sitespeed.io only emits frames where visual progress is
-      // changing — between First and Last Visual Change, at 100ms
-      // intervals, with the last frame at the exact LastVisualChange.
-      if (lastVis > 0) {
-        const startMs = Math.max(100, Math.ceil(firstVis / 100) * 100);
-        for (let t = startMs; t < lastVis; t += 100) times.push(t);
-        if (times[times.length - 1] !== lastVis) times.push(lastVis);
+      const sorted = Object.keys(vp)
+        .map(function (k) { return Number(k); })
+        .sort(function (a, b) { return a - b; });
+
+      const times = [];
+      let prevPct = null;
+      for (let i = 0; i < sorted.length; i++) {
+        const ms = sorted[i];
+        if (vp[ms] !== prevPct) {
+          times.push(ms);
+          prevPct = vp[ms];
+        }
       }
+
+      // VisualProgress should always start with a 0ms entry; if it
+      // didn't for some reason, anchor the strip so the first frame
+      // is the pre-load state.
+      if (!times.length || times[0] !== 0) times.unshift(0);
 
       return times.map(function (ms) {
         return {
