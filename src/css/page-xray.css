@@ -16,11 +16,12 @@
 
 /*
  * Section divider rows — full-width header cells inserted between
- * groups of related metrics ("Content", "Visual metrics", "Core Web
- * Vitals", "CPU", "Captures"). Reads as a quiet, scannable label
- * rather than competing with the data rows: small caps, secondary
- * text colour, extra top padding to separate it from the previous
- * group, and no hover treatment.
+ * groups of related metrics ("Content", "Render blocking", "Visual
+ * metrics", "Core Web Vitals", "CPU", "Captures"). Each kind gets
+ * its own quiet pastel/text pair so the eye can tell sections apart
+ * at a glance instead of seeing identical bars stacked down the
+ * table. Hover is suppressed so they stay visually distinct from
+ * data rows.
  */
 .pageXrayTable .pageXraySection th {
   text-align: left;
@@ -28,14 +29,29 @@
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
   padding: 14px 12px 6px;
   border-bottom: 1px solid var(--color-border);
 }
 .pageXrayTable .pageXraySection:hover th {
-  background: var(--color-surface);
+  /* Keep the section's own background on hover — re-set in each
+     modifier below; this rule just disables the default row-hover
+     tint that the .pageXrayTable tr:hover rule would otherwise paint. */
 }
+
+.pageXrayTable .pageXraySection--content th  { background: var(--color-info-bg);    color: var(--color-info); }
+.pageXrayTable .pageXraySection--blocking th { background: var(--color-warning-bg); color: var(--color-warning); }
+.pageXrayTable .pageXraySection--visual th   { background: #f3e8ff;                  color: #6b21a8; }
+.pageXrayTable .pageXraySection--cwv th      { background: var(--color-ok-bg);      color: var(--color-ok); }
+.pageXrayTable .pageXraySection--cpu th      { background: #ffedd5;                  color: #9a3412; }
+.pageXrayTable .pageXraySection--captures th { background: var(--color-surface);    color: var(--color-text-muted); }
+
+/* Repeat for hover so the bg doesn't snap to the row-hover tint. */
+.pageXrayTable .pageXraySection--content:hover th  { background: var(--color-info-bg); }
+.pageXrayTable .pageXraySection--blocking:hover th { background: var(--color-warning-bg); }
+.pageXrayTable .pageXraySection--visual:hover th   { background: #f3e8ff; }
+.pageXrayTable .pageXraySection--cwv:hover th      { background: var(--color-ok-bg); }
+.pageXrayTable .pageXraySection--cpu:hover th      { background: #ffedd5; }
+.pageXrayTable .pageXraySection--captures:hover th { background: var(--color-surface); }
 
 .pageXrayTable {
   table-layout: fixed;
