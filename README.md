@@ -1,12 +1,12 @@
 # Compare HAR files
-Make it easier to find regressions by comparing your [HAR](http://www.softwareishard.com/blog/har-12-spec/) files. Test it out https://compare.sitespeed.io or look at the video: https://youtu.be/dCThwpglIeE
+Make it easier to find regressions by comparing your [HAR](http://www.softwareishard.com/blog/har-12-spec/) files. Test it out https://compare.sitespeed.io.
 
 ![Logo](https://raw.githubusercontent.com/sitespeedio/compare/main/img/compare.png)
 
 ## First: Shout out!
-We couldn't built compare without the support or inspiration from the following people:
- * Thank you [Michael Mrowetz](https://twitter.com/MicMro) :bow: for creating [PerfCascade](https://github.com/micmro/PerfCascade) (the SVG HAR waterfall viewer).
- * Thank you [Patrick Meenan](https://twitter.com/patmeenan) :bow:. Pat has built the HAR compare viewer in [WebPageTest](https://www.webpagetest.org/) that inspired us to the idea with the slider.
+We couldn't have built compare without the support or inspiration from the following people:
+ * Thank you [Patrick Meenan](https://twitter.com/patmeenan) :bow:. The waterfall is rendered with Pat's [waterfall-tools](https://github.com/pmeenan/waterfall-tools), and the WebPageTest HAR compare viewer is what inspired the blend slider.
+ * Thank you [Michael Mrowetz](https://twitter.com/MicMro) :bow:. Earlier versions of compare used Michael's [PerfCascade](https://github.com/micmro/PerfCascade) and it carried us for years.
 
 If you like our project, please give them also some extra love :)
 
@@ -14,20 +14,31 @@ If you like our project, please give them also some extra love :)
 ![Compare two different HAR files](https://raw.githubusercontent.com/sitespeedio/compare/main/docs/img/compare.png)
 
 ## How it works
-As long as your HAR files follow the [HAR specification](http://www.softwareishard.com/blog/har-12-spec/) you can use them in Compare. Standard HARs will give you some basic functionality and HARs from WebPageTest and sitespeed.io will give you more.
+As long as your HAR files follow the [HAR specification](http://www.softwareishard.com/blog/har-12-spec/) you can use them in compare. Standard HARs give you the basics; HARs from WebPageTest and sitespeed.io/Browsertime unlock the extras.
 
-### HARs from Firefox/Chrome/Safari (and other browsers).
-For all HARs we will show the waterfall (using [PerfCascade](https://github.com/micmro/PerfCascade)) and statistics for the page (using [PageXray](https://github.com/sitespeedio/pagexray)).
+The result page is the same for every HAR — sections that don't apply silently stay hidden, so a plain Chrome HAR doesn't show a half-empty "filmstrip" or "CPU" block.
 
-### WebPageTest
-If you add a [WebPageTest](https://www.webpagetest.org) HAR we will show SpeedIndex and FirstVisualChange and if you used Chrome to collect CPU stats, we will show that too. You will get some extra sugar if your HAR is from WebPageTest! Do you have something else that we should add? Create an issue or send a PR!
+### What you get for every HAR
+* A **stacked waterfall** rendered by [waterfall-tools](https://github.com/pmeenan/waterfall-tools). Both HARs share the same time axis so widths are comparable at a glance. A **blend slider** fades HAR2 over HAR1, and a per-result toggle switches between **side-by-side** and **overlay**. Hovering a request highlights its peer in the other waterfall.
+* A **Page X-ray** table (powered by [PageXray](https://github.com/sitespeedio/pagexray)) grouped into sections — Content, Render blocking, Visual metrics, Core Web Vitals, CPU and First/Third party. A **Δ column** shows the HAR2−HAR1 delta with regressions in red and improvements in green. An **"Only differences"** toggle hides rows where the two HARs match.
+* A **request/response diff** when both HARs are for the same URL — added requests, removed requests, and (per-request) size, status and timing changes. Tick **"Strip version parameters"** on the start page (or set `"stripVersion": true` in your config) to ignore cache-busting query strings.
+* A **domains** breakdown.
+* Chrome HARs with priority hints also produce a **Render blocking** row (blocking / potentially blocking / in-body parser blocking).
+* `.har` and `.har.gz` are both accepted on drag/drop and via URL.
 
-### sitespeed.io/Browsertime
-If you want even more sugar, you should use HAR files from [sitespeed.io](https://github.com/sitespeedio/sitespeed.io) or [Browsertime](https://github.com/sitespeedio/browsertime): SpeedIndex, FirstVisualChange, LastVisualChange and a graph for VisualProgress.
+### Extras for WebPageTest HARs
+SpeedIndex, FirstVisualChange and, if the run was captured on Chrome with the CPU profile enabled, CPU timings.
 
-If you deploy your result from your sitespeed.io run to a server and use **--resultBaseURL** when you run sitespeed.io, we will also pickup the screenshot, video and a link to the result page.
+### Extras for sitespeed.io / Browsertime HARs
+* **Visual progress chart** with a line per HAR and vertical timing markers (First Visual Change, FCP, LCP and Speed Index) so a regressed metric shows up as two side-by-side guide lines.
+* A **filmstrip** section sampled from the VisualProgress change points, with a lightbox for full-size frames, plus a small thumbnail strip under the visual-progress chart.
+* The full set of visual metrics (FirstVisualChange, LargestImage, Logo, Heading, Speed Index, LastVisualChange, Visual Readiness).
+* **Core Web Vitals**: First Contentful Paint, Largest Contentful Paint, Total Blocking Time, Cumulative Layout Shift.
+* CPU details when sitespeed.io ran Lighthouse: Long Tasks, Total Blocking Time, Max Potential FID.
 
-If you also run with **--firstParty** (adding a regex that show which assets that are first/third parties) we will will show data grouped by party.
+If you deploy your sitespeed.io result with **--resultBaseURL**, compare will pick up the screenshot, video and a link to the result page.
+
+PageXray auto-detects first-party hosts from the page URL. If you want to override it (e.g. multi-domain sites), pass a regex via **--firstParty** when running sitespeed.io, or set `"firstParty"` in the config below; the result page then shows a first-vs-third party breakdown.
 
 ![First Party vs Third Party!](https://raw.githubusercontent.com/sitespeedio/compare/main/docs/img/firstparty.png)
 
@@ -67,6 +78,7 @@ But you can also add some extra sugar. All the extras are optional:
   },
   "title": "The page title used in the title bar",
   "firstParty" : " (.*wikipedia.*||.*wikimedia.*)", // RegEx that defines first party requests
+  "stripVersion": true, // ignore query-string version params when diffing requests
   "comments": {
     "intro": "Extra information put at the top of the page",
     "waterfall": "Text displayed at top of the waterfall",
@@ -102,18 +114,22 @@ Add the parameters **?har1=FULL_URL1&har2=FULL_URL2&compare=1** and the two HAR 
 
 ## Developers
 
-To run the project locally start a server with:
+The project is built with [Vite](https://vitejs.dev/). Compare uses a small Vite-bundled entry (`src/main.js`, which pulls in the CSS and the waterfall-tools wrapper) plus a set of classic-script modules in `public/js/compare/` that share globals on `window`. Vite serves `public/` verbatim in both dev and production, so editing a file under `public/js/compare/` is a hard reload away from running.
+
+Run the dev server:
 ```
 npm run develop
 ```
 
-Send us a PR/create an issue. If you have big change coming up, please discuss it with us in an issue first!
+Send us a PR / create an issue. If you have a big change coming up, please discuss it with us in an issue first.
 
 ## Deploy your own version
 Deploying your own version is easy:
 1. Clone the repo: `git clone git@github.com:sitespeedio/compare.git`
-2. Build: `cd compare && npm run build`
-3. Copy everything in *build/* to your server
+2. Build: `cd compare && npm install && npm run build`
+3. Copy everything in `dist/` to your server.
+
+The build version-stamps the classic compare scripts so a new deploy invalidates any stale copies cached by visitors.
 
 ## Privacy
 We take your privacy really serious: We do not use any tracking software at all (no Google Analytics or any other tracking software) in [compare.sitespeed.io](https://compare.sitespeed.io). The page do no call home.

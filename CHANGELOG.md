@@ -1,11 +1,63 @@
 # CHANGELOG - compare
 
-## UNRELEASED
+## 2.0.0 - 2026-05-12
+The first tagged release since 1.0.0 (2018). Compare has been rewritten
+underneath: a new waterfall engine, new visual-progress chart, a real
+filmstrip, Core Web Vitals, render-blocking metrics, accessibility work,
+and a modern build setup. Many of these changes shipped to
+https://compare.sitespeed.io between releases — this entry consolidates
+them.
+
 ### Added
-* Added comment for request diff.
-* Upgraded to latest PageXray that will automatically calculate first/third party request + adding the possibility to configure it in a config file.
-* Added first/third party % to make it easier to see how much content that is actually third party.
-* Updated to PageXray 4.0.0
+* Swapped the waterfall renderer from PerfCascade to
+  [waterfall-tools](https://github.com/pmeenan/waterfall-tools) and added
+  a WebPageTest-style blend slider that fades HAR2 over HAR1 on a shared
+  time axis. A side-by-side / overlay toggle is remembered across
+  reloads, and hovering a request highlights it in the paired waterfall.
+* Page X-ray table grouped into sections (Content, Render blocking,
+  Visual metrics, Core Web Vitals, CPU, First/Third party) with a Δ
+  column that highlights regressions in red and improvements in green,
+  plus a per-table "Only differences" toggle.
+* Filmstrip section (when both HARs have one) with frames sampled from
+  the VisualProgress change points, and a lightbox for full-size frames.
+* Visual progress chart now shows per-HAR timing markers
+  (First Visual Change, FCP, LCP, Speed Index) and a thumbnail strip
+  under each line.
+* Core Web Vitals row in the page X-ray table:
+  First Contentful Paint, Largest Contentful Paint, Total Blocking Time
+  and Cumulative Layout Shift (3 decimals).
+* Render-blocking metrics from Chrome HARs (blocking, potentially
+  blocking, in-body parser blocking).
+* Long Tasks, Total Blocking Time and Max Potential FID under CPU.
+* `stripVersion` configuration flag (and a checkbox on the start page)
+  to ignore query-string version parameters when diffing requests for
+  the same URL.
+* Support for `.har.gz` HAR files via the browser's native
+  `DecompressionStream`.
+* Skip-to-content link, ARIA labels and visually-hidden table captions
+  for screen readers.
+* Comment slot for the request/response diff section
+  (`comments.requestDiff` in the config file).
+* First/third party support — PageXray now auto-detects the host page's
+  party automatically, and the share of first vs third party requests
+  is shown next to each row.
+
+### Changed
+* Build tooling moved to [Vite](https://vitejs.dev/). The build output
+  directory is now `dist/`, not `build/`. Classic compare scripts are
+  served verbatim from `public/` and version-stamped at build time so a
+  new deploy invalidates any stale cached copies.
+* Styling rewritten in plain CSS (Sass dropped) with a small design-token
+  layer. The start page and result header were refreshed to make
+  regressions easier to spot.
+* Templates rewritten as plain JS template literals (Template7 dropped).
+* Upgraded PageXray to 4.x.
+
+### Removed
+* The service worker / Workbox offline support. A one-time cleanup
+  unregisters any service worker still installed from older versions
+  so the first reload after upgrading is fresh.
+
 
 ## 1.0.0 2018-11-28
 ### Added
