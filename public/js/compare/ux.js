@@ -90,7 +90,11 @@ function formatURL(url) {
 function formatTime(ms) {
   if (ms !== undefined) {
     if (ms < 1000) {
-      return ms + ' ms';
+      // Round to whole milliseconds. Chrome's HAR timings are already
+      // integer ms for the page-level metrics (FCP/LCP/etc.), but
+      // browsertime's recalculateStyle field reports sub-ms precision
+      // ("17.099 ms") that's noise at this scale.
+      return Math.round(ms) + ' ms';
     } else {
       return Number(ms / 1000).toFixed(3) + ' s';
     }

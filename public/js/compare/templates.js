@@ -220,25 +220,14 @@ function pageXrayTemplate(d) {
 
   if (p1.renderBlocking && p2.renderBlocking) {
     html += section('Render blocking', 'blocking');
-    html += '<tr><td class="tabletext">Render blocking</td>' +
-            '<td>' + p1.renderBlocking.blocking + '</td>' +
-            '<td>' + p2.renderBlocking.blocking + '</td>' +
-            diffCell(p1.renderBlocking.blocking, p2.renderBlocking.blocking) + '</tr>';
-    html += '<tr><td class="tabletext">Potentially blocking</td>' +
-            '<td>' + p1.renderBlocking.potentiallyBlocking + '</td>' +
-            '<td>' + p2.renderBlocking.potentiallyBlocking + '</td>' +
-            diffCell(p1.renderBlocking.potentiallyBlocking, p2.renderBlocking.potentiallyBlocking) + '</tr>';
-    html += '<tr><td class="tabletext">In body parser blocking</td>' +
-            '<td>' + p1.renderBlocking.in_body_parser_blocking + '</td>' +
-            '<td>' + p2.renderBlocking.in_body_parser_blocking + '</td>' +
-            diffCell(p1.renderBlocking.in_body_parser_blocking, p2.renderBlocking.in_body_parser_blocking) + '</tr>';
 
     // Style recalculation before FCP / LCP. Sitespeed.io / browsertime
     // captures how many elements the browser re-styled and how long it
     // took on its way to each paint milestone — both are "lower is
-    // better", so the existing diff colouring applies. Guarded so a
-    // plain Chrome HAR (no recalculateStyle) doesn't render four empty
-    // rows.
+    // better", so the existing diff colouring applies. Rendered before
+    // the blocking-request counts so the eye sees the work first and
+    // the per-request counts as context. Guarded so a plain Chrome HAR
+    // (no recalculateStyle) doesn't render four empty rows.
     const rs1 = p1.renderBlocking.recalculateStyle;
     const rs2 = p2.renderBlocking.recalculateStyle;
     if (rs1 && rs2) {
@@ -249,18 +238,35 @@ function pageXrayTemplate(d) {
                diffCell(a, b, formatter) + '</tr>';
       }
       if (rs1.beforeFCP && rs2.beforeFCP) {
-        html += recalcRow('Style recalc elements (before FCP)',
+        html += recalcRow('Style recalc elements (FCP)',
                           rs1.beforeFCP.elements, rs2.beforeFCP.elements);
-        html += recalcRow('Style recalc duration (before FCP)',
+        html += recalcRow('Style recalc time (FCP)',
                           rs1.beforeFCP.durationInMillis, rs2.beforeFCP.durationInMillis, formatTime);
       }
       if (rs1.beforeLCP && rs2.beforeLCP) {
-        html += recalcRow('Style recalc elements (before LCP)',
+        html += recalcRow('Style recalc elements (LCP)',
                           rs1.beforeLCP.elements, rs2.beforeLCP.elements);
-        html += recalcRow('Style recalc duration (before LCP)',
+        html += recalcRow('Style recalc time (LCP)',
                           rs1.beforeLCP.durationInMillis, rs2.beforeLCP.durationInMillis, formatTime);
       }
     }
+
+    // The three counters below are *request* counts — how many
+    // resources fall into each render-blocking class. The "requests"
+    // suffix makes that explicit so the numbers aren't mistaken for
+    // milliseconds or sizes.
+    html += '<tr><td class="tabletext">Render blocking requests</td>' +
+            '<td>' + p1.renderBlocking.blocking + '</td>' +
+            '<td>' + p2.renderBlocking.blocking + '</td>' +
+            diffCell(p1.renderBlocking.blocking, p2.renderBlocking.blocking) + '</tr>';
+    html += '<tr><td class="tabletext">Potentially blocking requests</td>' +
+            '<td>' + p1.renderBlocking.potentiallyBlocking + '</td>' +
+            '<td>' + p2.renderBlocking.potentiallyBlocking + '</td>' +
+            diffCell(p1.renderBlocking.potentiallyBlocking, p2.renderBlocking.potentiallyBlocking) + '</tr>';
+    html += '<tr><td class="tabletext">In body parser blocking requests</td>' +
+            '<td>' + p1.renderBlocking.in_body_parser_blocking + '</td>' +
+            '<td>' + p2.renderBlocking.in_body_parser_blocking + '</td>' +
+            diffCell(p1.renderBlocking.in_body_parser_blocking, p2.renderBlocking.in_body_parser_blocking) + '</tr>';
   }
 
   if (p1.visualMetrics) {
