@@ -1,5 +1,5 @@
 /* global isFileGzipped, isFileZipped, gzipArrayBufferToJSON, readGZipFile, errorMessage, generate, showUpload */
-/* exported readHar, fetchHar, getHarURL, loadFilesFromURL, loadFilesFromGist, loadFilesFromConfig*/
+/* exported readHar, fetchHar, getHarURL, loadFilesFromURL, loadFilesFromGist, loadFilesFromConfig, loadFromBundle, isBundle*/
 
 /**
  * Help functions to read HAR/JSON files from file
@@ -166,6 +166,43 @@ function loadFilesFromGist(id) {
     });
 }
 
+// Compare bundle: a single JSON file with both HARs embedded, produced
+// by the "Download bundle" share action. We detect it by the explicit
+// `compareBundle` flag so a future format bump doesn't get mistaken
+// for the current shape.
+function isBundle(obj) {
+  return !!(obj && obj.compareBundle === true && obj.har1 && obj.har2);
+}
+
+function loadFromBundle(bundle) {
+  if (!bundle.har1 || !bundle.har1.har || !bundle.har1.har.log) {
+    errorMessage('Bundle is missing har1.');
+    showUpload();
+    return;
+  }
+  if (!bundle.har2 || !bundle.har2.har || !bundle.har2.har.log) {
+    errorMessage('Bundle is missing har2.');
+    showUpload();
+    return;
+  }
+  generate({
+    har1: {
+      har: bundle.har1.har,
+      run: bundle.har1.run || 0,
+      label: bundle.har1.label || 'HAR1'
+    },
+    har2: {
+      har: bundle.har2.har,
+      run: bundle.har2.run || 0,
+      label: bundle.har2.label || 'HAR2'
+    },
+    title: bundle.title || 'Compare HAR files',
+    firstParty: bundle.firstParty || undefined,
+    stripVersion: !!bundle.stripVersion,
+    comments: bundle.comments || undefined
+  });
+}
+
 function loadHARsFromConfig(config) {
   // The runs/pages are zero based since it's an array but
   // in configuration we wanna use 1 based since it makes more sense
@@ -201,16 +238,23 @@ function loadHARsFromConfig(config) {
       const har2Run = sameHar
         ? (har1.log.pages.length > 1 ? 1 : 0)
         : (reworkedConfig2.run || config.har2.run || 0);
+      // Preserve the *user-supplied* URLs (not the rewritten sitespeed
+      // .har.gz paths) so a share link sends the recipient to the same
+      // landing context the original viewer used. The single-HAR case
+      // (`?compare=1&har1=…`) intentionally leaves har2.url unset — the
+      // share UI then offers a bundle download instead.
       return generate({
         har1: {
           har: har1,
           run: har1Run,
-          label: config.har1.label || 'HAR1'
+          label: config.har1.label || 'HAR1',
+          url: config.har1.url
         },
         har2: {
           har: har2,
           run: har2Run,
-          label: config.har2.label || 'HAR2'
+          label: config.har2.label || 'HAR2',
+          url: sameHar ? undefined : config.har2.url
         },
         comments: config.comments || undefined,
         title: config.title || 'Compare HAR files',

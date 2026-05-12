@@ -1,4 +1,4 @@
-/* global readHar, errorMessage, generate, showUpload, showLoading, removeAndHide */
+/* global readHar, errorMessage, generate, showUpload, showLoading, removeAndHide, isBundle, loadFromBundle */
 /* exported createMainDropZone, createUpload  */
 
 // Native drag-and-drop + click-to-pick replacement for the old
@@ -58,6 +58,13 @@ function createMainDropZone(id) {
       readHar(files[0])
         .then(har => {
           removeAndHide();
+          // Bundles round-trip through the same file picker as HARs,
+          // so detect by the explicit flag and route to the bundle
+          // loader (which fills in both HARs from the embedded data).
+          if (isBundle(har)) {
+            loadFromBundle(har);
+            return;
+          }
           generate({
             har1: { har: har, run: 0, label: 'HAR1' },
             har2: {
@@ -131,17 +138,27 @@ function createUpload(id) {
         const optionName = changeHar1 ? 'run2Option' : 'run1Option';
         const e2 = document.getElementById(optionName);
         const run = e2 ? e2.options[e2.selectedIndex].value : 0;
-        const har1 = changeHar1 ? har : window.har.har1.har;
-        const har2 = changeHar1 ? window.har.har2.har : har;
+        const prev = window.har || {};
+        const har1 = changeHar1 ? har : prev.har1.har;
+        const har2 = changeHar1 ? prev.har2.har : har;
         const run1 = changeHar1 ? 0 : run;
         const run2 = changeHar1 ? run : 0;
-        const label1 = changeHar1 ? 'HAR1' : window.har.har1.label;
-        const label2 = changeHar1 ? window.har.har2.label : 'HAR2';
+        const label1 = changeHar1 ? 'HAR1' : prev.har1.label;
+        const label2 = changeHar1 ? prev.har2.label : 'HAR2';
+        // The freshly-uploaded HAR has no source URL; preserve the
+        // other HAR's URL so the share UI keeps "Copy share link"
+        // available if both are still URL-backed (else it correctly
+        // falls through to "Download bundle").
+        const url1 = changeHar1 ? undefined : prev.har1 && prev.har1.url;
+        const url2 = changeHar1 ? (prev.har2 && prev.har2.url) : undefined;
 
         generate({
-          har1: { har: har1, run: run1, label: label1 },
-          har2: { har: har2, run: run2, label: label2 },
-          stripVersion: stripVersion
+          har1: { har: har1, run: run1, label: label1, url: url1 },
+          har2: { har: har2, run: run2, label: label2, url: url2 },
+          stripVersion: stripVersion,
+          title: prev.title,
+          firstParty: prev.firstParty,
+          comments: prev.comments
         });
       })
       .catch(e => {

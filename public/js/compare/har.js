@@ -107,21 +107,21 @@ function getUniqueRequests(har1, run1, har2, run2, options) {
   const urls2 = getURLs(har2, run2, options.stripVersion);
   const all = [];
   const minDiffInBytes = 1000;
+  // Use `in` for presence checks because a URL whose transfer size is
+  // unknown is stored as 0 — truthy checks would mis-classify those as
+  // removed/added.
   for (let url of Object.keys(urls1)) {
-    if (
-      (urls2[url] && urls2[url] === urls1[url]) ||
-      (urls2[url] &&
-        urls2[url] - urls1[url] < minDiffInBytes &&
-        urls2[url] - urls1[url] > -minDiffInBytes)
-    ) {
-      // TODO no diff, do nada
-    } else if (urls2[url]) {
-      // There's a diff in size
+    if (url in urls2) {
+      const delta = urls2[url] - urls1[url];
+      if (delta < minDiffInBytes && delta > -minDiffInBytes) {
+        // no meaningful diff, skip
+        continue;
+      }
       all.push({
         url: url,
         har1: urls1[url],
         har2: urls2[url],
-        diff: urls2[url] - urls1[url]
+        diff: delta
       });
     } else {
       all.push({
@@ -132,7 +132,7 @@ function getUniqueRequests(har1, run1, har2, run2, options) {
     }
   }
   for (let url of Object.keys(urls2)) {
-    if (urls2[url] && !urls1[url]) {
+    if (!(url in urls1)) {
       all.push({
         url: url,
         diff: urls2[url],
@@ -162,7 +162,30 @@ function getURLs(har, run, stripVersion) {
     if (stripVersion) {
       url = url.replace(/version=[A-Za-z0-9]+/i, '');
     }
-    urls[url] = entry.response.bodySize;
+    urls[url] = bestTransferSize(entry.response);
   }
   return urls;
+}
+
+// Best-effort "bytes over the wire" for a HAR response. The request
+// diff cares about network cost, not decoded payload size, so prefer
+// _transferSize (added by Chrome devtools / sitespeed.io / WPT) which
+// is exactly that. HAR-spec bodySize is the encoded body length when
+// known and -1 when not — usable as a fallback. content.size is the
+// decoded body and a last resort. Anything missing or <= 0 (spec uses
+// -1 for "unknown") becomes 0 so totals don't go negative.
+function bestTransferSize(response) {
+  if (!response) return 0;
+  if (typeof response._transferSize === 'number' && response._transferSize > 0) {
+    return response._transferSize;
+  }
+  if (typeof response.bodySize === 'number' && response.bodySize > 0) {
+    return response.bodySize;
+  }
+  if (response.content &&
+      typeof response.content.size === 'number' &&
+      response.content.size > 0) {
+    return response.content.size;
+  }
+  return 0;
 }
