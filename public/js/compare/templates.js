@@ -66,6 +66,10 @@ function pageXrayTemplate(d) {
   const p1 = d.p1, p2 = d.p2, config = d.config;
   const showRuns = d.runs1.length > 1 || d.runs2.length > 1;
 
+  function section(title) {
+    return '<tr class="pageXraySection"><th colspan="3">' + h(title) + '</th></tr>';
+  }
+
   let html = '';
   html += '<div><table class="pageXrayTable">';
   html += '<thead><tr>';
@@ -79,6 +83,8 @@ function pageXrayTemplate(d) {
             '<label for="har2upload">Upload</label></th>';
   html += '</tr></thead><tbody>';
 
+  // Setup (top of the table — first rows after the header, no section
+  // title because there's no group above it to separate from).
   if (showRuns) {
     html += '<tr><td class="tabletext">Run</td><td>';
     if (d.runs1.length > 1) {
@@ -117,6 +123,7 @@ function pageXrayTemplate(d) {
             '<td>' + h(p2.meta.connectivity) + '</td></tr>';
   }
 
+  html += section('Content');
   html += '<tr><td class="tabletext">Total</td>' +
           '<td>' + p1.requests + ' (' + formatBytes(p1.transferSize) + ' / ' + formatBytes(p1.contentSize) + ')</td>' +
           '<td>' + p2.requests + ' (' + formatBytes(p2.transferSize) + ' / ' + formatBytes(p2.contentSize) + ')</td></tr>';
@@ -137,6 +144,7 @@ function pageXrayTemplate(d) {
           '<td>' + img2.requests + ' (' + formatBytes(img2.transferSize) + ')</td></tr>';
 
   if (p1.renderBlocking && p2.renderBlocking) {
+    html += section('Render blocking');
     html += '<tr><td class="tabletext">Render blocking</td>' +
             '<td>' + p1.renderBlocking.blocking + '</td>' +
             '<td>' + p2.renderBlocking.blocking + '</td></tr>';
@@ -159,17 +167,20 @@ function pageXrayTemplate(d) {
       ['Last Visual Change',  'LastVisualChange'],
       ['Visual Readiness',    'VisualReadiness']
     ];
+    let vmHtml = '';
     vmRows.forEach(function (row) {
       const label = row[0], key = row[1];
       if (p1.visualMetrics[key] && p2.visualMetrics && p2.visualMetrics[key]) {
-        html += '<tr><td class="tabletext">' + label + '</td>' +
-                '<td>' + formatTime(p1.visualMetrics[key]) + '</td>' +
-                '<td>' + formatTime(p2.visualMetrics[key]) + '</td></tr>';
+        vmHtml += '<tr><td class="tabletext">' + label + '</td>' +
+                  '<td>' + formatTime(p1.visualMetrics[key]) + '</td>' +
+                  '<td>' + formatTime(p2.visualMetrics[key]) + '</td></tr>';
       }
     });
+    if (vmHtml) html += section('Visual metrics') + vmHtml;
   }
 
   if (p1.googleWebVitals && p2.googleWebVitals) {
+    html += section('Core Web Vitals');
     html += '<tr><td class="tabletext">First Contentful Paint</td>' +
             '<td>' + formatTime(p1.googleWebVitals.firstContentfulPaint) + '</td>' +
             '<td>' + formatTime(p2.googleWebVitals.firstContentfulPaint) + '</td></tr>';
@@ -185,42 +196,33 @@ function pageXrayTemplate(d) {
   }
 
   if (p1.cpu && p2.cpu && p1.cpu.longTasks && p2.cpu.longTasks) {
+    let cpuHtml = '';
     if (p1.cpu.longTasks.totalBlockingTime && p2.cpu.longTasks.totalBlockingTime) {
-      html += '<tr><td class="tabletext">Total Blocking Time</td>' +
-              '<td>' + formatTime(p1.cpu.longTasks.totalBlockingTime) + '</td>' +
-              '<td>' + formatTime(p2.cpu.longTasks.totalBlockingTime) + '</td></tr>';
+      cpuHtml += '<tr><td class="tabletext">Total Blocking Time</td>' +
+                 '<td>' + formatTime(p1.cpu.longTasks.totalBlockingTime) + '</td>' +
+                 '<td>' + formatTime(p2.cpu.longTasks.totalBlockingTime) + '</td></tr>';
     }
     if (p1.cpu.longTasks.maxPotentialFid && p2.cpu.longTasks.maxPotentialFid) {
-      html += '<tr><td class="tabletext">Max Potential FID</td>' +
-              '<td>' + formatTime(p1.cpu.longTasks.maxPotentialFid) + '</td>' +
-              '<td>' + formatTime(p2.cpu.longTasks.maxPotentialFid) + '</td></tr>';
+      cpuHtml += '<tr><td class="tabletext">Max Potential FID</td>' +
+                 '<td>' + formatTime(p1.cpu.longTasks.maxPotentialFid) + '</td>' +
+                 '<td>' + formatTime(p2.cpu.longTasks.maxPotentialFid) + '</td></tr>';
     }
     if (p1.cpu.longTasks.tasks && p2.cpu.longTasks.tasks) {
-      html += '<tr><td class="tabletext">Total CPU Long Tasks</td>' +
-              '<td>' + p1.cpu.longTasks.tasks + '</td>' +
-              '<td>' + p2.cpu.longTasks.tasks + '</td></tr>';
+      cpuHtml += '<tr><td class="tabletext">Total CPU Long Tasks</td>' +
+                 '<td>' + p1.cpu.longTasks.tasks + '</td>' +
+                 '<td>' + p2.cpu.longTasks.tasks + '</td></tr>';
     }
-  }
-
-  if (p1.meta.screenshot && p2.meta.screenshot) {
-    html += '<tr><td class="tabletext">Screenshot</td>' +
-            '<td><a href="' + h(p1.meta.screenshot) + '"><img src="' + h(p1.meta.screenshot) + '" width="200"/></a></td>' +
-            '<td><a href="' + h(p2.meta.screenshot) + '"><img src="' + h(p2.meta.screenshot) + '" width="200"/></a></td></tr>';
-  }
-
-  if (p1.meta.video && p2.meta.video) {
-    html += '<tr><td class="tabletext">Video</td>' +
-            '<td><video width="200" controls poster="' + h(p1.meta.screenshot) + '"><source src="' + h(p1.meta.video) + '" type="video/mp4"></video></td>' +
-            '<td><video width="200" controls poster="' + h(p2.meta.screenshot) + '"><source src="' + h(p2.meta.video) + '" type="video/mp4"></video></td></tr>';
-  }
-
-  if (p1.meta.result && p2.meta.result) {
-    html += '<tr><td class="tabletext">Extra</td>' +
-            '<td><a href="' + h(p1.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td>' +
-            '<td><a href="' + h(p2.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td></tr>';
+    if (cpuHtml) html += section('CPU') + cpuHtml;
   }
 
   if (d.cpuCategories1 && d.cpuCategories2) {
+    // Same group as the CPU long-task rows above when those exist;
+    // emit the header here only if we didn't already (in which case
+    // CPU has no long-task data but we still want the disclosure rows
+    // visually under a heading).
+    if (!(p1.cpu && p2.cpu && p1.cpu.longTasks && p2.cpu.longTasks)) {
+      html += section('CPU');
+    }
     html += '<tr><td class="tabletext" colspan="3"> CPU time spent by category ' +
               '<button onclick="toggleRow(this, \'cpuCategoryInfo\', this.childNodes[0]);" class="submit submit-smaller">' +
                 '<i class="arrow right"></i></button></td></tr>';
@@ -250,6 +252,28 @@ function pageXrayTemplate(d) {
               }) +
             '</ul></td></tr>';
   }
+
+  // Captures — final screenshot, video, link back to the per-run
+  // result page. Last group because the values are large media
+  // elements, not numbers; pushing them to the bottom keeps the
+  // scannable metric rows above contiguous.
+  let capturesHtml = '';
+  if (p1.meta.screenshot && p2.meta.screenshot) {
+    capturesHtml += '<tr><td class="tabletext">Screenshot</td>' +
+            '<td><a href="' + h(p1.meta.screenshot) + '"><img src="' + h(p1.meta.screenshot) + '" width="200"/></a></td>' +
+            '<td><a href="' + h(p2.meta.screenshot) + '"><img src="' + h(p2.meta.screenshot) + '" width="200"/></a></td></tr>';
+  }
+  if (p1.meta.video && p2.meta.video) {
+    capturesHtml += '<tr><td class="tabletext">Video</td>' +
+            '<td><video width="200" controls poster="' + h(p1.meta.screenshot) + '"><source src="' + h(p1.meta.video) + '" type="video/mp4"></video></td>' +
+            '<td><video width="200" controls poster="' + h(p2.meta.screenshot) + '"><source src="' + h(p2.meta.video) + '" type="video/mp4"></video></td></tr>';
+  }
+  if (p1.meta.result && p2.meta.result) {
+    capturesHtml += '<tr><td class="tabletext">Extra</td>' +
+            '<td><a href="' + h(p1.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td>' +
+            '<td><a href="' + h(p2.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td></tr>';
+  }
+  if (capturesHtml) html += section('Captures') + capturesHtml;
 
   html += '</tbody></table></div>';
   return html;
