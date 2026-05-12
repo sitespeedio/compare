@@ -111,6 +111,46 @@ function generateVisualProgress(visualProgress1, visualProgress2, id, opts) {
   add('path', { class: 'vp-series--1', d: stepPath(series[0]) });
   add('path', { class: 'vp-series--2', d: stepPath(series[1]) });
 
+  // Marker lines — vertical guides at FCP / LCP / FVC / Speed Index
+  // for each HAR. Drawn under the series paths so the curves stay
+  // dominant, with a small label at the top so the eye can match a
+  // line to its metric without hovering. HAR1 markers go above the
+  // chart top, HAR2 markers go to the same line but a smaller font
+  // and a different colour series.
+  function drawMarkers(markers, hark) {
+    if (!markers || !markers.length) return;
+    // Cluster markers that fall within 2% of plot width so labels
+    // don't overlap when, say, FCP and FVC coincide.
+    const minGapPx = plotW * 0.02;
+    const sorted = markers.slice().sort(function (a, b) { return a.time - b.time; });
+    let lastX = -Infinity;
+    sorted.forEach(function (m) {
+      const t = m.time / 1000;
+      const xv = x(t);
+      const cls = 'vp-marker vp-marker--' + hark + ' vp-marker--' + m.kind;
+      add('line', {
+        class: cls,
+        x1: xv, x2: xv,
+        y1: y(0), y2: y(100)
+      });
+      // Stagger label Y when two markers are too close horizontally so
+      // their text doesn't collide.
+      const close = (xv - lastX) < minGapPx;
+      const labelY = hark === 1
+        ? (close ? padT + 22 : padT + 10)
+        : (close ? H - padB - 4 : H - padB - 16);
+      add('text', {
+        class: 'vp-marker-label vp-marker-label--' + hark + ' vp-marker--' + m.kind,
+        x: xv + 3,
+        y: labelY,
+        'text-anchor': 'start'
+      }, m.label);
+      lastX = xv;
+    });
+  }
+  drawMarkers(opts.markers1, 1);
+  drawMarkers(opts.markers2, 2);
+
   container.appendChild(svg);
 
   // Thumbnail strips below the chart, aligned to the same time axis

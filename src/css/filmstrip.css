@@ -1,97 +1,218 @@
 /*
  * FILMSTRIP
  * =========
- * Two parallel horizontal rails (HAR1 above HAR2), labels on the left,
- * frames flowing left-to-right with time captions underneath. Each rail
- * scrolls independently when a run has many frames; both rails share
- * an absolute time scale because the renderer sampled them on the same
- * grid (0 + every 100 ms in [FirstVisualChange, LastVisualChange]).
+ * One scrollable rail of columns. Each column is a single timestamp,
+ * with HAR1 on top, HAR2 below, the shared timestamp underneath. The
+ * two padded frame arrays come in the same length and grid step, so
+ * the eye reads each column as a single timeslice and the divergence
+ * between the two HARs is obvious side-by-side.
+ *
+ * Columns where the two HARs disagree on visual progress get a
+ * coloured accent (mild amber for small gaps, strong red for large
+ * gaps) so the regression announces itself before you have to look
+ * at the pixels.
  */
 
 .filmstrip {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 8px;
   margin-top: 12px;
 }
 
-.filmstrip-row {
-  display: grid;
-  grid-template-columns: minmax(90px, 110px) 1fr;
-  align-items: center;
-  gap: 14px;
+.filmstrip-legend {
+  display: flex;
+  gap: 16px;
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
 }
 
-.filmstrip-label {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-  font-size: 0.95rem;
-  white-space: nowrap;
+.filmstrip-legend-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--color-border);
+  }
 }
+.filmstrip-legend-label--har1::before { background: var(--color-blue); }
+.filmstrip-legend-label--har2::before { background: #f97316; /* orange — deliberately
+  distinct from HAR1 blue so the eye can tell which row is which without
+  reading the label. */ }
 
 .filmstrip-rail {
   display: flex;
   gap: 10px;
-  padding: 6px 4px;
+  padding: 8px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-}
+  user-select: none;
 
-.filmstrip-frame {
-  flex: 0 0 auto;
-  margin: 0;
-  scroll-snap-align: start;
+  /* While the user drags the rail to scroll horizontally, swap the
+     cursor and silence the column hover affordances so it feels like
+     a panning interaction not a series of micro-clicks. */
+  &.is-dragging {
+    cursor: grabbing;
 
-  a {
-    display: block;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface-card);
-    transition: border-color var(--motion-fast),
-                box-shadow var(--motion-fast),
-                transform var(--motion-fast);
-
-    &:hover,
-    &:focus-visible {
-      border-color: var(--color-info-border);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-1px);
+    .filmstrip-column {
+      pointer-events: none;
     }
   }
+}
+.filmstrip-rail:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
 
-  img {
-    display: block;
-    width: 140px;
-    height: auto;
-    max-height: 220px;
-    object-fit: cover;
-  }
+.filmstrip-column {
+  flex: 0 0 auto;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--color-surface-card);
+  scroll-snap-align: start;
+  transition: border-color var(--motion-fast), background var(--motion-fast);
+}
 
-  figcaption {
-    margin-top: 4px;
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--color-text-secondary);
-    font-variant-numeric: tabular-nums;
+.filmstrip-column:hover {
+  border-color: var(--color-info-border);
+}
+
+/* Divergence accent — column shows the two HARs as visually different
+   at this timestamp. Mild amber, strong red. The colours only paint
+   the border + caption so the screenshot content stays uncoloured. */
+.filmstrip-column--diff-mild {
+  border-color: var(--color-warning);
+  background: var(--color-warning-bg);
+
+  .filmstrip-time {
+    color: var(--color-warning);
+    font-weight: var(--font-weight-semibold);
   }
+}
+.filmstrip-column--diff-strong {
+  border-color: var(--color-error);
+  background: rgba(220, 38, 38, 0.07);
+
+  .filmstrip-time {
+    color: var(--color-error);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+.filmstrip-cell {
+  position: relative;
+  display: block;
+  padding: 0;
+  margin: 0;
+  background: var(--color-surface-card);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: border-color var(--motion-fast),
+              box-shadow var(--motion-fast),
+              transform var(--motion-fast);
+}
+
+.filmstrip-cell:hover,
+.filmstrip-cell:focus-visible {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/*
+ * HAR-specific colour treatment — left edge stripe + matching badge
+ * so the eye lands on HAR1 vs HAR2 immediately, without having to
+ * consult the legend on every column. Picked deliberately
+ * dissimilar colours (blue / orange) so colour-blind users still get
+ * a high-contrast difference. The badge gives a redundant numeric
+ * cue for safety.
+ */
+.filmstrip-cell--har1 {
+  border-left: 4px solid var(--color-blue);
+}
+.filmstrip-cell--har2 {
+  border-left: 4px solid #f97316;
+}
+.filmstrip-cell--har1:hover,
+.filmstrip-cell--har1:focus-visible {
+  border-color: var(--color-blue);
+  border-left-color: var(--color-blue);
+}
+.filmstrip-cell--har2:hover,
+.filmstrip-cell--har2:focus-visible {
+  border-color: #f97316;
+}
+
+.filmstrip-cell-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-semibold);
+  color: white;
+  background: rgba(15, 23, 42, 0.6);
+  pointer-events: none;
+}
+.filmstrip-cell--har1 .filmstrip-cell-badge { background: var(--color-blue); }
+.filmstrip-cell--har2 .filmstrip-cell-badge { background: #f97316; }
+
+.filmstrip-cell img {
+  display: block;
+  width: 240px;
+  height: auto;
+  max-height: 260px;
+  object-fit: cover;
+}
+
+.filmstrip-cell--missing {
+  display: block;
+  width: 240px;
+  height: 140px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-surface),
+    var(--color-surface) 8px,
+    var(--color-surface-card) 8px,
+    var(--color-surface-card) 16px
+  );
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.filmstrip-time {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
 }
 
 @media (max-width: 640px) {
-  .filmstrip-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .filmstrip-label {
-    padding-left: 4px;
-  }
-
-  .filmstrip-frame img {
-    width: 110px;
-    max-height: 170px;
+  .filmstrip-cell img,
+  .filmstrip-cell--missing {
+    width: 170px;
+    max-height: 190px;
   }
 }

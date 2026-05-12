@@ -65,6 +65,22 @@ function addVisualProgress(pageXray1, pageXray2, config, filmstrip) {
     'visualProgressContent'
   );
 
+  // Marker timings — vertical guide lines on the chart anchor the
+  // comparison in time so "when did this happen?" is answerable at
+  // a glance. We pick the standard set: First Visual Change, FCP,
+  // LCP and Speed Index. Each marker is per-HAR so a regressed LCP
+  // shows up as two side-by-side red lines rather than one.
+  function markerSet(p) {
+    const vm = p.visualMetrics || {};
+    const gw = p.googleWebVitals || {};
+    return [
+      { label: 'FVC',         time: vm.FirstVisualChange,            kind: 'fvc' },
+      { label: 'FCP',         time: gw.firstContentfulPaint,         kind: 'fcp' },
+      { label: 'LCP',         time: gw.largestContentfulPaint,       kind: 'lcp' },
+      { label: 'Speed Index', time: vm.SpeedIndex,                   kind: 'si'  }
+    ].filter(function (m) { return typeof m.time === 'number' && m.time > 0; });
+  }
+
   generateVisualProgress(
     pageXray1.visualMetrics.VisualProgress,
     pageXray2.visualMetrics.VisualProgress,
@@ -73,7 +89,9 @@ function addVisualProgress(pageXray1, pageXray2, config, filmstrip) {
       thumbnails1: filmstrip ? sampleFrames(filmstrip.frames1, 6) : [],
       thumbnails2: filmstrip ? sampleFrames(filmstrip.frames2, 6) : [],
       label1:      config.har1.label,
-      label2:      config.har2.label
+      label2:      config.har2.label,
+      markers1:    markerSet(pageXray1),
+      markers2:    markerSet(pageXray2)
     }
   );
 }
@@ -178,6 +196,12 @@ function generate(config) {
   const slider = document.getElementById('harBlendSlider');
   if (slider) slider.value = 0;
   blendWaterfalls(0);
+  // Restore the user's saved side-by-side / overlay preference now
+  // that the waterfall DOM is populated. No-op when the wrapper is
+  // missing (e.g. during the loading view).
+  if (typeof applyWaterfallLayoutPreference === 'function') {
+    applyWaterfallLayoutPreference();
+  }
 
   parseTemplate(
     'pageXrayTemplate',

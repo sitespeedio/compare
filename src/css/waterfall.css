@@ -51,6 +51,33 @@
   pointer-events: none;
 }
 
+/*
+ * Side-by-side mode — two waterfalls in a grid instead of stacked
+ * with a blend slider. Useful for "which row is HAR1?" — overlaying
+ * makes that question harder than it should be.
+ */
+.harwrapper--side-by-side {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  .har-canvas {
+    min-width: 0;
+  }
+  .har-canvas--base,
+  .har-canvas--overlay {
+    position: static;
+    inset: auto;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+@media (max-width: 720px) {
+  .harwrapper--side-by-side {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Floating tooltip used by the waterfall-tools onHover hook. Lives at
    document.body so it can pop over the card without being clipped by
    the .harwrapper overflow. */

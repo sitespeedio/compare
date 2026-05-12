@@ -1,10 +1,10 @@
 /*
  * PAGE X-RAY TABLE
  * ================
- * Side-by-side metric breakdown — the dominant table on the result
- * view. Table itself inherits the base table styling from elements.css;
- * this file tunes its hover, column widths and the file-upload chip
- * used to swap HARs.
+ * Side-by-side metric breakdown plus a Δ column — the dominant table
+ * on the result view. Table itself inherits the base table styling
+ * from elements.css; this file tunes its layout, the section
+ * dividers, the delta colouring and the captures sizing.
  */
 
 .userShowable {
@@ -32,11 +32,6 @@
   padding: 14px 12px 6px;
   border-bottom: 1px solid var(--color-border);
 }
-.pageXrayTable .pageXraySection:hover th {
-  /* Keep the section's own background on hover — re-set in each
-     modifier below; this rule just disables the default row-hover
-     tint that the .pageXrayTable tr:hover rule would otherwise paint. */
-}
 
 .pageXrayTable .pageXraySection--content th  { background: var(--color-info-bg);    color: var(--color-info); }
 .pageXrayTable .pageXraySection--blocking th { background: var(--color-warning-bg); color: var(--color-warning); }
@@ -45,7 +40,8 @@
 .pageXrayTable .pageXraySection--cpu th      { background: #ffedd5;                  color: #9a3412; }
 .pageXrayTable .pageXraySection--captures th { background: var(--color-surface);    color: var(--color-text-muted); }
 
-/* Repeat for hover so the bg doesn't snap to the row-hover tint. */
+/* Hover repeats the section's own bg so the row doesn't snap to the
+   default row-hover blue tint when the user mouses over a header. */
 .pageXrayTable .pageXraySection--content:hover th  { background: var(--color-info-bg); }
 .pageXrayTable .pageXraySection--blocking:hover th { background: var(--color-warning-bg); }
 .pageXrayTable .pageXraySection--visual:hover th   { background: #f3e8ff; }
@@ -68,14 +64,132 @@
   }
 }
 
-.tableXrayMetric {
-  width: 24%;
-  text-align: left;
+.tableXrayMetric    { width: 22%; text-align: left; }
+.tableXrayHarMetric,
+.tableXrayHar2Metric { width: 31%; }
+.tableXrayDiff      { width: 16%; text-align: right; padding-right: 12px; color: var(--color-text-muted); font-weight: var(--font-weight-medium); }
+
+/*
+ * Δ column — at-a-glance regression / improvement marker. Every
+ * metric in this table is "lower is better"; HAR2 minus HAR1 > 0 is a
+ * regression (red), < 0 is an improvement (green). The colour comes
+ * from the modifier class, the layout is shared.
+ */
+.pageXrayDiff {
+  text-align: right;
+  padding-right: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+.pageXrayDiff--better { color: var(--color-ok); }
+.pageXrayDiff--worse  { color: var(--color-error); }
+.pageXrayDiff--same   { color: var(--color-text-muted); font-weight: var(--font-weight-regular); }
+.pageXrayDiff-pct {
+  font-weight: var(--font-weight-regular);
+  opacity: 0.85;
+  margin-left: 2px;
 }
 
-.tableXrayHarMetric,
-.tableXrayHar2Metric {
-  width: 38%;
+/*
+ * "Only show differences" toggle chip — lives in the metric header
+ * next to Switch. When pressed, the user only sees rows where the Δ
+ * column actually reports a change; "no change" rows fold away.
+ */
+.chip-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  margin-left: 4px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill, 999px);
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background var(--motion-fast), color var(--motion-fast),
+              border-color var(--motion-fast);
+}
+.chip-toggle:hover,
+.chip-toggle:focus-visible {
+  background: var(--color-blue-tint);
+  color: var(--color-blue-dark);
+  border-color: var(--color-info-border);
+}
+.chip-toggle[aria-pressed="true"] {
+  background: var(--color-blue);
+  color: white;
+  border-color: var(--color-blue);
+}
+
+/*
+ * Hide rows whose Δ cell explicitly reports "no change". Section
+ * dividers and rows without a Δ cell stay visible — the toggle is
+ * meant to reduce noise, not strip the table of its structure.
+ */
+.pageXrayTable--diff-only tr:has(td.pageXrayDiff--same) {
+  display: none;
+}
+
+/* Captures — final screenshot and recorded video. The whole point of
+   the comparison view is to spot regressions, so the captures need
+   real room: width caps at column width (responsive) with a sensible
+   minimum that still beats the previous 200px hard-cap. */
+.pageXrayCapture {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  height: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-card);
+}
+
+/*
+ * CPU disclosure sub-tables. The cell hosting the sub-table loses the
+ * parent table's hover styling so the inner header/rows read on their
+ * own; the sub-table itself uses smaller text and the same Δ column
+ * styling so a regression in "scripting" reads the same way as a
+ * regression in the main table.
+ */
+.cpuBreakdownCell {
+  padding: 0;
+  background: var(--color-surface);
+}
+.pageXrayTable tr.userShowable:hover td.cpuBreakdownCell {
+  background: var(--color-surface);
+}
+
+.cpuBreakdownTable {
+  width: 100%;
+  margin: 0;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  th, td {
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--color-border);
+  }
+  th {
+    background: var(--color-surface-card);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+  }
+  th:nth-child(1) { width: 22%; }
+  th:nth-child(2),
+  th:nth-child(3) { width: 31%; text-align: right; }
+  th:nth-child(4) { width: 16%; text-align: right; }
+  td:nth-child(1) { text-align: left; }
+  td:nth-child(2),
+  td:nth-child(3),
+  td:nth-child(4) { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: var(--color-blue-tint); }
 }
 
 /*
@@ -121,6 +235,17 @@
     outline: 2px solid var(--color-blue);
     outline-offset: 2px;
   }
+}
+
+@media screen and (max-width: 720px) {
+  /* On narrow screens, drop the Δ column to a smaller width so the
+     two HAR columns keep most of the room — the diff is still useful
+     but no longer dominant. */
+  .tableXrayMetric    { width: 28%; }
+  .tableXrayHarMetric,
+  .tableXrayHar2Metric { width: 28%; }
+  .tableXrayDiff      { width: 16%; font-size: 0.85rem; }
+  .pageXrayCapture    { max-width: 100%; }
 }
 
 @media screen and (max-width: 400px) {

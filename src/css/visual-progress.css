@@ -49,6 +49,40 @@
     stroke-linejoin: round;
     stroke-dasharray: 4 4;
   }
+
+  /*
+   * Marker lines anchor the chart in time at FCP / LCP / FVC /
+   * Speed Index. HAR1 markers are solid; HAR2 markers are dashed
+   * (matches the HAR2 series style). Colour-coded per metric so a
+   * regressed LCP shows up as a pair of orange lines drifting apart.
+   */
+  .vp-marker {
+    stroke-width: 1.5;
+    opacity: 0.55;
+    stroke-linecap: round;
+  }
+  .vp-marker--2 {
+    stroke-dasharray: 3 3;
+  }
+  .vp-marker--fvc { stroke: #9333ea; }   /* purple */
+  .vp-marker--fcp { stroke: #16a34a; }   /* green  */
+  .vp-marker--lcp { stroke: #ea580c; }   /* orange */
+  .vp-marker--si  { stroke: #2563eb; }   /* blue   */
+
+  .vp-marker-label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    paint-order: stroke;
+    stroke: var(--color-surface-card);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+  .vp-marker-label--2 { font-size: 9px; opacity: 0.85; }
+  .vp-marker-label.vp-marker--fvc { fill: #9333ea; }
+  .vp-marker-label.vp-marker--fcp { fill: #16a34a; }
+  .vp-marker-label.vp-marker--lcp { fill: #ea580c; }
+  .vp-marker-label.vp-marker--si  { fill: #2563eb; }
 }
 
 /* Thumbnail strips under the chart — absolute positioning lets us
@@ -71,7 +105,7 @@
 
 .vp-thumb-rail {
   position: relative;
-  height: 84px;
+  height: 104px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -106,9 +140,9 @@
 
   img {
     display: block;
-    width: 80px;
+    width: 120px;
     height: auto;
-    max-height: 60px;
+    max-height: 80px;
     object-fit: cover;
   }
 }

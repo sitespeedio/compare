@@ -69,22 +69,33 @@ function getFilmstripForPage(har, pageIndex) {
           ms: ms,
           time: (ms / 1000).toFixed(2),
           img: dataBase + '/filmstrip/' + runId + '/ms_' +
-               String(ms).padStart(6, '0') + '.jpg'
+               String(ms).padStart(6, '0') + '.jpg',
+          // Visual-progress percent at this change point. Carries
+          // through padFrames so each padded cell knows how rendered
+          // the page was at that moment — used to flag divergence
+          // between the two HARs.
+          progress: vp[ms]
         };
       });
     }
   }
 
   // Legacy WPT path — the HAR's page object has a filmstrip array
-  // directly. Translate into the same shape.
+  // directly. Translate into the same shape. WPT entries usually carry
+  // a `VisuallyComplete` percent on each frame; surface it as
+  // progress so divergence colouring still works.
   const legacy = page.filmstrip || (page._wpt && page._wpt.filmstrip);
   if (Array.isArray(legacy) && legacy.length > 0) {
     return legacy.map(function (f) {
       const ms = Math.round((f.time || 0) * 1000);
+      const prog = typeof f.progress === 'number' ? f.progress
+                 : typeof f.VisuallyComplete === 'number' ? f.VisuallyComplete
+                 : null;
       return {
         ms: ms,
         time: (ms / 1000).toFixed(2),
-        img: f.file || f.image || ''
+        img: f.file || f.image || '',
+        progress: prog
       };
     });
   }
@@ -93,17 +104,73 @@ function getFilmstripForPage(har, pageIndex) {
 }
 
 /**
+ * Resample a change-point frame list onto a uniform time grid so the
+ * rendered strip reads like an actual filmstrip: every cell represents
+ * the same time slice, repeating the last-known frame until the page
+ * visibly changes again. Without this the cells are spaced by *visual
+ * progress*, which makes "nothing happened for 2 s" look identical to
+ * "everything changed in 50 ms".
+ */
+function padFrames(frames, maxMs, stepMs) {
+  if (frames.length === 0) return [];
+  const padded = [];
+  let lastFrame = frames[0];
+  let nextIdx = 0;
+  for (let t = 0; t <= maxMs; t += stepMs) {
+    while (nextIdx < frames.length && frames[nextIdx].ms <= t) {
+      lastFrame = frames[nextIdx];
+      nextIdx++;
+    }
+    padded.push({
+      ms: t,
+      time: (t / 1000).toFixed(1),
+      img: lastFrame.img,
+      sourceMs: lastFrame.ms,
+      progress: lastFrame.progress
+    });
+  }
+  // Always end on the exact LastVisualChange frame so the final visual
+  // state is shown, even if it falls between two grid steps.
+  const lastAvailable = frames[frames.length - 1];
+  if (lastAvailable.ms !== padded[padded.length - 1].ms) {
+    padded.push({
+      ms: lastAvailable.ms,
+      time: (lastAvailable.ms / 1000).toFixed(1),
+      img: lastAvailable.img,
+      sourceMs: lastAvailable.ms,
+      progress: lastAvailable.progress
+    });
+  }
+  return padded;
+}
+
+/**
  * Build filmstrip data for both HARs in the comparison.
  * Returns null if neither HAR has frames available.
  */
 function getFilmstrip(har1, run1, har2, run2) {
-  const frames1 = getFilmstripForPage(har1, run1) || [];
-  const frames2 = getFilmstripForPage(har2, run2) || [];
-  if (frames1.length === 0 && frames2.length === 0) return null;
+  const raw1 = getFilmstripForPage(har1, run1) || [];
+  const raw2 = getFilmstripForPage(har2, run2) || [];
+  if (raw1.length === 0 && raw2.length === 0) return null;
 
   const maxMs = Math.max(
-    frames1.length ? frames1[frames1.length - 1].ms : 0,
-    frames2.length ? frames2[frames2.length - 1].ms : 0
+    raw1.length ? raw1[raw1.length - 1].ms : 0,
+    raw2.length ? raw2[raw2.length - 1].ms : 0
   );
-  return { frames1: frames1, frames2: frames2, maxMs: maxMs };
+
+  // 100 ms is sitespeed.io's native capture cadence, so every cell
+  // maps to a real on-disk frame whenever the page is actually
+  // changing. For very long pages we widen the step so the rail
+  // stops at ~120 cells.
+  let stepMs = 100;
+  while (Math.floor(maxMs / stepMs) + 1 > 120) {
+    stepMs *= 2;
+  }
+
+  return {
+    frames1: padFrames(raw1, maxMs, stepMs),
+    frames2: padFrames(raw2, maxMs, stepMs),
+    maxMs: maxMs,
+    stepMs: stepMs
+  };
 }
