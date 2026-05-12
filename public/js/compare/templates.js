@@ -232,6 +232,35 @@ function pageXrayTemplate(d) {
             '<td>' + p1.renderBlocking.in_body_parser_blocking + '</td>' +
             '<td>' + p2.renderBlocking.in_body_parser_blocking + '</td>' +
             diffCell(p1.renderBlocking.in_body_parser_blocking, p2.renderBlocking.in_body_parser_blocking) + '</tr>';
+
+    // Style recalculation before FCP / LCP. Sitespeed.io / browsertime
+    // captures how many elements the browser re-styled and how long it
+    // took on its way to each paint milestone — both are "lower is
+    // better", so the existing diff colouring applies. Guarded so a
+    // plain Chrome HAR (no recalculateStyle) doesn't render four empty
+    // rows.
+    const rs1 = p1.renderBlocking.recalculateStyle;
+    const rs2 = p2.renderBlocking.recalculateStyle;
+    if (rs1 && rs2) {
+      function recalcRow(label, a, b, formatter) {
+        return '<tr><td class="tabletext">' + h(label) + '</td>' +
+               '<td>' + (formatter ? formatter(a) : a) + '</td>' +
+               '<td>' + (formatter ? formatter(b) : b) + '</td>' +
+               diffCell(a, b, formatter) + '</tr>';
+      }
+      if (rs1.beforeFCP && rs2.beforeFCP) {
+        html += recalcRow('Style recalc elements (before FCP)',
+                          rs1.beforeFCP.elements, rs2.beforeFCP.elements);
+        html += recalcRow('Style recalc duration (before FCP)',
+                          rs1.beforeFCP.durationInMillis, rs2.beforeFCP.durationInMillis, formatTime);
+      }
+      if (rs1.beforeLCP && rs2.beforeLCP) {
+        html += recalcRow('Style recalc elements (before LCP)',
+                          rs1.beforeLCP.elements, rs2.beforeLCP.elements);
+        html += recalcRow('Style recalc duration (before LCP)',
+                          rs1.beforeLCP.durationInMillis, rs2.beforeLCP.durationInMillis, formatTime);
+      }
+    }
   }
 
   if (p1.visualMetrics) {
