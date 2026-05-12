@@ -54,7 +54,11 @@
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  margin: 0;
+  /* Small left margin so the button doesn't sit flush against the
+     preceding label text (e.g. "Metric Switch", "CPU time spent by
+     category [arrow]"). Doesn't apply inside flex parents thanks to
+     `gap` taking over there. */
+  margin: 0 0 0 8px;
   font-size: 0.8rem;
   font-weight: var(--font-weight-medium);
   vertical-align: middle;

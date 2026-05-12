@@ -65,6 +65,35 @@
 }
 
 .tableXrayMetric    { width: 22%; text-align: left; }
+
+/*
+ * Metric column header — "Metric" label sits on top of a row of
+ * action chips (Switch + Only differences). Stacking with flex
+ * keeps the chips aligned consistently with each other and with the
+ * column's left edge (which is where the row labels below sit),
+ * instead of relying on inline-wrap and ending up indented.
+ */
+.tableXrayMetric-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.tableXrayMetric-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  /* Negative margin so the button's visible text edge lines up with
+     the metric labels below ("URL", "Date", …) — the button's own
+     border + padding would otherwise indent the text by ~9px. */
+  margin-left: -9px;
+}
+.tableXrayMetric-actions .chip-toggle,
+.tableXrayMetric-actions .submit-smaller {
+  /* `gap` handles spacing — strip the default left margins. */
+  margin-left: 0;
+}
 .tableXrayHarMetric,
 .tableXrayHar2Metric { width: 31%; }
 .tableXrayDiff      { width: 16%; text-align: right; padding-right: 12px; color: var(--color-text-muted); font-weight: var(--font-weight-medium); }
@@ -101,7 +130,11 @@
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  margin-left: 4px;
+  /* Visually separate from any preceding button or text. Reset to 0
+     inside a flex parent (e.g. .card-title) where `gap` already
+     handles the spacing. */
+  margin-left: 12px;
+  vertical-align: middle;
   background: var(--color-surface);
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
@@ -111,6 +144,9 @@
   cursor: pointer;
   transition: background var(--motion-fast), color var(--motion-fast),
               border-color var(--motion-fast);
+}
+.card-title > .chip-toggle {
+  margin-left: 0;
 }
 .chip-toggle:hover,
 .chip-toggle:focus-visible {
@@ -213,6 +249,10 @@
     display: inline-flex;
     align-items: center;
     padding: 6px 14px;
+    /* Keep the chip away from the HAR1 / HAR2 column label text it
+       sits next to. */
+    margin-left: 10px;
+    vertical-align: middle;
     background: var(--color-surface);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border);
