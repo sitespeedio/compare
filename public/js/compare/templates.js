@@ -66,8 +66,9 @@ function pageXrayTemplate(d) {
   const p1 = d.p1, p2 = d.p2, config = d.config;
   const showRuns = d.runs1.length > 1 || d.runs2.length > 1;
 
-  function section(title) {
-    return '<tr class="pageXraySection"><th colspan="3">' + h(title) + '</th></tr>';
+  function section(title, kind) {
+    const cls = 'pageXraySection' + (kind ? ' pageXraySection--' + kind : '');
+    return '<tr class="' + cls + '"><th colspan="3">' + h(title) + '</th></tr>';
   }
 
   let html = '';
@@ -123,7 +124,7 @@ function pageXrayTemplate(d) {
             '<td>' + h(p2.meta.connectivity) + '</td></tr>';
   }
 
-  html += section('Content');
+  html += section('Content', 'content');
   html += '<tr><td class="tabletext">Total</td>' +
           '<td>' + p1.requests + ' (' + formatBytes(p1.transferSize) + ' / ' + formatBytes(p1.contentSize) + ')</td>' +
           '<td>' + p2.requests + ' (' + formatBytes(p2.transferSize) + ' / ' + formatBytes(p2.contentSize) + ')</td></tr>';
@@ -144,7 +145,7 @@ function pageXrayTemplate(d) {
           '<td>' + img2.requests + ' (' + formatBytes(img2.transferSize) + ')</td></tr>';
 
   if (p1.renderBlocking && p2.renderBlocking) {
-    html += section('Render blocking');
+    html += section('Render blocking', 'blocking');
     html += '<tr><td class="tabletext">Render blocking</td>' +
             '<td>' + p1.renderBlocking.blocking + '</td>' +
             '<td>' + p2.renderBlocking.blocking + '</td></tr>';
@@ -176,11 +177,18 @@ function pageXrayTemplate(d) {
                   '<td>' + formatTime(p2.visualMetrics[key]) + '</td></tr>';
       }
     });
-    if (vmHtml) html += section('Visual metrics') + vmHtml;
+    if (vmHtml) html += section('Visual metrics', 'visual') + vmHtml;
   }
 
   if (p1.googleWebVitals && p2.googleWebVitals) {
-    html += section('Core Web Vitals');
+    // CLS is a unitless float that browsers report at full precision
+    // (e.g. 0.05641193152186011). Round to three decimals — that's
+    // the granularity that matters for comparison and matches the
+    // convention used in the sitespeed.io HTML report.
+    function fmtCLS(v) {
+      return typeof v === 'number' ? v.toFixed(3) : (v == null ? '' : v);
+    }
+    html += section('Core Web Vitals', 'cwv');
     html += '<tr><td class="tabletext">First Contentful Paint</td>' +
             '<td>' + formatTime(p1.googleWebVitals.firstContentfulPaint) + '</td>' +
             '<td>' + formatTime(p2.googleWebVitals.firstContentfulPaint) + '</td></tr>';
@@ -191,8 +199,8 @@ function pageXrayTemplate(d) {
             '<td>' + formatTime(p1.googleWebVitals.totalBlockingTime) + '</td>' +
             '<td>' + formatTime(p2.googleWebVitals.totalBlockingTime) + '</td></tr>';
     html += '<tr><td class="tabletext">Cumulative Layout Shift</td>' +
-            '<td>' + p1.googleWebVitals.cumulativeLayoutShift + '</td>' +
-            '<td>' + p2.googleWebVitals.cumulativeLayoutShift + '</td></tr>';
+            '<td>' + fmtCLS(p1.googleWebVitals.cumulativeLayoutShift) + '</td>' +
+            '<td>' + fmtCLS(p2.googleWebVitals.cumulativeLayoutShift) + '</td></tr>';
   }
 
   if (p1.cpu && p2.cpu && p1.cpu.longTasks && p2.cpu.longTasks) {
@@ -212,7 +220,7 @@ function pageXrayTemplate(d) {
                  '<td>' + p1.cpu.longTasks.tasks + '</td>' +
                  '<td>' + p2.cpu.longTasks.tasks + '</td></tr>';
     }
-    if (cpuHtml) html += section('CPU') + cpuHtml;
+    if (cpuHtml) html += section('CPU', 'cpu') + cpuHtml;
   }
 
   if (d.cpuCategories1 && d.cpuCategories2) {
@@ -221,7 +229,7 @@ function pageXrayTemplate(d) {
     // CPU has no long-task data but we still want the disclosure rows
     // visually under a heading).
     if (!(p1.cpu && p2.cpu && p1.cpu.longTasks && p2.cpu.longTasks)) {
-      html += section('CPU');
+      html += section('CPU', 'cpu');
     }
     html += '<tr><td class="tabletext" colspan="3"> CPU time spent by category ' +
               '<button onclick="toggleRow(this, \'cpuCategoryInfo\', this.childNodes[0]);" class="submit submit-smaller">' +
@@ -273,7 +281,7 @@ function pageXrayTemplate(d) {
             '<td><a href="' + h(p1.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td>' +
             '<td><a href="' + h(p2.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td></tr>';
   }
-  if (capturesHtml) html += section('Captures') + capturesHtml;
+  if (capturesHtml) html += section('Captures', 'captures') + capturesHtml;
 
   html += '</tbody></table></div>';
   return html;
