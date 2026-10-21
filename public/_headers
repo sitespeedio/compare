@@ -1,10 +1,9 @@
 /*
 	X-Content-Type-Options: nosniff
 	x-frame-options: SAMEORIGIN
-	X-XSS-Protection: 1; mode=block
 	Referrer-Policy: strict-origin
-	Permissions-Policy: interest-cohort=()
 	Strict-Transport-Security: max-age=31536000; includeSubDomains
+	Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src * data: blob:; media-src *; connect-src *; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
 
 # Stable-URL classic scripts (and any other unhashed JS/CSS) — revalidate
 # on every load so a deploy reaches existing visitors immediately instead

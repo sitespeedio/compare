@@ -133,10 +133,10 @@ function pageXrayTemplate(d) {
             '<div class="tableXrayMetric-stack">' +
               '<span class="tableXrayMetric-label">Metric</span>' +
               '<span class="tableXrayMetric-actions">' +
-                '<button onclick="regenerate(true);" class="submit submit-smaller" ' +
+                '<button type="button" data-action="switch" class="submit submit-smaller" ' +
                         'aria-label="Swap HAR1 and HAR2">Switch</button>' +
                 '<button id="diffOnlyToggle" type="button" ' +
-                        'onclick="toggleDiffOnly(this);" ' +
+                        'data-action="toggle-diff-only" ' +
                         'class="chip-toggle" ' +
                         'aria-pressed="' + diffOnlyPressed + '">' +
                   'Only differences</button>' +
@@ -157,7 +157,7 @@ function pageXrayTemplate(d) {
   if (showRuns) {
     html += '<tr><td class="tabletext">Run</td><td>';
     if (d.runs1.length > 1) {
-      html += '<select name="runs1" onchange="regenerate();" id="run1Option">';
+      html += '<select name="runs1" data-action="change-run" id="run1Option">';
       html += each(d.runs1, function (r) {
         return '<option value="' + h(r.id) + '"' + (r.selected ? ' selected' : '') + '>' + h(r.show) + '</option>';
       });
@@ -165,7 +165,7 @@ function pageXrayTemplate(d) {
     }
     html += '</td><td>';
     if (d.runs2.length > 1) {
-      html += '<select name="runs2" onchange="regenerate();" id="run2Option">';
+      html += '<select name="runs2" data-action="change-run" id="run2Option">';
       html += each(d.runs2, function (r) {
         return '<option value="' + h(r.id) + '"' + (r.selected ? ' selected' : '') + '>' + h(r.show) + '</option>';
       });
@@ -389,14 +389,14 @@ function pageXrayTemplate(d) {
   if (d.cpuCategories1 && d.cpuCategories2) {
     ensureCpuSection();
     html += '<tr><td class="tabletext" colspan="4"> CPU time spent by category ' +
-              '<button onclick="toggleRow(this, \'cpuCategoryInfo\', this.childNodes[0]);" class="submit submit-smaller" ' +
+              '<button type="button" data-action="toggle-row" data-rows="cpuCategoryInfo" class="submit submit-smaller" ' +
                       'aria-label="Show CPU category breakdown">' +
                 '<i class="arrow right"></i></button></td></tr>';
     html += '<tr class="userShowable cpuCategoryInfo"><td colspan="4" class="cpuBreakdownCell">' +
               cpuBreakdownTable(d.cpuCategories1, d.cpuCategories2, fmtCategoryValue, 'Category') +
             '</td></tr>';
     html += '<tr><td class="tabletext" colspan="4">CPU Events ' +
-              '<button onclick="toggleRow(this, \'cpuExtraInfo\', this.childNodes[0]);" class="submit submit-smaller" ' +
+              '<button type="button" data-action="toggle-row" data-rows="cpuExtraInfo" class="submit submit-smaller" ' +
                       'aria-label="Show CPU event breakdown">' +
                 '<i class="arrow right"></i></button></td></tr>';
     html += '<tr class="userShowable cpuExtraInfo"><td colspan="4" class="cpuBreakdownCell">' +
@@ -544,7 +544,7 @@ function thirdPartyTemplate(d) {
 
   function expandableRow(label, toggleClass, p1Cell, p2Cell, contentTypes1, contentTypes2, cellFn) {
     let row = '<tr><td class="tabletext">' + label + ' ' +
-                '<button onclick="toggleRow(this, \'' + toggleClass + '\', this.childNodes[0]);" class="submit submit-smaller">' +
+                '<button type="button" data-action="toggle-row" data-rows="' + toggleClass + '" class="submit submit-smaller">' +
                   '<i class="arrow right"></i></button></td>' +
               '<td>' + p1Cell + '</td>' +
               '<td>' + p2Cell + '</td></tr>';
@@ -649,7 +649,7 @@ function domainsTemplate(d) {
     const safeId = 'domainDetails' + domain.name;
     let row = '<tr>' +
               '<td class="tabletext">' + h(domain.name) + ' ' +
-                '<button onclick="toggleRow(this, \'' + h(safeId) + '\', this.childNodes[0]);" class="submit submit-smaller">' +
+                '<button type="button" data-action="toggle-row" data-rows="' + h(safeId) + '" class="submit submit-smaller">' +
                   '<i class="arrow right"></i></button></td>' +
               '<td class="no-break">' + (domain.firstPage ? domain.firstPage.requests : '') + '</td>' +
               '<td class="no-break">' + (domain.secondPage ? domain.secondPage.requests : '') + '</td>' +
