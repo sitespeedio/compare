@@ -122,48 +122,9 @@
       }
 
       document.addEventListener("paste", function (e) {
-        const paste = e.clipboardData.getData("Text");
-        // Is it a HAR, a bundle, or a gist?
-        try {
-          const parsed = JSON.parse(paste);
-          showLoading();
-          if (isBundle(parsed)) {
-            loadFromBundle(parsed);
-          } else if (parsed.log) {
-            generate({
-              har1: {
-                har: parsed,
-                run: 0,
-                label: "HAR1"
-              },
-              har2: {
-                har: parsed,
-                run: parsed.log.pages.length > 1 ? 1 : 0,
-                label: "HAR2"
-              }
-            });
-          } else {
-            readConfig(parsed);
-          }
-        } catch (e) {
-          if (paste.startsWith("https://gist.github.com/")) {
-            const gistId = paste.substring(
-              paste.lastIndexOf("/") + 1,
-              paste.length
-            );
-            showLoading();
-            loadFilesFromGist(gistId);
-          } else if (paste.endsWith(".json")) {
-            showLoading();
-            loadFilesFromConfig(paste);
-          }
-          // Guess it's a gist id
-          else if (!paste.startsWith("http")) {
-            showLoading();
-            loadFilesFromGist(paste);
-          }
-          // Ok let the the user paste the URL into the field
-        }
+        // Ok let the the user paste the URL into the field
+        if (e.target.closest && e.target.closest("input, textarea")) return;
+        loadFromPaste(e.clipboardData.getData("Text"));
       });
     });
   </script>
@@ -220,7 +181,7 @@
           <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
         </p>
         <button type="button" class="submit"
-          onclick="loadHARsFromConfig({har1: {url: document.getElementById('harurl').value}, har2: {url: document.getElementById('harurl2').value}});">
+          onclick="compareFromForm();">
           Compare
         </button>
         <div id="message" class="message"></div>

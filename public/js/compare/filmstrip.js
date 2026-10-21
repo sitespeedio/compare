@@ -104,10 +104,16 @@ function getFilmstripForPage(har, pageIndex) {
  */
 function padFrames(frames, maxMs, stepMs) {
   if (frames.length === 0) return [];
+  const times = [];
+  for (let t = 0; t <= maxMs; t += stepMs) times.push(t);
+  // Always end on the exact LastVisualChange frame so the final visual
+  // state is shown, even if it falls between two grid steps.
+  if (times[times.length - 1] < maxMs) times.push(maxMs);
+
   const padded = [];
   let lastFrame = frames[0];
   let nextIdx = 0;
-  for (let t = 0; t <= maxMs; t += stepMs) {
+  for (const t of times) {
     while (nextIdx < frames.length && frames[nextIdx].ms <= t) {
       lastFrame = frames[nextIdx];
       nextIdx++;
@@ -118,18 +124,6 @@ function padFrames(frames, maxMs, stepMs) {
       img: lastFrame.img,
       sourceMs: lastFrame.ms,
       progress: lastFrame.progress
-    });
-  }
-  // Always end on the exact LastVisualChange frame so the final visual
-  // state is shown, even if it falls between two grid steps.
-  const lastAvailable = frames[frames.length - 1];
-  if (lastAvailable.ms !== padded[padded.length - 1].ms) {
-    padded.push({
-      ms: lastAvailable.ms,
-      time: (lastAvailable.ms / 1000).toFixed(1),
-      img: lastAvailable.img,
-      sourceMs: lastAvailable.ms,
-      progress: lastAvailable.progress
     });
   }
   return padded;

@@ -56,7 +56,7 @@ function objectPropertiesToArray(object) {
 // Put a error message on the screen
 function errorMessage(myMessage) {
   const message = document.getElementById('message');
-  message.innerHTML = myMessage;
+  message.textContent = myMessage;
 }
 
 function show(id) {

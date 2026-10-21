@@ -699,13 +699,13 @@ function requestDiffTemplate(d) {
 
   html += each(d.requestDiff, function (r) {
     let diffCell;
-    if (r.har1 && r.har2) {
+    if (r.har1 !== undefined && r.har2 !== undefined) {
       if (r.diff < 0) {
         diffCell = '<td class="tabletext green">-' + formatBytes(-r.diff) + '</td>';
       } else {
         diffCell = '<td class="tabletext red">+' + formatBytes(r.diff) + '</td>';
       }
-    } else if (r.har1) {
+    } else if (r.har1 !== undefined) {
       diffCell = '<td class="tabletext green">Removed</td>';
     } else {
       diffCell = '<td class="tabletext red">New</td>';

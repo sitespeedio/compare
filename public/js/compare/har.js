@@ -82,10 +82,10 @@ function getTotalDiff(requestDiff) {
     if (diff.diff) total.diff += diff.diff;
 
     // is new!
-    if (diff.har2 && !diff.har1) {
+    if (diff.har1 === undefined) {
       total.new += 1;
       total.newBytes += diff.har2;
-    } else if (diff.har1 && !diff.har2) {
+    } else if (diff.har2 === undefined) {
       // is removed
       total.removed += 1;
       total.removedBytes += diff.har1;
@@ -160,7 +160,7 @@ function getURLs(har, run, stripVersion) {
   for (let entry of cleaned) {
     let url = entry.request.url;
     if (stripVersion) {
-      url = url.replace(/version=[A-Za-z0-9]+/i, '');
+      url = url.replace(/([?&])version=[^&#]*/i, '$1');
     }
     urls[url] = bestTransferSize(entry.response);
   }

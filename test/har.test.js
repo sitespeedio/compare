@@ -65,3 +65,25 @@ test('stripVersion matches URLs that only differ in version', () => {
   assert.equal(getUniqueRequests(har1, 0, har2, 0, {}).length, 2);
   assert.equal(getUniqueRequests(har1, 0, har2, 0, { stripVersion: true }).length, 0);
 });
+
+test('stripVersion removes the whole version value', () => {
+  const har1 = page('p', [['https://a.com/x.js?version=1.2.3&a=1', { _transferSize: 5000 }]]);
+  const har2 = page('p', [['https://a.com/x.js?version=1.2.4&a=1', { _transferSize: 5000 }]]);
+  assert.equal(getUniqueRequests(har1, 0, har2, 0, { stripVersion: true }).length, 0);
+});
+
+test('stripVersion keeps parameters that only end in version', () => {
+  const har1 = page('p', [['https://a.com/x.js?subversion=1', { _transferSize: 5000 }]]);
+  const har2 = page('p', [['https://a.com/x.js?subversion=2', { _transferSize: 5000 }]]);
+  assert.equal(getUniqueRequests(har1, 0, har2, 0, { stripVersion: true }).length, 2);
+});
+
+test('getTotalDiff counts requests with unknown size as new or removed', () => {
+  const total = getTotalDiff([
+    { url: 'new', har2: 0, diff: 0 },
+    { url: 'removed', har1: 0, diff: -0 }
+  ]);
+  assert.equal(total.new, 1);
+  assert.equal(total.removed, 1);
+  assert.equal(total.increased, 0);
+});

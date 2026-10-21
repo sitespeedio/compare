@@ -90,6 +90,8 @@ But you can also add some extra sugar. All the extras are optional:
 }
 ```
 
+Comments are shown as plain text.
+
 
 And then you can use your configuration file in different ways. You can copy/paste the configuration into the start page of [compare.sitespeed.io](https://compare.sitespeed.io).
 

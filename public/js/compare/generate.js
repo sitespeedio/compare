@@ -296,7 +296,7 @@ function generate(config) {
       for (let key of commentKeys) {
         const el = document.getElementById('comment-' + key);
         if (el) {
-          el.innerHTML = config.comments[key];
+          el.textContent = config.comments[key];
         }
       }
     }
