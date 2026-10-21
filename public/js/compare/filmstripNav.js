@@ -28,11 +28,9 @@ function initFilmstripNav() {
     // Ignore mousedown on the actual zoom button — let the lightbox
     // handle that click. Drag-scroll triggers on mousedown anywhere
     // else inside the rail (the padding, the column gap, etc.).
-    if (e.target.closest('.lightbox-trigger')) {
-      // Still want to allow drag if user moves before releasing; we
-      // arm a "candidate" state and promote to dragging only after
-      // crossing the threshold.
-    }
+    // Still want to allow drag if user moves before releasing; we
+    // arm a "candidate" state and promote to dragging only after
+    // crossing the threshold.
     if (e.button !== 0) return;
 
     const startX = e.pageX;

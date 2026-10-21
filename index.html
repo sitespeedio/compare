@@ -77,7 +77,7 @@
         <div class="col-1-1">
           <div class="logo">
             <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="77" class="img-logo" />
+              <img src="img/compare.png" width="77" class="img-logo" alt="Compare home" />
             </a>
           </div>
           <h1 class="title">Compare</h1>
@@ -98,8 +98,9 @@
         <p class="smallish">
           Or add the URL to your HAR files and press <b>compare</b>:
         </p>
-        <input class="input-field" id="harurl" type="URL" placeholder="URL HAR 1" required />
-        <input class="input-field" id="harurl2" type="URL" placeholder="URL HAR 2" required />
+        <form data-action="compare">
+        <input class="input-field" id="harurl" type="url" placeholder="URL HAR 1" aria-label="URL HAR 1" />
+        <input class="input-field" id="harurl2" type="url" placeholder="URL HAR 2" aria-label="URL HAR 2" />
         <p class="smallish">
           You can also use a
           <a href="https://github.com/sitespeedio/compare#configuration">configuration file</a>
@@ -113,10 +114,10 @@
         <p class="smallish">
           <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
         </p>
-        <button type="button" class="submit"
-          data-action="compare">
+        <button type="submit" class="submit">
           Compare
         </button>
+        </form>
         <div id="message" class="message"></div>
       </div>
     </div>
@@ -128,7 +129,7 @@
         <div class="col-1-1">
           <div class="logo">
             <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="34" class="img-logo" />
+              <img src="img/compare.png" width="34" class="img-logo" alt="Compare home" />
             </a>
           </div>
           <nav id="resultHeaderContent" aria-label="Page sections"></nav>
@@ -179,7 +180,7 @@
         <div class="col-1-1">
           <div class="logo">
             <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="77" class="img-logo" />
+              <img src="img/compare.png" width="77" class="img-logo" alt="Compare home" />
             </a>
           </div>
           <h1 class="title">Compare</h1>
@@ -203,10 +204,10 @@
         - Built using
         <a href="https://github.com/pmeenan/waterfall-tools">waterfall-tools</a> and
         <a href="https://github.com/sitespeedio/pagexray">PageXray</a> and
-        <a href="https://github.com/sitespeedio/compare/blob/master/CREDIT.md">other great Open Source tools</a>. <br />
+        <a href="https://github.com/sitespeedio/compare/blob/main/CREDIT.md">other great Open Source tools</a>. <br />
         Code licensed
-        <a href="https://github.com/sitespeedio/compare/blob/master/LICENSE">MIT</a>.
-        <a href="https://github.com/sitespeedio/compare/blob/master/CHANGELOG.md">Changelog</a>. Help us
+        <a href="https://github.com/sitespeedio/compare/blob/main/LICENSE">MIT</a>.
+        <a href="https://github.com/sitespeedio/compare/blob/main/CHANGELOG.md">Changelog</a>. Help us
         <a href="https://github.com/sitespeedio/compare">make it better!</a>
       </div>
     </div>

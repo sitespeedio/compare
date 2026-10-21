@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, createUpload, getAllDomains, hideUpload, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip, compareWaterfall, renderShareControls, blendWaterfalls, applyWaterfallLayoutPreference */
+/* global getLastTiming, removeAndHide, createUpload, getAllDomains, hideUpload, objectPropertiesToArray, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip, compareWaterfall, renderShareControls, blendWaterfalls, applyWaterfallLayoutPreference */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
@@ -168,25 +168,24 @@ function generate(config) {
     });
   }
 
-  // It's time to start to parse content
-  // make sure we have the helpers ready
-  registerTemplateHelpers();
-
-  parseTemplate(
-    'resultHeaderTemplate',
-    {
-      p1: pageXray1,
-      p2: pageXray2
-    },
-    'resultHeaderContent'
-  );
-
   const filmstrip = getFilmstrip(
     config.har1.har,
     config.har1.run,
     config.har2.har,
     config.har2.run
   );
+
+  // It's time to start to parse content
+  parseTemplate(
+    'resultHeaderTemplate',
+    {
+      p1: pageXray1,
+      p2: pageXray2,
+      filmstrip: filmstrip
+    },
+    'resultHeaderContent'
+  );
+
   if (filmstrip) {
     parseTemplate(
       'filmstripTemplate',
