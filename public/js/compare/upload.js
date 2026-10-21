@@ -143,8 +143,8 @@ function createUpload(id) {
         const har2 = changeHar1 ? prev.har2.har : har;
         const run1 = changeHar1 ? 0 : run;
         const run2 = changeHar1 ? run : 0;
-        const label1 = changeHar1 ? 'HAR1' : prev.har1.label;
-        const label2 = changeHar1 ? prev.har2.label : 'HAR2';
+        const label1 = changeHar1 ? shortLabel(files[0].name) : prev.har1.label;
+        const label2 = changeHar1 ? prev.har2.label : shortLabel(files[0].name);
         // The freshly-uploaded HAR has no source URL; preserve the
         // other HAR's URL so the share UI keeps "Copy share link"
         // available if both are still URL-backed (else it correctly

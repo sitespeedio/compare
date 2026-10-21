@@ -96,6 +96,7 @@ const actions = {
 };
 
 const actionElements = {
+  submit: 'form[data-action]',
   click: 'button[data-action]',
   change: 'select[data-action]',
   input: 'input[data-action]'
@@ -104,6 +105,8 @@ const actionElements = {
 for (const [type, selector] of Object.entries(actionElements)) {
   document.addEventListener(type, e => {
     const el = e.target instanceof Element && e.target.closest(selector);
-    if (el) actions[el.dataset.action](el);
+    if (!el) return;
+    if (type === 'submit') e.preventDefault();
+    actions[el.dataset.action](el);
   });
 }

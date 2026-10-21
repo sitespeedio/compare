@@ -1,7 +1,7 @@
 # Compare HAR files
 Make it easier to find regressions by comparing your [HAR](http://www.softwareishard.com/blog/har-12-spec/) files. Test it out https://compare.sitespeed.io.
 
-![Logo](https://raw.githubusercontent.com/sitespeedio/compare/main/img/compare.png)
+![Logo](https://raw.githubusercontent.com/sitespeedio/compare/main/public/img/compare.png)
 
 ## First: Shout out!
 We couldn't have built compare without the support or inspiration from the following people:
@@ -19,9 +19,9 @@ As long as your HAR files follow the [HAR specification](http://www.softwareisha
 The result page is the same for every HAR — sections that don't apply silently stay hidden, so a plain Chrome HAR doesn't show a half-empty "filmstrip" or "CPU" block.
 
 ### What you get for every HAR
-* A **stacked waterfall** rendered by [waterfall-tools](https://github.com/pmeenan/waterfall-tools). Both HARs share the same time axis so widths are comparable at a glance. A **blend slider** fades HAR2 over HAR1, and a per-result toggle switches between **side-by-side** and **overlay**. Hovering a request highlights its peer in the other waterfall.
+* A **stacked waterfall** rendered by [waterfall-tools](https://github.com/pmeenan/waterfall-tools). Both HARs share the same time axis so widths are comparable at a glance. A **blend slider** fades HAR2 over HAR1, and a per-result toggle switches between **side-by-side** and **overlay**. Hovering a request shows its URL.
 * A **Page X-ray** table (powered by [PageXray](https://github.com/sitespeedio/pagexray)) grouped into sections — Content, Render blocking, Visual metrics, Core Web Vitals, CPU and First/Third party. A **Δ column** shows the HAR2−HAR1 delta with regressions in red and improvements in green. An **"Only differences"** toggle hides rows where the two HARs match.
-* A **request/response diff** when both HARs are for the same URL — added requests, removed requests, and (per-request) size, status and timing changes. Tick **"Strip version parameters"** on the start page (or set `"stripVersion": true` in your config) to ignore cache-busting query strings.
+* A **request/response diff** when both HARs are for the same URL — new requests, removed requests, and requests whose transfer size changed by more than 1 KB. Tick **"Strip version parameters"** on the start page (or set `"stripVersion": true` in your config) to ignore cache-busting query strings.
 * A **domains** breakdown.
 * Chrome HARs with priority hints also produce a **Render blocking** row (blocking / potentially blocking / in-body parser blocking).
 * `.har` and `.har.gz` are both accepted on drag/drop and via URL.
@@ -43,7 +43,7 @@ PageXray auto-detects first-party hosts from the page URL. If you want to overri
 ![First Party vs Third Party!](https://raw.githubusercontent.com/sitespeedio/compare/main/docs/img/firstparty.png)
 
 ## How to use it
-You can either upload two HAR files (drag/drop) or give the URL to two URLs hosted online. If your HAR got multiple pages/runs, you can use just one HAR file.
+You can either upload two HAR files (drag/drop) or give the URL to two HAR files hosted online. If your HAR got multiple pages/runs, you can use just one HAR file.
 
 Or you can just copy/paste your HAR file into the start page of [compare.sitespeed.io](https://compare.sitespeed.io/).
 

@@ -197,23 +197,15 @@ function toggleDiffOnly(btn) {
 }
 
 function toggleRow(element, className, toggler) {
-  const rows = element.parentNode.parentNode.parentNode.getElementsByClassName(
-    className
-  );
+  const rows = element.closest('table').getElementsByClassName(className);
 
   for (let i = 0; i < rows.length; i++) {
-    const status = rows[i].currentStyle
-      ? rows[i].currentStyle.display
-      : getComputedStyle(rows[i], null).display;
-
-    if (status === 'none') {
+    if (getComputedStyle(rows[i]).display === 'none') {
       rows[i].style.display = 'table-row';
       toggler.style.transform = 'rotate(45deg)';
-      toggler.style['-webkit-transform'] = 'rotate(45deg)';
     } else {
       rows[i].style.display = 'none';
       toggler.style.transform = 'rotate(-45deg)';
-      toggler.style['-webkit-transform'] = 'rotate(-45deg)';
     }
   }
 }

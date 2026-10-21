@@ -1,14 +1,12 @@
 /* global formatBytes, formatTime, formatDate, formatURL */
-/* exported parseTemplate, registerTemplateHelpers */
+/* exported parseTemplate */
 
 //
 // Templates. Replaces the Template7 setup that used to live here —
 // each template is now a plain JS function that returns an HTML
-// string built with template literals.
+// string.
 //
-// parseTemplate(templateId, data, divId) is the public entry point;
-// callers in generate.js stay unchanged. registerTemplateHelpers is
-// kept as a no-op so the existing call site doesn't need touching.
+// parseTemplate(templateId, data, divId) is the public entry point.
 //
 
 // HTML-escape user-supplied or pulled-from-HAR strings.
@@ -32,15 +30,6 @@ function each(collection, fn) {
   return Object.keys(collection)
     .map(function (key) { return fn(collection[key], key); })
     .join('');
-}
-
-// Safe property lookup for nested keys that might be missing on
-// either of the two HARs (e.g. p2.firstParty.contentTypes['css'] may
-// be undefined if HAR2 has no CSS at all).
-// eslint-disable-next-line no-unused-vars -- not used now
-function getValue(obj, key, name) {
-  if (!obj || !obj[key]) return 0;
-  return obj[key][name] != null ? obj[key][name] : 0;
 }
 
 //
@@ -110,6 +99,13 @@ function pageXrayTemplate(d) {
   // Empty Δ cell — for rows where a delta wouldn't make sense
   // (URLs, dates, captures).
   const emptyDiff = '<td class="pageXrayDiff"></td>';
+
+  function metricRow(label, a, b, formatter) {
+    return '<tr><td class="tabletext">' + h(label) + '</td>' +
+           '<td>' + (formatter ? formatter(a) : a) + '</td>' +
+           '<td>' + (formatter ? formatter(b) : b) + '</td>' +
+           diffCell(a, b, formatter) + '</tr>';
+  }
 
   // "Only show differences" toggle — read the user's last choice from
   // localStorage so the preference survives reload. The button itself
@@ -232,22 +228,16 @@ function pageXrayTemplate(d) {
     const rs1 = p1.renderBlocking.recalculateStyle;
     const rs2 = p2.renderBlocking.recalculateStyle;
     if (rs1 && rs2) {
-      function recalcRow(label, a, b, formatter) {
-        return '<tr><td class="tabletext">' + h(label) + '</td>' +
-               '<td>' + (formatter ? formatter(a) : a) + '</td>' +
-               '<td>' + (formatter ? formatter(b) : b) + '</td>' +
-               diffCell(a, b, formatter) + '</tr>';
-      }
       if (rs1.beforeFCP && rs2.beforeFCP) {
-        html += recalcRow('Style recalc elements (FCP)',
+        html += metricRow('Style recalc elements (FCP)',
                           rs1.beforeFCP.elements, rs2.beforeFCP.elements);
-        html += recalcRow('Style recalc time (FCP)',
+        html += metricRow('Style recalc time (FCP)',
                           rs1.beforeFCP.durationInMillis, rs2.beforeFCP.durationInMillis, formatTime);
       }
       if (rs1.beforeLCP && rs2.beforeLCP) {
-        html += recalcRow('Style recalc elements (LCP)',
+        html += metricRow('Style recalc elements (LCP)',
                           rs1.beforeLCP.elements, rs2.beforeLCP.elements);
-        html += recalcRow('Style recalc time (LCP)',
+        html += metricRow('Style recalc time (LCP)',
                           rs1.beforeLCP.durationInMillis, rs2.beforeLCP.durationInMillis, formatTime);
       }
     }
@@ -256,18 +246,12 @@ function pageXrayTemplate(d) {
     // resources fall into each render-blocking class. The "requests"
     // suffix makes that explicit so the numbers aren't mistaken for
     // milliseconds or sizes.
-    html += '<tr><td class="tabletext">Render blocking requests</td>' +
-            '<td>' + p1.renderBlocking.blocking + '</td>' +
-            '<td>' + p2.renderBlocking.blocking + '</td>' +
-            diffCell(p1.renderBlocking.blocking, p2.renderBlocking.blocking) + '</tr>';
-    html += '<tr><td class="tabletext">Potentially blocking requests</td>' +
-            '<td>' + p1.renderBlocking.potentiallyBlocking + '</td>' +
-            '<td>' + p2.renderBlocking.potentiallyBlocking + '</td>' +
-            diffCell(p1.renderBlocking.potentiallyBlocking, p2.renderBlocking.potentiallyBlocking) + '</tr>';
-    html += '<tr><td class="tabletext">In body parser blocking requests</td>' +
-            '<td>' + p1.renderBlocking.in_body_parser_blocking + '</td>' +
-            '<td>' + p2.renderBlocking.in_body_parser_blocking + '</td>' +
-            diffCell(p1.renderBlocking.in_body_parser_blocking, p2.renderBlocking.in_body_parser_blocking) + '</tr>';
+    const rb1 = p1.renderBlocking, rb2 = p2.renderBlocking;
+    html += metricRow('Render blocking requests', rb1.blocking, rb2.blocking);
+    html += metricRow('Potentially blocking requests',
+                      rb1.potentiallyBlocking, rb2.potentiallyBlocking);
+    html += metricRow('In body parser blocking requests',
+                      rb1.in_body_parser_blocking, rb2.in_body_parser_blocking);
   }
 
   if (p1.visualMetrics) {
@@ -285,10 +269,7 @@ function pageXrayTemplate(d) {
     vmRows.forEach(function (row) {
       const label = row[0], key = row[1];
       if (p1.visualMetrics[key] && p2.visualMetrics && p2.visualMetrics[key]) {
-        vmHtml += '<tr><td class="tabletext">' + label + '</td>' +
-                  '<td>' + formatTime(p1.visualMetrics[key]) + '</td>' +
-                  '<td>' + formatTime(p2.visualMetrics[key]) + '</td>' +
-                  diffCell(p1.visualMetrics[key], p2.visualMetrics[key], formatTime) + '</tr>';
+        vmHtml += metricRow(label, p1.visualMetrics[key], p2.visualMetrics[key], formatTime);
       }
     });
     if (vmHtml) html += section('Visual metrics', 'visual') + vmHtml;
@@ -296,22 +277,15 @@ function pageXrayTemplate(d) {
 
   if (p1.googleWebVitals && p2.googleWebVitals) {
     html += section('Core Web Vitals', 'cwv');
-    html += '<tr><td class="tabletext">First Contentful Paint</td>' +
-            '<td>' + formatTime(p1.googleWebVitals.firstContentfulPaint) + '</td>' +
-            '<td>' + formatTime(p2.googleWebVitals.firstContentfulPaint) + '</td>' +
-            diffCell(p1.googleWebVitals.firstContentfulPaint, p2.googleWebVitals.firstContentfulPaint, formatTime) + '</tr>';
-    html += '<tr><td class="tabletext">Largest Contentful Paint</td>' +
-            '<td>' + formatTime(p1.googleWebVitals.largestContentfulPaint) + '</td>' +
-            '<td>' + formatTime(p2.googleWebVitals.largestContentfulPaint) + '</td>' +
-            diffCell(p1.googleWebVitals.largestContentfulPaint, p2.googleWebVitals.largestContentfulPaint, formatTime) + '</tr>';
-    html += '<tr><td class="tabletext">Total Blocking Time</td>' +
-            '<td>' + formatTime(p1.googleWebVitals.totalBlockingTime) + '</td>' +
-            '<td>' + formatTime(p2.googleWebVitals.totalBlockingTime) + '</td>' +
-            diffCell(p1.googleWebVitals.totalBlockingTime, p2.googleWebVitals.totalBlockingTime, formatTime) + '</tr>';
-    html += '<tr><td class="tabletext">Cumulative Layout Shift</td>' +
-            '<td>' + fmtCLS(p1.googleWebVitals.cumulativeLayoutShift) + '</td>' +
-            '<td>' + fmtCLS(p2.googleWebVitals.cumulativeLayoutShift) + '</td>' +
-            diffCell(p1.googleWebVitals.cumulativeLayoutShift, p2.googleWebVitals.cumulativeLayoutShift, function (n) { return n.toFixed(3); }) + '</tr>';
+    const gw1 = p1.googleWebVitals, gw2 = p2.googleWebVitals;
+    html += metricRow('First Contentful Paint',
+                      gw1.firstContentfulPaint, gw2.firstContentfulPaint, formatTime);
+    html += metricRow('Largest Contentful Paint',
+                      gw1.largestContentfulPaint, gw2.largestContentfulPaint, formatTime);
+    html += metricRow('Total Blocking Time',
+                      gw1.totalBlockingTime, gw2.totalBlockingTime, formatTime);
+    html += metricRow('Cumulative Layout Shift',
+                      gw1.cumulativeLayoutShift, gw2.cumulativeLayoutShift, fmtCLS);
   }
 
   // Long-task block — sitespeed.io HARs that ran Lighthouse get
@@ -325,23 +299,17 @@ function pageXrayTemplate(d) {
     }
   }
   if (p1.cpu && p2.cpu && p1.cpu.longTasks && p2.cpu.longTasks) {
-    if (p1.cpu.longTasks.totalBlockingTime && p2.cpu.longTasks.totalBlockingTime) {
-      cpuHtml += '<tr><td class="tabletext">Total Blocking Time</td>' +
-                 '<td>' + formatTime(p1.cpu.longTasks.totalBlockingTime) + '</td>' +
-                 '<td>' + formatTime(p2.cpu.longTasks.totalBlockingTime) + '</td>' +
-                 diffCell(p1.cpu.longTasks.totalBlockingTime, p2.cpu.longTasks.totalBlockingTime, formatTime) + '</tr>';
+    const lt1 = p1.cpu.longTasks, lt2 = p2.cpu.longTasks;
+    if (lt1.totalBlockingTime && lt2.totalBlockingTime) {
+      cpuHtml += metricRow('Total Blocking Time',
+                           lt1.totalBlockingTime, lt2.totalBlockingTime, formatTime);
     }
-    if (p1.cpu.longTasks.maxPotentialFid && p2.cpu.longTasks.maxPotentialFid) {
-      cpuHtml += '<tr><td class="tabletext">Max Potential FID</td>' +
-                 '<td>' + formatTime(p1.cpu.longTasks.maxPotentialFid) + '</td>' +
-                 '<td>' + formatTime(p2.cpu.longTasks.maxPotentialFid) + '</td>' +
-                 diffCell(p1.cpu.longTasks.maxPotentialFid, p2.cpu.longTasks.maxPotentialFid, formatTime) + '</tr>';
+    if (lt1.maxPotentialFid && lt2.maxPotentialFid) {
+      cpuHtml += metricRow('Max Potential FID',
+                           lt1.maxPotentialFid, lt2.maxPotentialFid, formatTime);
     }
-    if (p1.cpu.longTasks.tasks && p2.cpu.longTasks.tasks) {
-      cpuHtml += '<tr><td class="tabletext">Total CPU Long Tasks</td>' +
-                 '<td>' + p1.cpu.longTasks.tasks + '</td>' +
-                 '<td>' + p2.cpu.longTasks.tasks + '</td>' +
-                 diffCell(p1.cpu.longTasks.tasks, p2.cpu.longTasks.tasks) + '</tr>';
+    if (lt1.tasks && lt2.tasks) {
+      cpuHtml += metricRow('Total CPU Long Tasks', lt1.tasks, lt2.tasks);
     }
     if (cpuHtml) {
       ensureCpuSection();
@@ -615,6 +583,9 @@ function resultHeaderTemplate(d) {
   const p1 = d.p1, p2 = d.p2;
   let html = '<div class="header-links">';
   html += '<a href="#pageXrayContent">Metrics</a> - ';
+  if (d.filmstrip) {
+    html += '<a href="#filmstripHeader">Filmstrip</a> - ';
+  }
   html += '<a href="#waterfallHeader">Waterfall</a> - ';
   if (p1.visualMetrics && p1.visualMetrics.VisualProgress) {
     html += '<a href="#visualProgressHeader">Visual Progress</a> - ';
@@ -623,7 +594,7 @@ function resultHeaderTemplate(d) {
     html += '<a href="#firstPartyHeader">1st vs 3rd party</a> - ';
   }
   if (p1.url === p2.url) {
-    html += '<a href="#requestDifffHeader">Request diff</a> - ';
+    html += '<a href="#requestDiffHeader">Request diff</a> - ';
   }
   html += '<a href="#domainsHeader">Domains</a>';
   html += '</div>';
@@ -679,7 +650,7 @@ function domainsTemplate(d) {
 //
 function requestDiffTemplate(d) {
   if (!d.requestDiff) return '';
-  let html = '<h3 id="requestDifffHeader">Request/response transfer size difference (larger than 1 KB)</h3>';
+  let html = '<h3 id="requestDiffHeader">Request/response transfer size difference (larger than 1 KB)</h3>';
   html += '<div id="comment-requestDiff" class="comment"></div>';
 
   if (!d.requestDiff.length) {
@@ -763,7 +734,3 @@ function parseTemplate(templateId, data, divId) {
   const target = document.getElementById(divId);
   if (target) target.innerHTML = renderer(data);
 }
-
-// No-op kept for backwards compatibility with generate.js calling it
-// at the start of every render.
-function registerTemplateHelpers() {}
