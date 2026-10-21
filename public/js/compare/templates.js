@@ -37,6 +37,7 @@ function each(collection, fn) {
 // Safe property lookup for nested keys that might be missing on
 // either of the two HARs (e.g. p2.firstParty.contentTypes['css'] may
 // be undefined if HAR2 has no CSS at all).
+// eslint-disable-next-line no-unused-vars -- not used now
 function getValue(obj, key, name) {
   if (!obj || !obj[key]) return 0;
   return obj[key][name] != null ? obj[key][name] : 0;
@@ -345,7 +346,6 @@ function pageXrayTemplate(d) {
     if (cpuHtml) {
       ensureCpuSection();
       html += cpuHtml;
-      cpuHtml = '';
     }
   }
 

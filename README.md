@@ -121,6 +121,12 @@ Run the dev server:
 npm run develop
 ```
 
+Lint and run the tests (CI runs both on every PR):
+```
+npm run lint
+npm test
+```
+
 Send us a PR / create an issue. If you have a big change coming up, please discuss it with us in an issue first.
 
 ## Deploy your own version

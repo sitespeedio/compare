@@ -1,4 +1,4 @@
-/* exported getLastTiming getAllDomains getTotalDiff getUniqueRequests*/
+/* exported getLastTiming, getAllDomains, getTotalDiff, getUniqueRequests */
 
 /**
  * Helper functions to get things out of the HAR

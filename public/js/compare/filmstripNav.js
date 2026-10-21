@@ -80,7 +80,7 @@ function initFilmstripNav() {
     const column = cell.closest('.filmstrip-column');
     if (!column) return;
 
-    let next = null;
+    let next;
     if (e.key === 'ArrowRight') {
       const nextCol = column.nextElementSibling;
       next = nextCol && nextCol.querySelector('.filmstrip-cell:not(.filmstrip-cell--missing)');

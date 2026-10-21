@@ -128,7 +128,7 @@ function loadFilesFromConfig(url) {
     .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       errorMessage(e.message);
       showUpload();
     });
@@ -145,14 +145,14 @@ function loadFilesFromGist(id) {
       try {
         content = JSON.parse(gist.files[key].content);
       } catch (e) {
-        throw new Error('Malformed gist.' + e);
+        throw new Error('Malformed gist.' + e, { cause: e });
       }
       return readConfig(content);
     })
     .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       errorMessage(e.message);
       showUpload();
     });
@@ -257,7 +257,7 @@ function loadHARsFromConfig(config) {
     .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       errorMessage(e.message);
       showUpload();
     });
