@@ -38,5 +38,12 @@ export default [
     languageOptions: {
       globals: { ...globals.node }
     }
+  },
+  {
+    // Functions passed to executeScript run in the browser
+    files: ['test/e2e/**/*.js'],
+    languageOptions: {
+      globals: { ...globals.browser }
+    }
   }
 ];
