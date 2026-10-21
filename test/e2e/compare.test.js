@@ -7,6 +7,9 @@
 // CHROMEDRIVER to use a local install instead (for example on Linux
 // ARM, where Selenium Manager has no Chrome to download).
 
+/* global pickRun, setCompareMode, timeline */
+// The page globals above are used in code that runs in the browser.
+
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createReadStream, existsSync, readFileSync } from 'node:fs';
@@ -109,6 +112,25 @@ test('every header link points to a section', async () => {
 test('the waterfalls render', async () => {
   await waitFor('#har1 canvas');
   await waitFor('#har2 canvas');
+});
+
+test('a later run draws its own connections, not those of run 1', async () => {
+  // Run 3 opens connection 63 again, as run 1 did.
+  await driver.executeScript(() => pickRun(1, 3));
+  const connects = () => driver.executeScript(() => {
+    const wf = timeline.waterfalls.har1;
+    const entries = (wf && wf.renderer.rawEntries) || [];
+    return entries.filter(e => e.timings && e.timings.connect > 0)
+      .map(e => ({ late: e._connectTimeMs >= e.time_start - 1, page: wf.renderer.options.pageId }));
+  });
+  try {
+    await driver.wait(async () => (await connects()).some(c => c.page === 'page_1-1-1'), 15000);
+    const found = await connects();
+    assert.ok(found.length >= 2);
+    assert.ok(found.every(c => c.late));
+  } finally {
+    await driver.executeScript(() => setCompareMode('all'));
+  }
 });
 
 test('two HAR files with five runs each are compared by their medians', async () => {

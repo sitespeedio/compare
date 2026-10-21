@@ -20,6 +20,21 @@ function loadWaterfallTools() {
 
 const encoder = new TextEncoder();
 
+// Only the run to show, as a HAR of its own. The runs of a Browsertime
+// or sitespeed.io HAR reuse connection ids, and waterfall-tools keys
+// connections by id only, so a later run got the connect and SSL times
+// of the first run (drawn off its time axis). A smaller HAR also loads
+// faster. Entries without a pageref belong to the first page.
+function singleRun(har, runIndex) {
+  const pages = har.log.pages || [];
+  const page = pages[runIndex];
+  if (!page || pages.length < 2) return har;
+  const entries = (har.log.entries || []).filter(e =>
+    e.pageref ? e.pageref === page.id : runIndex === 0
+  );
+  return { log: { ...har.log, pages: [page], entries } };
+}
+
 /**
  * Load a parsed HAR object into waterfall-tools and render it as a
  * canvas waterfall inside `container`. Both calls in a side-by-side
@@ -36,9 +51,11 @@ const encoder = new TextEncoder();
 export async function renderCompareWaterfall(har, container, opts = {}) {
   const { WaterfallTools } = await loadWaterfallTools();
 
+  const run = typeof opts.runIndex === 'number' ? singleRun(har, opts.runIndex) : har;
+
   // waterfall-tools.loadBuffer wants a byte buffer it can stream. JSON-stringify
   // the parsed HAR and hand it back as UTF-8 bytes; cheap on a single HAR.
-  const buf = encoder.encode(JSON.stringify(har));
+  const buf = encoder.encode(JSON.stringify(run));
 
   const wt = new WaterfallTools();
   await wt.loadBuffer(buf, { format: 'har' });
@@ -54,8 +71,9 @@ export async function renderCompareWaterfall(har, container, opts = {}) {
 
   if (typeof opts.runIndex === 'number') {
     const keys = Object.keys(wt.data.pages);
-    if (keys[opts.runIndex] != null) {
-      options.pageId = keys[opts.runIndex];
+    const runKey = run === har ? keys[opts.runIndex] : keys[0];
+    if (runKey != null) {
+      options.pageId = runKey;
     }
   }
 
