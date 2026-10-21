@@ -3,19 +3,74 @@
  * ============================
  * Single column with a generous drop-target card and URL inputs
  * underneath. Centred at desktop widths, full-width on phones.
+ * The soft blue and orange background matches the two HAR colors.
  */
 
-.dropzone {
-  max-width: 640px;
-  margin: 32px auto 0;
-  padding: 36px 28px;
+.home {
+  min-height: 100vh;
+  /* Soft blue and orange light, the colors of HAR 1 and HAR 2. */
+  background:
+    radial-gradient(40rem 26rem at 12% -6%, rgba(0, 149, 210, 0.16), transparent 70%),
+    radial-gradient(36rem 24rem at 92% 4%, rgba(249, 115, 22, 0.13), transparent 70%),
+    var(--color-surface);
+
+  .header {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border-bottom: 0;
+  }
+}
+
+.home-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  text-decoration: none;
+
+  .img-logo { width: 40px; }
+}
+
+.home-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
   text-align: center;
-  background: var(--color-surface-card);
+}
+
+.home-title {
+  margin: 24px 0 12px;
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.home-har1 { color: var(--color-har1-ink); }
+.home-har2 { color: var(--color-har2-ink); }
+
+.home-lead {
+  max-width: 560px;
+  margin: 0 auto 32px;
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  text-wrap: balance;
+}
+
+.dropzone {
+  margin: 0;
+  padding: 40px 28px 32px;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.85);
   border: 2px dashed var(--color-border-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  transition: border-color var(--motion-fast),
-              background-color var(--motion-fast);
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -12px rgba(15, 23, 42, 0.12);
+  transition: border-color var(--motion-med), background-color var(--motion-med),
+              box-shadow var(--motion-med), transform var(--motion-med);
 
   h2 { margin: 0 0 8px 0; }
 
@@ -23,15 +78,184 @@
     color: var(--color-text-secondary);
     margin: 0 0 16px 0;
   }
+
+  &:hover {
+    border-color: var(--color-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -14px rgba(0, 149, 210, 0.35);
+  }
 }
 
-.fd-zone {
+.dropzone-icon {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 8px;
+  transition: transform var(--motion-med);
+}
+.dropzone-file1 { fill: var(--color-blue-tint); stroke: var(--color-har1); stroke-width: 2.5; }
+.dropzone-file2 { fill: #fff7ed; stroke: var(--color-har2); stroke-width: 2.5; }
+.dropzone-arrow {
+  fill: none;
+  stroke: var(--color-har2-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dropzone .dropzone-title {
+  margin-bottom: 4px;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.dropzone-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-surface-card);
+  background: var(--color-blue);
+  border-radius: var(--radius-pill);
+  transition: background-color var(--motion-fast);
+}
+.dropzone:hover .dropzone-button { background: var(--color-blue-dark); }
+
+.home-private {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.home-tip {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+
+  code { font-size: 0.85em; white-space: nowrap; }
+}
+
+.home-tip-badge {
+  flex: none;
+  padding: 1px 8px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-info);
+  background: var(--color-info-bg);
+  border-radius: var(--radius-pill);
+}
+
+.home-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.home-urls {
+  padding: 20px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+
+  .smallish {
+    margin: 0 0 12px;
+    text-align: left;
+  }
+}
+
+.home-url {
+  position: relative;
+  display: block;
+  margin-bottom: 10px;
+
+  .input-field {
+    max-width: none;
+    margin: 0;
+    padding-left: 46px;
+  }
+}
+
+.home-url-badge {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-surface-card);
+  border-radius: 50%;
+}
+.home-url--1 .home-url-badge { background: var(--color-har1); }
+.home-url--2 .home-url-badge { background: var(--color-har2-ink); }
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+
+  .submit { margin: 0; }
+}
+
+.home-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  input { width: 16px; height: 16px; accent-color: var(--color-blue); }
+}
+
+.home-links {
+  margin-top: 24px;
+
+  a { white-space: nowrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone:hover { transform: none; }
+}
+
+.dropzone {
   position: relative;
   overflow: hidden;
 
   &.over {
     border-color: var(--color-blue);
+    border-style: solid;
     background: var(--color-blue-tint);
+    box-shadow: 0 0 0 6px rgba(0, 149, 210, 0.15), 0 18px 40px -14px rgba(0, 149, 210, 0.35);
+
+    .dropzone-icon { transform: translateY(-4px) scale(1.06); }
   }
 }
 

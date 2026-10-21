@@ -14,7 +14,5 @@
 @import './waterfall.css';
 @import './filmstrip.css';
 @import './visual-progress.css';
-@import './domains.css';
-@import './page-xray.css';
-@import './request-diff.css';
+@import './result.css';
 @import './lightbox.css';

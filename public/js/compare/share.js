@@ -102,12 +102,14 @@ function downloadBundle(btn, cfg) {
     har1: {
       har: cfg.har1.har,
       run: cfg.har1.run,
-      label: cfg.har1.label
+      label: cfg.har1.label,
+      drawings: cfg.har1.drawings
     },
     har2: {
       har: cfg.har2.har,
       run: cfg.har2.run,
-      label: cfg.har2.label
+      label: cfg.har2.label,
+      drawings: cfg.har2.drawings
     }
   };
   const blob = new Blob([JSON.stringify(bundle)], { type: 'application/json' });

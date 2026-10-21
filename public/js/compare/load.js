@@ -182,12 +182,14 @@ function loadFromBundle(bundle) {
     har1: {
       har: bundle.har1.har,
       run: bundle.har1.run || 0,
-      label: bundle.har1.label || 'HAR1'
+      label: bundle.har1.label || 'HAR1',
+      drawings: bundle.har1.drawings
     },
     har2: {
       har: bundle.har2.har,
       run: bundle.har2.run || 0,
-      label: bundle.har2.label || 'HAR2'
+      label: bundle.har2.label || 'HAR2',
+      drawings: bundle.har2.drawings
     },
     title: bundle.title || 'Compare HAR files',
     firstParty: bundle.firstParty || undefined,

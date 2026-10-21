@@ -1,4 +1,4 @@
-/* exported showUpload, formatDate, formatURL, toggleRow, hideUpload, objectPropertiesToArray, formatTime, showLoading, errorMessage, formatBytes, blendWaterfalls, toggleDiffOnly, toggleWaterfallLayout, applyWaterfallLayoutPreference */
+/* exported showUpload, formatDate, formatURL, hideUpload, formatTime, showLoading, errorMessage, formatBytes, blendWaterfalls, toggleWaterfallLayout, applyWaterfallLayoutPreference, prefersReducedMotion */
 
 // Hide the upload functionality
 function hideUpload() {
@@ -16,12 +16,13 @@ function removeAndHide() {
   }
   removeChildren('har1');
   removeChildren('har2');
-  removeChildren('pageXrayContent');
+  removeChildren('summaryContent');
+  removeChildren('visualProgress');
+  removeChildren('timelineMedia');
   removeChildren('filmstripContent');
-  removeChildren('thirdPartyContent');
-  removeChildren('visualProgressContent');
-  removeChildren('requestDiffContent');
-  removeChildren('domainsContent');
+  removeChildren('metricsTableContent');
+  removeChildren('requestsContent');
+  removeChildren('capturesContent');
   hide('result');
   hide('loading');
 }
@@ -37,20 +38,6 @@ function showLoading() {
   el.style.display = 'none';
   const el2 = document.getElementById('loading');
   el2.style.display = 'block';
-}
-
-function objectPropertiesToArray(object) {
-  const array = [];
-  for (let key in object) {
-    if (Object.hasOwn(object, key)) {
-      array.push({ name: key, value: object[key] });
-    }
-  }
-  return array.sort(function(a, b) {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
 }
 
 // Put a error message on the screen
@@ -71,6 +58,10 @@ function hide(id) {
   if (el) {
     el.style.display = 'none';
   }
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 function formatDate(dateString) {
@@ -180,32 +171,4 @@ function toggleWaterfallLayout() {
   setWaterfallSideBySide(on);
   try { localStorage.setItem('compare.waterfallSideBySide', on ? '1' : '0'); }
   catch (e) { /* localStorage blocked */ }
-}
-
-// "Only show differences" toggle for the page-x-ray table — hides
-// rows whose Δ cell renders "no change", so a long metric list
-// collapses to just the things that actually moved. Persists the
-// choice so the page comes back the way the user left it.
-function toggleDiffOnly(btn) {
-  const table = document.querySelector('.pageXrayTable');
-  if (!table) return;
-  const on = !table.classList.contains('pageXrayTable--diff-only');
-  table.classList.toggle('pageXrayTable--diff-only', on);
-  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  try { localStorage.setItem('compare.diffOnly', on ? '1' : '0'); }
-  catch (e) { /* localStorage blocked — preference is in-memory only */ }
-}
-
-function toggleRow(element, className, toggler) {
-  const rows = element.closest('table').getElementsByClassName(className);
-
-  for (let i = 0; i < rows.length; i++) {
-    if (getComputedStyle(rows[i]).display === 'none') {
-      rows[i].style.display = 'table-row';
-      toggler.style.transform = 'rotate(45deg)';
-    } else {
-      rows[i].style.display = 'none';
-      toggler.style.transform = 'rotate(-45deg)';
-    }
-  }
 }

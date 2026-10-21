@@ -1,9 +1,9 @@
 /*
  * VISUAL PROGRESS CHART
  * =====================
- * Hand-rolled inline-SVG curve (built in JS at runtime). Two series —
- * HAR1 in brand blue, HAR2 in dark blue — and an optional pair of
- * thumbnail strips below, aligned to the same time axis.
+ * Hand-rolled inline-SVG curve (built in JS at runtime). A thin line
+ * for every run and a strong line for the selected run of each HAR —
+ * HAR1 in blue, HAR2 in orange — with the timeline cursor on top.
  */
 
 .vp-chart {
@@ -35,16 +35,23 @@
     stroke-width: 1;
   }
 
+  .vp-range {
+    stroke: none;
+    opacity: 0.18;
+  }
+  .vp-range--1 { fill: var(--color-har1); }
+  .vp-range--2 { fill: var(--color-har2); }
+
   .vp-series--1 {
     fill: none;
-    stroke: var(--color-blue);
+    stroke: var(--color-har1);
     stroke-width: 2;
     stroke-linejoin: round;
   }
 
   .vp-series--2 {
     fill: none;
-    stroke: var(--color-blue-dark);
+    stroke: var(--color-har2);
     stroke-width: 2;
     stroke-linejoin: round;
     stroke-dasharray: 4 4;
@@ -83,107 +90,4 @@
   .vp-marker-label.vp-marker--fcp { fill: #16a34a; }
   .vp-marker-label.vp-marker--lcp { fill: #ea580c; }
   .vp-marker-label.vp-marker--si  { fill: #2563eb; }
-}
-
-/* Thumbnail strips under the chart — absolute positioning lets us
-   align each thumb's center to its time on the same axis as the SVG
-   above, so the visual change at each milestone is easy to spot. */
-.vp-thumb-row {
-  display: grid;
-  grid-template-columns: minmax(70px, 90px) 1fr;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.vp-thumb-label {
-  font-size: 0.85rem;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-}
-
-.vp-thumb-rail {
-  position: relative;
-  height: 104px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-}
-
-.vp-thumb {
-  position: absolute;
-  top: 4px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-
-  a {
-    display: block;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface-card);
-    transition: border-color var(--motion-fast),
-                box-shadow var(--motion-fast),
-                transform var(--motion-fast);
-
-    &:hover,
-    &:focus-visible {
-      border-color: var(--color-info-border);
-      box-shadow: var(--shadow-md);
-      transform: translate(-50%, -1px) translateX(50%);
-    }
-  }
-
-  img {
-    display: block;
-    width: 120px;
-    height: auto;
-    max-height: 80px;
-    object-fit: cover;
-  }
-}
-
-.vp-thumb-time {
-  font-size: 0.7rem;
-  color: var(--color-text-secondary);
-  font-variant-numeric: tabular-nums;
-}
-
-.resource-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin: 12px 0 0 0;
-  padding: 0;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-
-  li {
-    display: inline-flex;
-    align-items: center;
-
-    &::before {
-      content: '';
-      width: 12px;
-      height: 12px;
-      margin-right: 6px;
-      border-radius: var(--radius-pill);
-    }
-  }
-
-  .legend-url1::before { background: var(--color-blue); }
-  .legend-url2::before { background: var(--color-blue-dark); }
-}
-
-@media (max-width: 640px) {
-  .vp-thumb-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
-  .vp-thumb img { width: 60px; max-height: 45px; }
-  .vp-thumb-rail { height: 70px; }
 }

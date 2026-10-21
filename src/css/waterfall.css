@@ -66,7 +66,9 @@
   }
   .har-canvas--base,
   .har-canvas--overlay {
-    position: static;
+    /* Relative, not static: the cursor and the drawings are placed
+       inside each waterfall. */
+    position: relative;
     inset: auto;
     opacity: 1;
     pointer-events: auto;
@@ -76,6 +78,54 @@
   .harwrapper--side-by-side {
     grid-template-columns: 1fr;
   }
+}
+
+/* Drawings on the waterfall. The layer lets pointer events through to
+   the waterfall until a draw tool is on. In blend mode it inherits the
+   pointer-events of its waterfall, so only the visible one gets them. */
+.wf-draw {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+.harwrapper.is-drawing .wf-draw {
+  pointer-events: inherit;
+  cursor: crosshair;
+  touch-action: none;
+}
+.harwrapper.is-drawing-text .wf-draw { cursor: text; }
+
+.wf-draw-input {
+  position: absolute;
+  z-index: 4;
+  width: 220px;
+  padding: 2px 6px;
+  font: 600 0.9rem var(--font-sans);
+  color: var(--color-draw);
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-draw);
+  border-radius: var(--radius-sm);
+  transform: translateY(-50%);
+}
+
+.draw-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+
+  .chip-toggle { margin-left: 0; }
+}
+.draw-tools-label {
+  margin-right: 4px;
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+.draw-hint {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
 }
 
 /* Floating tooltip used by the waterfall-tools onHover hook. Lives at

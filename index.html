@@ -50,6 +50,10 @@
   <script src="/js/compare/filmstrip.js" defer></script>
   <script src="/js/compare/filmstripNav.js" defer></script>
   <script src="/js/compare/lightbox.js" defer></script>
+  <script src="/js/compare/stats.js" defer></script>
+  <script src="/js/compare/metrics.js" defer></script>
+  <script src="/js/compare/timeline.js" defer></script>
+  <script src="/js/compare/annotate.js" defer></script>
   <script src="/js/compare/generate.js" defer></script>
   <script src="/js/compare/generateVisualProgress.js" defer></script>
   <script src="/js/compare/templates.js" defer></script>
@@ -70,56 +74,77 @@
 
 <body>
   <a class="skip-link" href="#mainContent">Skip to content</a>
-  <div id="choosehars">
+  <div id="choosehars" class="home">
     <header class="header" role="banner">
       <div class="wip" aria-hidden="true">BETA</div>
-      <div class="grid grid-pad">
-        <div class="col-1-1">
-          <div class="logo">
-            <a href="https://compare.sitespeed.io/">
-              <img src="img/compare.png" width="77" class="img-logo" alt="Compare home" />
-            </a>
-          </div>
-          <h1 class="title">Compare</h1>
-          <p class="subtitle">
-            Understand regressions by comparing your HAR files.
-          </p>
-        </div>
-      </div>
+      <a class="home-brand" href="https://compare.sitespeed.io/">
+        <img src="img/compare.png" width="40" class="img-logo" alt="" />
+        <span>Compare</span>
+      </a>
     </header>
-    <div class="grid grid-pad">
-      <div class="col-1-1">
-        <fieldset id="zone" class="dropzone">
-          <p>
-            Drop HAR files here (max two) or click to upload. You can add .har
-            and .har.gz files.
-          </p>
-        </fieldset>
-        <p class="smallish">
-          Or add the URL to your HAR files and press <b>compare</b>:
+    <div class="home-main">
+      <h1 class="home-title">See what changed between <span class="home-har1">two</span> <span class="home-har2">HAR files</span></h1>
+      <p class="home-lead">
+        Understand regressions by comparing your HAR files: metrics with
+        statistics across all runs, video, filmstrip and waterfalls on one
+        timeline.
+      </p>
+
+      <fieldset id="zone" class="dropzone">
+        <svg class="dropzone-icon" viewBox="0 0 64 64" aria-hidden="true">
+          <rect class="dropzone-file1" x="8" y="10" width="30" height="40" rx="5" />
+          <rect class="dropzone-file2" x="26" y="16" width="30" height="40" rx="5" />
+          <path class="dropzone-arrow" d="M41 26v16m-6-6 6 6 6-6" />
+        </svg>
+        <p class="dropzone-title">Drop your HAR files here</p>
+        <p>
+          One or two .har or .har.gz files, or a saved comparison.
         </p>
-        <form data-action="compare">
-        <input class="input-field" id="harurl" type="url" placeholder="URL HAR 1" aria-label="URL HAR 1" />
-        <input class="input-field" id="harurl2" type="url" placeholder="URL HAR 2" aria-label="URL HAR 2" />
+        <span class="dropzone-button">Choose files</span>
+      </fieldset>
+      <p class="home-private">The files stay in your browser. Nothing is uploaded.</p>
+      <p class="home-tip">
+        <span class="home-tip-badge">Tip</span>
+        <span>HAR files from <a href="https://www.sitespeed.io/">sitespeed.io</a> and
+        <a href="https://www.sitespeed.io/documentation/browsertime/">Browsertime</a>
+        also give you visual metrics, CPU timings and more runs to compare. When the
+        HAR links to the result (sitespeed.io with <code>--resultBaseURL</code>), you
+        also get the video and filmstrip.</span>
+      </p>
+
+      <div class="home-or"><span>or</span></div>
+
+      <form class="home-urls" data-action="compare">
         <p class="smallish">
-          You can also use a
-          <a href="https://github.com/sitespeedio/compare#configuration">configuration file</a>
-          or a
-          <a href="https://github.com/sitespeedio/compare#github-gist">Github gist</a>.
+          Add the URL to your HAR files and press <b>compare</b>:
         </p>
-        <p class="smallish">
-          <input type="checkbox" id="stripVersion" name="stripVersion" value="false">
-          <label for="stripVersion">Strip version parameters</label>
-        </p>
-        <p class="smallish">
-          <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
-        </p>
-        <button type="submit" class="submit">
-          Compare
-        </button>
-        </form>
-        <div id="message" class="message"></div>
-      </div>
+        <label class="home-url home-url--1">
+          <span class="home-url-badge" aria-hidden="true">1</span>
+          <input class="input-field" id="harurl" type="url" placeholder="URL HAR 1" aria-label="URL HAR 1" />
+        </label>
+        <label class="home-url home-url--2">
+          <span class="home-url-badge" aria-hidden="true">2</span>
+          <input class="input-field" id="harurl2" type="url" placeholder="URL HAR 2" aria-label="URL HAR 2" />
+        </label>
+        <div class="home-actions">
+          <label class="home-check" for="stripVersion">
+            <input type="checkbox" id="stripVersion" name="stripVersion" value="false">
+            Strip version parameters
+          </label>
+          <button type="submit" class="submit">
+            Compare
+          </button>
+        </div>
+      </form>
+      <div id="message" class="message"></div>
+
+      <p class="home-links smallish">
+        You can also use a
+        <a href="https://github.com/sitespeedio/compare#configuration">configuration file</a>
+        or a
+        <a href="https://github.com/sitespeedio/compare#github-gist">Github gist</a>.
+        <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
+      </p>
     </div>
   </div>
 
@@ -133,17 +158,47 @@
             </a>
           </div>
           <nav id="resultHeaderContent" aria-label="Page sections"></nav>
-          <div id="shareControls" class="share-controls" aria-live="polite"></div>
+          <div class="header-actions">
+            <button type="button" class="submit submit-smaller" data-action="switch" aria-label="Swap the two HAR files">Swap</button>
+            <div id="shareControls" class="share-controls" aria-live="polite"></div>
+          </div>
         </div>
       </div>
     </header>
     <main id="mainContent" class="grid grid-pad grid-result" tabindex="-1">
       <div class="col-1-1">
         <h1 class="sr-only">HAR comparison</h1>
-        <div id="comment-intro" class="comment"></div>
-        <div id="pageXrayContent" class="card"></div>
-        <div id="filmstripContent" class="card"></div>
-        <section class="card">
+        <section id="summary" aria-label="Summary">
+          <div id="comment-intro" class="comment"></div>
+          <div id="summaryContent"></div>
+        </section>
+        <section id="timelineSection" class="card">
+          <div class="card-head">
+            <h3 id="timelineHeader" class="card-title">Timeline</h3>
+            <span id="timelineMeta" class="muted"></span>
+          </div>
+          <div id="comment-visualProgress" class="comment"></div>
+          <div id="timelineMedia"></div>
+          <div class="rendering-transport">
+            <button id="timelinePlay" type="button" class="rendering-button rendering-button--primary" data-action="timeline-play" aria-pressed="false">Play</button>
+            <span class="rendering-speeds" role="group" aria-label="Playback speed">
+              <button type="button" class="rendering-button" data-action="timeline-speed" data-speed="1" aria-pressed="true">1×</button>
+              <button type="button" class="rendering-button" data-action="timeline-speed" data-speed="0.5" aria-pressed="false">0.5×</button>
+              <button type="button" class="rendering-button" data-action="timeline-speed" data-speed="0.25" aria-pressed="false">0.25×</button>
+            </span>
+            <button type="button" class="rendering-button" data-action="timeline-step" data-step="-1" aria-label="Previous frame">⟨ frame</button>
+            <button type="button" class="rendering-button" data-action="timeline-step" data-step="1" aria-label="Next frame">frame ⟩</button>
+            <button type="button" class="rendering-button" data-action="timeline-jump">Jump to first visual change</button>
+            <span id="timelineTime" class="rendering-clock">0.000 s</span>
+          </div>
+          <div id="timelineTrackContent"></div>
+          <h4 class="vp-title">Visual progress</h4>
+          <p id="vpRangeNote" class="muted vp-note">Lines: the selected runs. Light color: from the slowest to the fastest run.</p>
+          <div id="visualProgress" class="vp-chart"></div>
+          <p id="vpBandNote" class="muted vp-note">Shaded red: the two runs differ by 20 percentage points or more in visual progress.</p>
+          <div id="filmstripContent"></div>
+        </section>
+        <section id="waterfallSection" class="card">
           <h3 id="waterfallHeader" class="card-title">Waterfall
             <button id="waterfallLayoutToggle" type="button"
                     data-action="toggle-waterfall-layout"
@@ -151,6 +206,16 @@
                     aria-pressed="false">Side by side</button>
           </h3>
           <div id="comment-waterfall" class="comment"></div>
+          <div class="draw-tools" role="toolbar" aria-label="Draw on the waterfalls">
+            <span class="draw-tools-label">Draw</span>
+            <button type="button" class="chip-toggle" data-action="draw-tool" data-tool="line" aria-pressed="false">Line</button>
+            <button type="button" class="chip-toggle" data-action="draw-tool" data-tool="circle" aria-pressed="false">Circle</button>
+            <button type="button" class="chip-toggle" data-action="draw-tool" data-tool="text" aria-pressed="false">Text</button>
+            <button type="button" class="chip-toggle" data-action="draw-undo">Undo</button>
+            <button type="button" class="chip-toggle" data-action="draw-clear">Clear</button>
+            <button type="button" class="chip-toggle" data-action="draw-save">Save as PNG</button>
+          </div>
+          <p id="drawHint" class="muted draw-hint" hidden>Drag on a waterfall to draw, or click to add text. Drag a drawing to move it. Esc stops drawing.</p>
           <div class="rangeWrapper" id="harBlendWrapper">
             <span class="har-label" id="har1Label"></span>
             <input id="harBlendSlider" type="range" min="0" max="1" step="0.05" value="0"
@@ -163,10 +228,31 @@
             <div id="har2" class="har-canvas har-canvas--overlay"></div>
           </div>
         </section>
-        <div id="visualProgressContent" class="card"></div>
-        <div id="requestDiffContent" class="card"></div>
-        <div id="thirdPartyContent" class="card"></div>
-        <div id="domainsContent" class="card"></div>
+        <section id="metricsSection" class="card">
+          <h3 id="metricsHeader" class="card-title">All metrics</h3>
+          <div id="comment-firstParty" class="comment"></div>
+          <div id="comment-domains" class="comment"></div>
+          <div class="metrics-tools">
+            <label class="metrics-search">
+              <span class="sr-only">Find a metric</span>
+              <input id="metricSearch" type="search" placeholder="Find a metric" data-action="metric-search">
+            </label>
+            <button id="allMetricsToggle" type="button" class="chip-toggle" data-action="toggle-all-metrics" aria-pressed="false">Show all metrics</button>
+          </div>
+          <p id="metricsNote" class="muted"></p>
+          <div id="metricsTableContent"></div>
+        </section>
+        <section id="requestsSection" class="card">
+          <h3 id="requestDiffHeader" class="card-title">Request changes</h3>
+          <div id="comment-requestDiff" class="comment"></div>
+          <p id="requestsNote" class="muted"></p>
+          <label class="request-min">
+            <span id="requestMinLabel">Hide size changes smaller than 1000 B</span>
+            <input id="requestMin" type="range" min="0" max="5000" step="100" value="1000" data-action="request-min">
+          </label>
+          <div id="requestsContent"></div>
+        </section>
+        <section id="capturesContent" class="card"></section>
         <button type="button" data-action="upload-again" class="submit">
           Upload again
         </button>
