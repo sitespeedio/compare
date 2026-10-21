@@ -41,13 +41,16 @@ test('getFilmstrip puts both HARs on the same time grid', () => {
   assert.equal(filmstrip.frames2.length, 25);
 });
 
-test('getFilmstrip gives both HARs the same number of frames', {
-  todo: 'padFrames adds the last frame of the faster page after the grid end'
-}, () => {
+test('getFilmstrip gives both HARs the same frame times', () => {
   const fast = sitespeedHar({ 0: 0, 500: 100 });
-  const slow = sitespeedHar({ 0: 0, 1200: 50, 2400: 100 });
-  const filmstrip = getFilmstrip(fast, 0, slow, 0);
-  assert.equal(filmstrip.frames1.length, filmstrip.frames2.length);
+  for (const lastMs of [2400, 2450]) {
+    const slow = sitespeedHar({ 0: 0, 1200: 50, [lastMs]: 100 });
+    const { frames1, frames2 } = getFilmstrip(fast, 0, slow, 0);
+    assert.deepEqual(Array.from(frames1, f => f.ms), Array.from(frames2, f => f.ms));
+    assert.equal(frames1.at(-1).ms, lastMs);
+    assert.equal(frames1.at(-1).sourceMs, 500);
+    assert.equal(frames2.at(-1).sourceMs, lastMs);
+  }
 });
 
 test('getFilmstrip widens the step for long pages', () => {

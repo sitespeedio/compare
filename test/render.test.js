@@ -30,3 +30,28 @@ test('the request diff shows decreases with a minus sign', () => {
   assert.match(html, /Decreased \(1\)<\/td><td class="green">-2\.0 KB/);
   assert.match(html, /green"><b>-5\.0 KB/);
 });
+
+test('the request diff labels requests with unknown size', () => {
+  const context = loadScripts(['ux', 'har', 'templates']);
+  const requestDiff = [
+    { url: 'https://a.com/new.js', har2: 0, diff: 0 },
+    { url: 'https://a.com/removed.js', har1: 0, diff: -0 }
+  ];
+  const html = context.requestDiffTemplate({
+    requestDiff,
+    total: context.getTotalDiff(requestDiff),
+    config: { har1: { label: 'A' }, har2: { label: 'B' } }
+  });
+  assert.match(html, /new\.js<\/a><\/td><td class="tabletext">N\/A<\/td><td class="tabletext">0 B<\/td><td class="tabletext red">New/);
+  assert.match(html, /removed\.js<\/a><\/td><td class="tabletext">0 B<\/td><td class="tabletext">N\/A<\/td><td class="tabletext green">Removed/);
+});
+
+test('error messages are shown as text', () => {
+  const message = {};
+  const { errorMessage } = loadScripts(['ux'], {
+    document: { getElementById: () => message }
+  });
+  errorMessage('<img src=x onerror=alert(1)>');
+  assert.equal(message.textContent, '<img src=x onerror=alert(1)>');
+  assert.equal(message.innerHTML, undefined);
+});
