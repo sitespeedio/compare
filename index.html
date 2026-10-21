@@ -55,79 +55,12 @@
   <script src="/js/compare/templates.js" defer></script>
   <script src="/js/compare/share.js" defer></script>
   <script src="/js/compare/compare.js" defer></script>
+  <script src="/js/compare/start.js" defer></script>
 
 
   <!--
 -->
 
-  <script>
-    // One-time cleanup for browsers that previously installed the
-    // compare service worker. The SW + workbox stack was removed, so
-    // any clients still controlled by an old SW would keep serving
-    // stale assets indefinitely. Unregister + drop its caches so the
-    // very next reload after this change is fresh. Cheap no-op for
-    // anyone who never had an SW.
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (regs) {
-        regs.forEach(function (r) { r.unregister(); });
-      }).catch(function () {});
-    }
-    if ("caches" in window) {
-      caches.keys().then(function (keys) {
-        keys.forEach(function (k) { caches.delete(k); });
-      }).catch(function () {});
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const footerYear = document.getElementById("footerYear");
-      if (footerYear) footerYear.textContent = new Date().getFullYear();
-      createMainDropZone("zone");
-
-      function getAndSet(paramName, elementId) {
-        const paramValue = getParam(paramName);
-        if (paramValue) {
-          const el = document.getElementById(elementId);
-          el.value = paramValue;
-        }
-      }
-      getAndSet("har1", "harurl");
-      getAndSet("har2", "harurl2");
-      // Carry stripVersion through share links — `?stripVersion=1`
-      // mirrors the start-page checkbox so a shared URL renders the
-      // same comparison the sender saw.
-      const stripVersionFromUrl = getParam("stripVersion") === "1";
-      if (getParam("har1") != undefined && getParam("har2") != undefined) {
-        showLoading();
-        loadHARsFromConfig({
-          har1: { url: getParam("har1") },
-          har2: { url: getParam("har2") },
-          stripVersion: stripVersionFromUrl
-        });
-      } else if (
-        (getParam("har1") != undefined || getParam("har2") != undefined) &&
-        getParam("compare")
-      ) {
-        showLoading();
-        loadHARsFromConfig({
-          har1: { url: getParam("har1") || getParam("har2") },
-          har2: {},
-          stripVersion: stripVersionFromUrl
-        });
-      } else if (getParam("gist") !== undefined) {
-        showLoading();
-        loadFilesFromGist(getParam("gist"));
-      } else if (getParam("config") !== undefined) {
-        showLoading();
-        loadFilesFromConfig(getParam("config"));
-      }
-
-      document.addEventListener("paste", function (e) {
-        // Ok let the the user paste the URL into the field
-        if (e.target.closest && e.target.closest("input, textarea")) return;
-        loadFromPaste(e.clipboardData.getData("Text"));
-      });
-    });
-  </script>
 
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/ico/compare-144.png" />
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/ico/compare-114.png" />
@@ -181,7 +114,7 @@
           <a href="https://github.com/sitespeedio/compare#compare-har-files">Read the full documentation</a>
         </p>
         <button type="button" class="submit"
-          onclick="compareFromForm();">
+          data-action="compare">
           Compare
         </button>
         <div id="message" class="message"></div>
@@ -212,7 +145,7 @@
         <section class="card">
           <h3 id="waterfallHeader" class="card-title">Waterfall
             <button id="waterfallLayoutToggle" type="button"
-                    onclick="toggleWaterfallLayout(this);"
+                    data-action="toggle-waterfall-layout"
                     class="chip-toggle"
                     aria-pressed="false">Side by side</button>
           </h3>
@@ -220,7 +153,7 @@
           <div class="rangeWrapper" id="harBlendWrapper">
             <span class="har-label" id="har1Label"></span>
             <input id="harBlendSlider" type="range" min="0" max="1" step="0.05" value="0"
-                   oninput="blendWaterfalls(this.value)"
+                   data-action="blend"
                    aria-label="Blend between the two waterfalls">
             <span class="har-label" id="har2Label"></span>
           </div>
@@ -233,7 +166,7 @@
         <div id="requestDiffContent" class="card"></div>
         <div id="thirdPartyContent" class="card"></div>
         <div id="domainsContent" class="card"></div>
-        <button type="button" onclick="errorMessage('');showUpload();" class="submit">
+        <button type="button" data-action="upload-again" class="submit">
           Upload again
         </button>
       </div>
@@ -278,16 +211,6 @@
       </div>
     </div>
   </footer>
-  <script>
-    function getParam(name) {
-      if (
-        (name = new RegExp(
-          "[?&]" + encodeURIComponent(name) + "=([^&]*)"
-        ).exec(location.search))
-      )
-        return decodeURIComponent(name[1]);
-    }
-  </script>
 </body>
 
 </html>
