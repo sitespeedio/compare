@@ -124,15 +124,7 @@ function readConfig(config) {
 
 function loadFilesFromConfig(url) {
   loadJson(url)
-    .then(unparsedConfig => {
-      let content;
-      try {
-        content = JSON.parse(unparsedConfig);
-      } catch (e) {
-        throw new Error('Malformed config file.' + e);
-      }
-      return readConfig(content);
-    })
+    .then(readConfig)
     .catch(e => {
       /* eslint-disable no-console */
       console.error(e);
