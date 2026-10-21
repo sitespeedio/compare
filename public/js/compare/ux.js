@@ -42,7 +42,7 @@ function showLoading() {
 function objectPropertiesToArray(object) {
   const array = [];
   for (let key in object) {
-    if (object.hasOwnProperty(key)) {
+    if (Object.hasOwn(object, key)) {
       array.push({ name: key, value: object[key] });
     }
   }
@@ -173,7 +173,7 @@ function applyWaterfallLayoutPreference() {
   setWaterfallSideBySide(on);
 }
 
-function toggleWaterfallLayout(btn) {
+function toggleWaterfallLayout() {
   const wrapper = document.querySelector('.harwrapper');
   if (!wrapper) return;
   const on = !wrapper.classList.contains('harwrapper--side-by-side');

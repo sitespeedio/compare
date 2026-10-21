@@ -1,4 +1,4 @@
-/* global getLastTiming, removeAndHide, createUpload, getAllDomains, hideUpload, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip, compareWaterfall, renderShareControls */
+/* global getLastTiming, removeAndHide, createUpload, getAllDomains, hideUpload, objectPropertiesToArray, registerTemplateHelpers, parseTemplate, getTotalDiff, generateVisualProgress, formatDate, getUniqueRequests, getFilmstrip, compareWaterfall, renderShareControls, blendWaterfalls, applyWaterfallLayoutPreference */
 /* exported showUpload, formatDate, generate, toggleRow, regenerate, formatTime, showLoading*/
 
 /**
