@@ -1,55 +1,44 @@
 /* exported generateVisualProgress */
 
 /**
- * Draw two visual-progress curves as inline SVG, with an optional
- * pair of thumbnail strips below aligned to the same time axis.
+ * Draw the visual progress as inline SVG: a shaded range of all runs
+ * and a strong line for the selected run of each side, and the
+ * timeline cursor on top.
  *
- * @param {Object<string, number>} visualProgress1 milliseconds -> percent
- * @param {Object<string, number>} visualProgress2 milliseconds -> percent
  * @param {string} id container element id
- * @param {Object} [opts]
- * @param {Array<{time:string,img:string}>} [opts.thumbnails1]
- * @param {Array<{time:string,img:string}>} [opts.thumbnails2]
- * @param {string} [opts.label1]
- * @param {string} [opts.label2]
+ * @param {Object} opts
+ * @param {number} opts.maxTime milliseconds on the x axis
+ * @param {Array<{vp: Object<string, number>, selected: boolean}>} opts.runs1
+ * @param {Array<{vp: Object<string, number>, selected: boolean}>} opts.runs2
+ * @param {Array} [opts.markers1]
+ * @param {Array} [opts.markers2]
+ * @param {Array<{from: number, to: number}>} [opts.bands] time ranges (ms) to shade
+ * @param {function(number)} [opts.onTime] called with the time (ms) under the pointer
+ * @returns {{setCursor: function(number)}|null}
  */
-function generateVisualProgress(visualProgress1, visualProgress2, id, opts) {
-  opts = opts || {};
+function generateVisualProgress(id, opts) {
   const container = document.getElementById(id);
-  if (!container) return;
+  if (!container) return null;
   container.innerHTML = '';
+
+  const maxTime = Math.max(opts.maxTime, 1) / 1000;
 
   // Build de-duplicated stepped point lists; series end on (maxTime, 100)
   // so the visual progress line is anchored even when the last sample
   // was below 100%.
-  let maxTime = 0;
-  const series = [visualProgress1, visualProgress2].map(function(list) {
+  function points(list) {
     let prev = -1;
-    const points = [];
-    Object.keys(list || {}).forEach(function(ms) {
+    const out = [];
+    Object.keys(list || {}).forEach(function (ms) {
       const v = list[ms];
       if (v !== prev) {
         prev = v;
-        const t = Number(ms) / 1000;
-        if (t > maxTime) maxTime = t;
-        points.push({ x: t, y: v });
+        out.push({ x: Math.min(Number(ms) / 1000, maxTime), y: v });
       }
     });
-    return points;
-  });
-
-  // Extend maxTime so the last thumbnail still fits on the axis.
-  function tMax(arr, key) {
-    if (!arr || !arr.length) return 0;
-    return Math.max.apply(null, arr.map(function (a) { return Number(a[key]) || 0; }));
+    out.push({ x: maxTime, y: 100 });
+    return out;
   }
-  maxTime = Math.max(
-    maxTime,
-    tMax(opts.thumbnails1, 'time'),
-    tMax(opts.thumbnails2, 'time')
-  );
-  if (maxTime <= 0) maxTime = 1;
-  series.forEach(function(s) { s.push({ x: maxTime, y: 100 }); });
 
   // Viewbox in "data units" — we draw in time-on-X (0..maxTime) and
   // percent-on-Y (0..100) and rely on the SVG viewBox + width:100% in
@@ -71,7 +60,7 @@ function generateVisualProgress(visualProgress1, visualProgress2, id, opts) {
   svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
   svg.setAttribute('preserveAspectRatio', 'none');
   svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', 'Visual progress comparison');
+  svg.setAttribute('aria-label', 'Visual progress of every run');
 
   function add(tag, attrs, text) {
     const el = document.createElementNS(ns, tag);
@@ -99,53 +88,73 @@ function generateVisualProgress(visualProgress1, visualProgress2, id, opts) {
       'Time (seconds)');
 
   // Stepped path between consecutive samples.
-  function stepPath(points) {
-    if (!points.length) return '';
-    let d = 'M ' + x(points[0].x) + ' ' + y(points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      d += ' H ' + x(points[i].x) + ' V ' + y(points[i].y);
+  function stepPath(pts) {
+    if (!pts.length) return '';
+    let d = 'M ' + x(pts[0].x) + ' ' + y(pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      d += ' H ' + x(pts[i].x) + ' V ' + y(pts[i].y);
     }
     return d;
   }
 
-  add('path', { class: 'vp-series--1', d: stepPath(series[0]) });
-  add('path', { class: 'vp-series--2', d: stepPath(series[1]) });
+  // Shade where the two selected runs differ a lot, under the lines.
+  const bands = (opts.bands || []).map(function (b) {
+    const x1 = x(Math.min(b.from / 1000, maxTime));
+    const x2 = x(Math.min(b.to / 1000, maxTime));
+    return {
+      from: b.from,
+      to: b.to,
+      el: add('rect', { class: 'vp-band', x: x1, y: y(100), width: Math.max(x2 - x1, 1), height: y(0) - y(100) })
+    };
+  });
+
+  // One shaded range per side, from the slowest to the fastest run.
+  // Separate lines per run cross and cover each other.
+  function rangePath(runs) {
+    const steps = runs.map(function (r) {
+      return Object.keys(r.vp).map(function (ms) { return [Number(ms) / 1000, r.vp[ms]]; })
+        .sort(function (a, b) { return a[0] - b[0]; });
+    });
+    const at = function (s, t) {
+      let v = 0;
+      s.forEach(function (p) { if (p[0] <= t) v = p[1]; });
+      return v;
+    };
+    const times = [...new Set([].concat(...steps.map(function (s) { return s.map(function (p) { return p[0]; }); })))]
+      .filter(function (t) { return t < maxTime; })
+      .sort(function (a, b) { return a - b; });
+    if (!times.length) return '';
+    const hi = times.map(function (t) { return Math.max(...steps.map(function (s) { return at(s, t); })); });
+    const lo = times.map(function (t) { return Math.min(...steps.map(function (s) { return at(s, t); })); });
+    let d = 'M ' + x(times[0]) + ' ' + y(hi[0]);
+    for (let i = 1; i < times.length; i++) d += ' H ' + x(times[i]) + ' V ' + y(hi[i]);
+    d += ' H ' + x(maxTime) + ' V ' + y(lo[times.length - 1]);
+    for (let i = times.length - 1; i > 0; i--) d += ' H ' + x(times[i]) + ' V ' + y(lo[i - 1]);
+    return d + ' H ' + x(times[0]) + ' Z';
+  }
+  [[opts.runs1, 1], [opts.runs2, 2]].forEach(function (pair) {
+    const runs = (pair[0] || []).filter(function (r) { return r.vp; });
+    if (runs.length > 1) add('path', { class: 'vp-range vp-range--' + pair[1], d: rangePath(runs) });
+  });
+  [[opts.runs1, 1], [opts.runs2, 2]].forEach(function (pair) {
+    (pair[0] || []).filter(function (r) { return r.selected; }).forEach(function (r) {
+      add('path', { class: 'vp-series--' + pair[1], d: stepPath(points(r.vp)) });
+    });
+  });
 
   // Marker lines — vertical guides at FCP / LCP / FVC / Speed Index
   // for each HAR. Drawn under the series paths so the curves stay
-  // dominant, with a small label at the top so the eye can match a
-  // line to its metric without hovering. HAR1 markers go above the
-  // chart top, HAR2 markers go to the same line but a smaller font
-  // and a different colour series.
+  // dominant. Their names are on the timeline flags above the chart.
   function drawMarkers(markers, hark) {
-    if (!markers || !markers.length) return;
-    // Cluster markers that fall within 2% of plot width so labels
-    // don't overlap when, say, FCP and FVC coincide.
-    const minGapPx = plotW * 0.02;
-    const sorted = markers.slice().sort(function (a, b) { return a.time - b.time; });
-    let lastX = -Infinity;
-    sorted.forEach(function (m) {
+    (markers || []).forEach(function (m) {
       const t = m.time / 1000;
+      if (t > maxTime) return;
       const xv = x(t);
-      const cls = 'vp-marker vp-marker--' + hark + ' vp-marker--' + m.kind;
       add('line', {
-        class: cls,
+        class: 'vp-marker vp-marker--' + hark + ' vp-marker--' + m.kind,
         x1: xv, x2: xv,
         y1: y(0), y2: y(100)
       });
-      // Stagger label Y when two markers are too close horizontally so
-      // their text doesn't collide.
-      const close = (xv - lastX) < minGapPx;
-      const labelY = hark === 1
-        ? (close ? padT + 22 : padT + 10)
-        : (close ? H - padB - 4 : H - padB - 16);
-      add('text', {
-        class: 'vp-marker-label vp-marker-label--' + hark + ' vp-marker--' + m.kind,
-        x: xv + 3,
-        y: labelY,
-        'text-anchor': 'start'
-      }, m.label);
-      lastX = xv;
     });
   }
   drawMarkers(opts.markers1, 1);
@@ -153,50 +162,27 @@ function generateVisualProgress(visualProgress1, visualProgress2, id, opts) {
 
   container.appendChild(svg);
 
-  // Thumbnail strips below the chart, aligned to the same time axis
-  // as the SVG. Each strip is a relative-positioned row; each thumb
-  // is absolutely positioned at its time's X percentage so they line
-  // up visually with the curve and markers above.
-  function thumbStrip(label, frames) {
-    if (!frames || !frames.length) return null;
-    const row = document.createElement('div');
-    row.className = 'vp-thumb-row';
-    if (label) {
-      const lab = document.createElement('span');
-      lab.className = 'vp-thumb-label';
-      lab.textContent = label;
-      row.appendChild(lab);
+  const cursor = document.createElement('div');
+  cursor.className = 'vp-cursor';
+  container.appendChild(cursor);
+
+  if (opts.onTime) {
+    const fromPointer = function (e) {
+      const rect = svg.getBoundingClientRect();
+      const xv = ((e.clientX - rect.left) / rect.width) * W;
+      const t = Math.max(0, Math.min(maxTime, ((xv - padL) / plotW) * maxTime));
+      opts.onTime(Math.round(t * 1000));
+    };
+    svg.addEventListener('pointermove', fromPointer);
+    svg.addEventListener('pointerdown', fromPointer);
+  }
+
+  return {
+    setCursor: function (ms) {
+      cursor.style.left = ((x(Math.min(ms / 1000, maxTime)) / W) * 100).toFixed(3) + '%';
+      bands.forEach(function (b) {
+        b.el.classList.toggle('vp-band--active', ms >= b.from && ms < b.to);
+      });
     }
-    const rail = document.createElement('div');
-    rail.className = 'vp-thumb-rail';
-    frames.forEach(function (f) {
-      const t = Number(f.time);
-      // Express the X position as a percentage of container width that
-      // matches the SVG's viewBox X coordinate at this time.
-      const xv = padL + (t / maxTime) * plotW;
-      const leftPct = (xv / W) * 100;
-      const wrap = document.createElement('div');
-      wrap.className = 'vp-thumb';
-      wrap.style.left = leftPct.toFixed(2) + '%';
-      wrap.innerHTML =
-        '<a href="' + escapeAttr(f.img) + '" target="_blank" rel="noopener">' +
-          '<img src="' + escapeAttr(f.img) + '" alt="" loading="lazy" decoding="async">' +
-        '</a>' +
-        '<span class="vp-thumb-time">' + (typeof f.time === 'number' ? f.time.toFixed(1) : f.time) + 's</span>';
-      rail.appendChild(wrap);
-    });
-    row.appendChild(rail);
-    return row;
-  }
-
-  function escapeAttr(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
-      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  const row1 = thumbStrip(opts.label1, opts.thumbnails1);
-  const row2 = thumbStrip(opts.label2, opts.thumbnails2);
-  if (row1) container.appendChild(row1);
-  if (row2) container.appendChild(row2);
+  };
 }

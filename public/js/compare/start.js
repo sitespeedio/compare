@@ -1,4 +1,4 @@
-/* global createMainDropZone, showLoading, loadHARsFromConfig, loadFilesFromGist, loadFilesFromConfig, loadFromPaste, compareFromForm, errorMessage, showUpload, toggleWaterfallLayout, blendWaterfalls, regenerate, toggleDiffOnly, toggleRow */
+/* global createMainDropZone, showLoading, loadHARsFromConfig, loadFilesFromGist, loadFilesFromConfig, loadFromPaste, compareFromForm, errorMessage, showUpload, toggleWaterfallLayout, blendWaterfalls, regenerate, setCompareMode, pickRun, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin, toggleTimelinePlay, scrubTimeline, showMetric, linkMetric, setTimelineSpeed, stepTimelineFrame, jumpTimeline, setDrawTool, undoDrawing, clearDrawings, saveDrawingPng */
 
 // Start-up code for the page. It lives in a file, not in index.html,
 // because the Content-Security-Policy blocks inline scripts.
@@ -91,8 +91,25 @@ const actions = {
   blend: el => blendWaterfalls(el.value),
   switch: () => regenerate(true),
   'change-run': () => regenerate(),
-  'toggle-diff-only': el => toggleDiffOnly(el),
-  'toggle-row': el => toggleRow(el, el.dataset.rows, el.firstElementChild)
+  'compare-mode': el => setCompareMode(el.dataset.mode),
+  'pick-run': el => pickRun(Number(el.dataset.side), Number(el.dataset.run)),
+  'toggle-all-metrics': () => toggleAllMetrics(),
+  'toggle-section': el => toggleMetricSection(el.dataset.section),
+  'metric-search': el => setMetricsQuery(el.value),
+  'request-filter': el => setRequestFilter(el.dataset.filter),
+  'request-sort': el => setRequestSort(el.dataset.sort),
+  'request-min': el => setRequestMin(Number(el.value)),
+  'timeline-play': () => toggleTimelinePlay(),
+  'timeline-seek': el => scrubTimeline(Number(el.dataset.t)),
+  'timeline-speed': el => setTimelineSpeed(el.dataset.speed),
+  'timeline-step': el => stepTimelineFrame(Number(el.dataset.step)),
+  'timeline-jump': () => jumpTimeline(),
+  'filmstrip-zoom': el => el.closest('.card').style.setProperty('--filmstrip-frame-width', el.value + 'px'),
+  'show-metric': el => showMetric(el.dataset.metric),
+  'draw-tool': el => setDrawTool(el.dataset.tool),
+  'draw-undo': () => undoDrawing(),
+  'draw-clear': () => clearDrawings(),
+  'draw-save': () => saveDrawingPng()
 };
 
 const actionElements = {
@@ -108,5 +125,13 @@ for (const [type, selector] of Object.entries(actionElements)) {
     if (!el) return;
     if (type === 'submit') e.preventDefault();
     actions[el.dataset.action](el);
+  });
+}
+
+// Pointing at (or tabbing to) a metric highlights it everywhere.
+for (const [type, on] of [['mouseover', true], ['mouseout', false], ['focusin', true], ['focusout', false]]) {
+  document.addEventListener(type, e => {
+    const el = e.target instanceof Element && e.target.closest('[data-metric]');
+    if (el) linkMetric(el.dataset.metric, on);
   });
 }

@@ -8,7 +8,7 @@
 .submit {
   display: block;
   margin: 16px auto;
-  padding: 12px 22px;
+  padding: 10px 28px;
   background-color: var(--color-blue);
   color: var(--color-surface-card);
   font-family: var(--font-sans);
@@ -16,7 +16,7 @@
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.01em;
   border: 1px solid var(--color-blue);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;

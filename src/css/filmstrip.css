@@ -42,7 +42,7 @@
   }
 }
 .filmstrip-legend-label--har1::before { background: var(--color-blue); }
-.filmstrip-legend-label--har2::before { background: #f97316; /* orange — deliberately
+.filmstrip-legend-label--har2::before { background: var(--color-har2); /* orange — deliberately
   distinct from HAR1 blue so the eye can tell which row is which without
   reading the label. */ }
 
@@ -146,7 +146,7 @@
   border-left: 4px solid var(--color-blue);
 }
 .filmstrip-cell--har2 {
-  border-left: 4px solid #f97316;
+  border-left: 4px solid var(--color-har2);
 }
 .filmstrip-cell--har1:hover,
 .filmstrip-cell--har1:focus-visible {
@@ -155,7 +155,7 @@
 }
 .filmstrip-cell--har2:hover,
 .filmstrip-cell--har2:focus-visible {
-  border-color: #f97316;
+  border-color: var(--color-har2);
 }
 
 .filmstrip-cell-badge {
@@ -176,7 +176,7 @@
   pointer-events: none;
 }
 .filmstrip-cell--har1 .filmstrip-cell-badge { background: var(--color-blue); }
-.filmstrip-cell--har2 .filmstrip-cell-badge { background: #f97316; }
+.filmstrip-cell--har2 .filmstrip-cell-badge { background: var(--color-har2); }
 
 .filmstrip-cell img {
   display: block;

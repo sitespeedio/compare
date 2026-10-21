@@ -1,5 +1,5 @@
-/* global formatBytes, formatTime, formatDate, formatURL */
-/* exported parseTemplate */
+/* global formatURL */
+/* exported parseTemplate, applyPositions */
 
 //
 // Templates. Replaces the Template7 setup that used to live here —
@@ -32,381 +32,273 @@ function each(collection, fn) {
     .join('');
 }
 
-//
-// visualProgressTemplate
-//
-function visualProgressTemplate(d) {
-  return (
-    '<h3 id="visualProgressHeader">Visual Progress</h3>' +
-    '<div id="comment-visualProgress" class="comment"></div>' +
-    '<div id="visualProgress" class="vp-chart"></div>' +
-    '<div id="visualProgressLegendHolder">' +
-      '<ul class="resource-legend">' +
-        '<li class="legend-url1" title="' + h(d.p1.url) + '">' + h(d.config.har1.label) + '</li>' +
-        '<li class="legend-url2" title="' + h(d.p2.url) + '">' + h(d.config.har2.label) + '</li>' +
-      '</ul>' +
-    '</div>'
-  );
+// Inline style attributes are blocked by the Content-Security-Policy, so
+// positions go in data-x / data-w and applyPositions() sets them.
+function applyPositions(container) {
+  for (const el of container.querySelectorAll('[data-x]')) el.style.left = el.dataset.x + '%';
+  for (const el of container.querySelectorAll('[data-w]')) el.style.width = el.dataset.w + '%';
+}
+
+function pill(cls, text) {
+  return '<span class="pill pill--' + cls + '">' + h(text) + '</span>';
+}
+
+// One lane of run dots for a side. Positions are the difference from
+// the reference value, on a shared -50% to +50% scale. A card passes its
+// own scale and gets plain marks, because the card itself is a button.
+function runDots(values, side, reference, selected, scale) {
+  return '<span class="run-lane">' + each(values, function (v) {
+    const pct = reference ? ((v.value - reference) / reference) * 100 : 0;
+    const x = scale ? scale(v.value) : 50 + Math.max(-50, Math.min(50, pct));
+    const cls = 'run-dot run-dot--' + side +
+      (v.run === selected ? ' run-dot--selected' : '') +
+      (!scale && Math.abs(pct) > 50 ? ' run-dot--clipped' : '');
+    const label = 'Run ' + v.run + ': ' + v.text;
+    if (scale) return '<span class="' + cls + '" data-x="' + x.toFixed(1) + '"></span>';
+    return '<button type="button" class="' + cls + '" data-x="' + x.toFixed(1) + '"' +
+      ' data-action="pick-run" data-side="' + side + '" data-run="' + v.run + '"' +
+      ' aria-label="' + h(label) + '" title="' + h(label) + '"></button>';
+  }) + '</span>';
 }
 
 //
-// pageXrayTemplate
+// resultHeaderTemplate — links to the sections that have content.
 //
-function pageXrayTemplate(d) {
-  const p1 = d.p1, p2 = d.p2, config = d.config;
-  const showRuns = d.runs1.length > 1 || d.runs2.length > 1;
+function resultHeaderTemplate(d) {
+  return '<div class="header-links">' +
+    d.sections.map(function (s) { return '<a href="#' + s.id + '">' + h(s.label) + '</a>'; }).join(' - ') +
+    '</div>';
+}
 
-  function section(title, kind) {
-    const cls = 'pageXraySection' + (kind ? ' pageXraySection--' + kind : '');
-    return '<tr class="' + cls + '"><th colspan="4">' + h(title) + '</th></tr>';
-  }
+//
+// summaryTemplate — the answer first: the two HAR files, what to
+// compare (all runs or single runs), a verdict and the key metrics.
+//
+function summaryTemplate(d) {
+  let html = '<div class="summary-head">' +
+    '<div class="summary-page"><h2 class="summary-title">' + h(d.url) + '</h2>' +
+    '<p class="muted">' + h(d.details) + '</p></div>' +
+    '<div class="har-chips">' + each(d.sides, function (s) {
+      return '<span class="har-chip"><span class="har-dot har-dot--' + s.key + '"></span>' +
+        '<b>' + h(s.label) + '</b> ' + h(s.when) + ' · ' + h(s.runs) +
+        '<input type="file" id="har' + s.key + 'upload" class="inputfile"/>' +
+        '<label for="har' + s.key + 'upload" class="har-chip-upload">Replace</label></span>';
+    }) + '</div></div>';
 
-  // Compute a Δ cell for a numeric metric. Every metric in this table
-  // is "lower is better" (request count, byte size, paint timing, CLS,
-  // long-task count), so a positive HAR2−HAR1 delta is a regression
-  // and renders in error red; a negative delta is an improvement and
-  // renders in success green. Non-numeric inputs produce an empty cell.
-  function diffCell(a, b, formatter) {
-    if (typeof a !== 'number' || typeof b !== 'number' ||
-        !isFinite(a) || !isFinite(b)) {
-      return '<td class="pageXrayDiff"></td>';
+  if (d.modeBar) {
+    html += '<div class="mode-bar">';
+    if (d.allowAll) {
+      html += '<div class="segmented" role="group" aria-label="What to compare">' +
+        '<button type="button" data-action="compare-mode" data-mode="all" aria-pressed="' + (d.mode === 'all') + '">All runs (median)</button>' +
+        '<button type="button" data-action="compare-mode" data-mode="runs" aria-pressed="' + (d.mode === 'runs') + '">Single runs</button>' +
+        '</div>';
     }
-    const delta = b - a;
-    if (Math.abs(delta) < 1e-4) {
-      return '<td class="pageXrayDiff pageXrayDiff--same">no change</td>';
-    }
-    const cls = delta > 0 ? 'pageXrayDiff--worse' : 'pageXrayDiff--better';
-    const sign = delta > 0 ? '+' : '−';
-    const absDelta = Math.abs(delta);
-    const value = formatter ? formatter(absDelta) : absDelta.toString();
-    let pctStr = '';
-    if (a !== 0) {
-      const pct = Math.round((delta / a) * 100);
-      pctStr = ' <span class="pageXrayDiff-pct">(' +
-               (pct > 0 ? '+' : (pct < 0 ? '−' : '')) +
-               Math.abs(pct) + '%)</span>';
-    }
-    return '<td class="pageXrayDiff ' + cls + '">' + sign + value + pctStr + '</td>';
-  }
-
-  // CLS is a unitless float; browsers report it at full precision
-  // (e.g. 0.05641193152186011). Three decimals is the granularity that
-  // matters for comparison and matches the sitespeed.io HTML report.
-  function fmtCLS(v) {
-    return typeof v === 'number' ? v.toFixed(3) : (v == null ? '' : v);
-  }
-
-  // Empty Δ cell — for rows where a delta wouldn't make sense
-  // (URLs, dates, captures).
-  const emptyDiff = '<td class="pageXrayDiff"></td>';
-
-  function metricRow(label, a, b, formatter) {
-    return '<tr><td class="tabletext">' + h(label) + '</td>' +
-           '<td>' + (formatter ? formatter(a) : a) + '</td>' +
-           '<td>' + (formatter ? formatter(b) : b) + '</td>' +
-           diffCell(a, b, formatter) + '</tr>';
-  }
-
-  // "Only show differences" toggle — read the user's last choice from
-  // localStorage so the preference survives reload. The button itself
-  // is rendered below; this just controls the initial class on the
-  // table so the page renders in the desired state without a flash.
-  const diffOnlyOn = (function () {
-    try { return localStorage.getItem('compare.diffOnly') === '1'; }
-    catch (e) { return false; }
-  })();
-  const diffOnlyClass = diffOnlyOn ? ' pageXrayTable--diff-only' : '';
-  const diffOnlyPressed = diffOnlyOn ? 'true' : 'false';
-
-  let html = '';
-  html += '<div><table class="pageXrayTable' + diffOnlyClass + '">';
-  // Visually-hidden caption — useful for screen readers and gives the
-  // table a programmatic name without taking up real estate.
-  html += '<caption class="sr-only">Page X-ray comparison: ' +
-          h(config.har1.label) + ' versus ' + h(config.har2.label) + '</caption>';
-  html += '<thead><tr>';
-  html += '<th class="tabletext tableXrayMetric" scope="col">' +
-            '<div class="tableXrayMetric-stack">' +
-              '<span class="tableXrayMetric-label">Metric</span>' +
-              '<span class="tableXrayMetric-actions">' +
-                '<button type="button" data-action="switch" class="submit submit-smaller" ' +
-                        'aria-label="Swap HAR1 and HAR2">Switch</button>' +
-                '<button id="diffOnlyToggle" type="button" ' +
-                        'data-action="toggle-diff-only" ' +
-                        'class="chip-toggle" ' +
-                        'aria-pressed="' + diffOnlyPressed + '">' +
-                  'Only differences</button>' +
-              '</span>' +
-            '</div></th>';
-  html += '<th class="tableXrayHarMetric" scope="col">' + h(config.har1.label) +
-            '<input type="file" id="har1upload" class="inputfile"/>' +
-            '<label for="har1upload">Upload</label></th>';
-  html += '<th class="tableXrayHar2Metric" scope="col"> ' + h(config.har2.label) +
-            '<input type="file" id="har2upload" class="inputfile"/>' +
-            '<label for="har2upload">Upload</label></th>';
-  html += '<th class="tableXrayDiff" scope="col" ' +
-              'title="HAR2 minus HAR1 — green = improvement, red = regression">Δ</th>';
-  html += '</tr></thead><tbody>';
-
-  // Setup (top of the table — first rows after the header, no section
-  // title because there's no group above it to separate from).
-  if (showRuns) {
-    html += '<tr><td class="tabletext">Run</td><td>';
-    if (d.runs1.length > 1) {
-      html += '<select name="runs1" data-action="change-run" id="run1Option">';
-      html += each(d.runs1, function (r) {
-        return '<option value="' + h(r.id) + '"' + (r.selected ? ' selected' : '') + '>' + h(r.show) + '</option>';
+    if (d.mode === 'all') {
+      html += '<p class="muted mode-note">' + h(d.modeNote) + '</p>';
+    } else {
+      html += each(d.runPickers, function (p) {
+        return '<label class="run-pick"><span class="har-name har-name--' + p.key + '">' + h(p.label) + '</span>' +
+          '<select id="run' + p.key + 'Option" data-action="change-run">' + each(p.options, function (o) {
+            return '<option value="' + o.value + '"' + (o.selected ? ' selected' : '') + '>' + h(o.text) + '</option>';
+          }) + '</select></label>';
       });
-      html += '</select>';
+      if (d.outlierNote) html += pill('warn', d.outlierNote);
     }
-    html += '</td><td>';
-    if (d.runs2.length > 1) {
-      html += '<select name="runs2" data-action="change-run" id="run2Option">';
-      html += each(d.runs2, function (r) {
-        return '<option value="' + h(r.id) + '"' + (r.selected ? ' selected' : '') + '>' + h(r.show) + '</option>';
-      });
-      html += '</select>';
-    }
-    html += '</td>' + emptyDiff + '</tr>';
+    html += '</div>';
   }
 
-  html += '<tr><td class="tabletext">URL</td>' +
-          '<td><a href="' + h(p1.url) + '" title="' + h(p1.meta.title) + '">' + h(p1.url) + '</a></td>' +
-          '<td><a href="' + h(p2.url) + '" title="' + h(p2.meta.title) + '">' + h(p2.url) + '</a></td>' +
-          emptyDiff + '</tr>';
+  const v = d.verdict;
+  html += '<div class="verdict verdict--' + v.cls + '">' + pill(v.cls, v.tag) +
+    '<div><p class="verdict-title">' + h(v.title) + '</p><p class="muted">' + h(v.text) + '</p>' +
+    (v.items.length ? '<p class="verdict-items">' + each(v.items, function (i) {
+      return '<button type="button" class="pill pill--' + i.cls + '" data-action="show-metric" data-metric="' + h(i.metric) + '">' + h(i.text) + '</button>';
+    }) + '</p>' : '') +
+    '</div></div>';
 
-  html += '<tr><td class="tabletext">Date</td>' +
-          '<td>' + h(formatDate(p1.meta.startedDateTime)) + '</td>' +
-          '<td>' + h(formatDate(p2.meta.startedDateTime)) + '</td>' +
-          emptyDiff + '</tr>';
+  html += '<div class="metric-cards">' + each(d.cards, function (c) {
+    return '<button type="button" class="metric-card" data-action="show-metric" data-metric="' + h(c.label) + '">' +
+      '<span class="metric-card-label">' + h(c.label) + '</span>' +
+      '<span class="metric-card-value">' + h(c.bText) + ' ' + pill(c.cls, c.delta) + '</span>' +
+      '<span class="muted">' + h(d.sides[0].label) + ' ' + h(c.aText) + (c.note ? ' · ' + h(c.note) : '') + '</span>' +
+      '<span class="metric-card-runs" aria-hidden="true">' +
+        runDots(c.valuesA, 1, 0, c.runA, c.scale) + runDots(c.valuesB, 2, 0, c.runB, c.scale) +
+      '</span></button>';
+  }) + '</div>';
+  return html;
+}
 
-  html += '<tr><td class="tabletext">Browser</td>' +
-          '<td>' + (p1.meta.browser ? h(p1.meta.browser.name) + ' ' + h(p1.meta.browser.version) : '') + '</td>' +
-          '<td>' + (p2.meta.browser ? h(p2.meta.browser.name) + ' ' + h(p2.meta.browser.version) : '') + '</td>' +
-          emptyDiff + '</tr>';
+//
+// metricsTableTemplate — every metric, grouped in the same sections as
+// before, with medians and ranges (all runs) or the two picked runs.
+//
+function metricsTableTemplate(d) {
+  if (!d.rows.length) return '<p class="muted">No metrics match.</p>';
+  const head = '<thead><tr>' +
+    '<th scope="col">Metric</th>' +
+    '<th scope="col" class="har-name har-name--1">' + h(d.labelA) + '</th>' +
+    '<th scope="col" class="har-name har-name--2">' + h(d.labelB) + '</th>' +
+    '<th scope="col">Change</th>' +
+    '<th scope="col" class="runs-col">Runs vs ' + h(d.referenceLabel) +
+      '<span class="runs-axis" aria-hidden="true"><span>−50%</span><span>0</span><span>+50%</span></span></th>' +
+    '</tr></thead>';
+  const body = each(d.rows, function (r) {
+    if (r.sectionRow) {
+      const count = r.changedCount === undefined ? ''
+        : '<span class="section-count">' + (r.changedCount ? r.changedCount + ' changed' : 'No changes') + '</span>';
+      const fold = r.canFold
+        ? '<button type="button" class="chip-toggle" data-action="toggle-section" data-section="' + h(r.label) + '"' +
+          ' aria-expanded="' + r.expanded + '">' + (r.expanded ? 'Fold unchanged' : 'Show ' + r.unchanged + ' unchanged') + '</button>'
+        : '';
+      return '<tr class="metricsSection"><th colspan="5" scope="colgroup">' + h(r.label) + count + fold + '</th></tr>';
+    }
+    return '<tr data-metric="' + h(r.label) + '"><th scope="row">' + h(r.label) + '</th>' +
+      '<td>' + h(r.aText) + '<span class="range">' + h(r.aRange) + '</span></td>' +
+      '<td>' + h(r.bText) + '<span class="range">' + h(r.bRange) + '</span></td>' +
+      '<td>' + pill(r.cls, r.dText) + '<span class="range">' + h(r.pText) + '</span></td>' +
+      '<td class="runs-col">' + (r.showDots
+        ? runDots(r.dotsA, 1, r.reference, d.runA) + runDots(r.dotsB, 2, r.reference, d.runB)
+        : '') + '</td></tr>';
+  });
+  return '<div class="table-scroll"><table class="metricsTable">' +
+    '<caption class="sr-only">All metrics: ' + h(d.labelA) + ' versus ' + h(d.labelB) + '</caption>' +
+    head + '<tbody>' + body + '</tbody></table></div>';
+}
 
-  if (p1.meta.connectivity && p2.meta.connectivity) {
-    html += '<tr><td class="tabletext">Connectivity</td>' +
-            '<td>' + h(p1.meta.connectivity) + '</td>' +
-            '<td>' + h(p2.meta.connectivity) + '</td>' +
-            emptyDiff + '</tr>';
+//
+// requestsTemplate — requests that are new, removed or changed size.
+//
+function requestsTemplate(d) {
+  const summary = '<div class="request-summary">' + each(d.summary, function (s) {
+    return '<div><span class="muted">' + h(s.label) + '</span><b class="change--' + s.cls + '">' + h(s.value) + '</b></div>';
+  }) + '</div>';
+  const filters = '<div class="request-filters" role="group" aria-label="Filter requests">' + each(d.filters, function (f) {
+    return '<button type="button" class="chip-toggle" data-action="request-filter" data-filter="' + f.id + '"' +
+      ' aria-pressed="' + f.active + '">' + h(f.label) + ' <span class="muted">' + f.count + '</span></button>';
+  }) + '</div>';
+  if (!d.rows.length) {
+    return summary + filters + '<p class="muted">No requests match. Lower the size limit or pick another filter.</p>';
   }
+  const sortButton = (id, label) => '<button type="button" class="sort-button" data-action="request-sort" data-sort="' + id + '"' +
+    ' aria-pressed="' + (d.sort === id) + '">' + label + '</button>';
+  return summary + filters +
+    '<div class="table-scroll"><table class="requestsTable">' +
+    '<caption class="sr-only">Request changes</caption>' +
+    '<thead><tr><th scope="col">' + sortButton('url', 'URL') + '</th><th scope="col">Type</th>' +
+    '<th scope="col" class="har-name har-name--1">' + h(d.labelA) + '</th>' +
+    '<th scope="col" class="har-name har-name--2">' + h(d.labelB) + '</th>' +
+    '<th scope="col">' + sortButton('change', 'Change') + '</th></tr></thead><tbody>' +
+    each(d.rows, function (r) {
+      return '<tr><td class="request-url"><a href="' + h(r.url) + '" title="' + h(r.url) + '">' + h(formatURL(r.url)) + '</a></td>' +
+        '<td><span class="tag">' + h(r.type) + '</span></td>' +
+        '<td>' + h(r.aText) + '</td><td>' + h(r.bText) + '</td>' +
+        '<td class="request-change"><span class="change-bar change-bar--' + r.cls + '" data-w="' + r.w + '"></span>' +
+          '<span class="change--' + r.cls + '">' + h(r.dText) + '</span></td></tr>';
+    }) + '</tbody></table></div>';
+}
 
-  html += section('Content', 'content');
-  html += '<tr><td class="tabletext">Total</td>' +
-          '<td>' + p1.requests + ' (' + formatBytes(p1.transferSize) + ' / ' + formatBytes(p1.contentSize) + ')</td>' +
-          '<td>' + p2.requests + ' (' + formatBytes(p2.transferSize) + ' / ' + formatBytes(p2.contentSize) + ')</td>' +
-          diffCell(p1.transferSize, p2.transferSize, formatBytes) + '</tr>';
+//
+// timelineMediaTemplate — the stage: the two runs at the timeline
+// cursor, their videos when both have one, else their filmstrip frames.
+//
+function timelineMediaTemplate(d) {
+  return '<div class="rendering-stage">' + each(d.sides, function (s) {
+    const media = d.hasVideo
+      ? '<video class="timeline-video" data-side="' + s.key + '" src="' + h(s.video) + '"' +
+        (s.poster ? ' poster="' + h(s.poster) + '"' : '') + ' muted playsinline preload="auto"></video>'
+      : '<img class="timeline-frame" data-side="' + s.key + '" src="' + h(s.frame) + '" alt="' + h(s.label) + ' at the timeline cursor">';
+    return '<figure class="rendering-stage-item rendering-stage-item--' + s.key + '">' + media +
+      '<figcaption><span class="har-dot har-dot--' + s.key + '"></span>' + h(s.label) +
+      ' <span class="timeline-progress" data-side="' + s.key + '"></span></figcaption></figure>';
+  }) + '</div>';
+}
 
-  ['html', 'css', 'javascript'].forEach(function (kind) {
-    const label = { html: 'HTML', css: 'CSS', javascript: 'JavaScript' }[kind];
-    const a = p1.contentTypes[kind] || { requests: 0, transferSize: 0, contentSize: 0 };
-    const b = p2.contentTypes[kind] || { requests: 0, transferSize: 0, contentSize: 0 };
-    html += '<tr><td class="tabletext">' + label + '</td>' +
-            '<td>' + a.requests + ' (' + formatBytes(a.transferSize) + ' / ' + formatBytes(a.contentSize) + ')</td>' +
-            '<td>' + b.requests + ' (' + formatBytes(b.transferSize) + ' / ' + formatBytes(b.contentSize) + ')</td>' +
-            diffCell(a.transferSize, b.transferSize, formatBytes) + '</tr>';
+//
+// timelineTrackTemplate — milestone chips per HAR that light up as the
+// cursor passes them, and the milestone timeline: HAR1 flags above the
+// axis, HAR2 flags below, long tasks and divergence bands on the axis.
+//
+function timelineTrackTemplate(d) {
+  const pct = t => ((t / d.end) * 100).toFixed(2);
+  const hud = '<div class="rendering-hud">' + each(d.sides, function (s) {
+    return '<div class="rendering-hud-row"><span class="rendering-hud-name har-name har-name--' + s.key + '">' +
+      '<span class="har-dot har-dot--' + s.key + '"></span>' + h(s.label) + '</span>' +
+      each(s.milestones, function (m) {
+        return '<button type="button" class="rendering-chip" data-action="timeline-seek" data-t="' + m.t + '"' +
+          (m.metric ? ' data-metric="' + h(m.metric) + '"' : '') + '>' + h(m.name) + ' <b>' + h(m.text) + '</b></button>';
+      }) + '</div>';
+  }) + '</div>';
+
+  let flags = '';
+  d.sides.forEach(function (s) {
+    // Milestones at almost the same time share one flag.
+    const groups = [];
+    s.milestones.forEach(function (m) {
+      const group = groups[groups.length - 1];
+      if (group && ((m.t - group.t) / d.end) * 100 < 3) {
+        group.short += ' · ' + m.short;
+        group.name += ', ' + m.name;
+        group.metric = null;
+      } else {
+        groups.push(Object.assign({}, m));
+      }
+    });
+    let last = -100;
+    let low = false;
+    groups.forEach(function (m) {
+      const at = (m.t / d.end) * 100;
+      // Alternate lanes when two flags would collide.
+      low = at - last < 7 ? !low : false;
+      last = at;
+      flags += '<button type="button" class="rendering-flag rendering-flag--' + s.key + (low ? ' rendering-flag--low' : '') + '"' +
+        ' data-x="' + pct(m.t) + '" data-t="' + m.t + '" data-action="timeline-seek"' +
+        (m.metric ? ' data-metric="' + h(m.metric) + '"' : '') +
+        ' aria-label="' + h(s.label + ' ' + m.name + ' ' + m.text) + '">' +
+        '<span class="rendering-flag-label">' + h(m.short) + '</span><span class="rendering-flag-stem"></span></button>';
+    });
   });
 
-  const img1 = p1.contentTypes.image || { requests: 0, transferSize: 0 };
-  const img2 = p2.contentTypes.image || { requests: 0, transferSize: 0 };
-  html += '<tr><td class="tabletext">Image</td>' +
-          '<td>' + img1.requests + ' (' + formatBytes(img1.transferSize) + ')</td>' +
-          '<td>' + img2.requests + ' (' + formatBytes(img2.transferSize) + ')</td>' +
-          diffCell(img1.transferSize, img2.transferSize, formatBytes) + '</tr>';
-
-  if (p1.renderBlocking && p2.renderBlocking) {
-    html += section('Render blocking', 'blocking');
-
-    // Style recalculation before FCP / LCP. Sitespeed.io / browsertime
-    // captures how many elements the browser re-styled and how long it
-    // took on its way to each paint milestone — both are "lower is
-    // better", so the existing diff colouring applies. Rendered before
-    // the blocking-request counts so the eye sees the work first and
-    // the per-request counts as context. Guarded so a plain Chrome HAR
-    // (no recalculateStyle) doesn't render four empty rows.
-    const rs1 = p1.renderBlocking.recalculateStyle;
-    const rs2 = p2.renderBlocking.recalculateStyle;
-    if (rs1 && rs2) {
-      if (rs1.beforeFCP && rs2.beforeFCP) {
-        html += metricRow('Style recalc elements (FCP)',
-                          rs1.beforeFCP.elements, rs2.beforeFCP.elements);
-        html += metricRow('Style recalc time (FCP)',
-                          rs1.beforeFCP.durationInMillis, rs2.beforeFCP.durationInMillis, formatTime);
-      }
-      if (rs1.beforeLCP && rs2.beforeLCP) {
-        html += metricRow('Style recalc elements (LCP)',
-                          rs1.beforeLCP.elements, rs2.beforeLCP.elements);
-        html += metricRow('Style recalc time (LCP)',
-                          rs1.beforeLCP.durationInMillis, rs2.beforeLCP.durationInMillis, formatTime);
-      }
-    }
-
-    // The three counters below are *request* counts — how many
-    // resources fall into each render-blocking class. The "requests"
-    // suffix makes that explicit so the numbers aren't mistaken for
-    // milliseconds or sizes.
-    const rb1 = p1.renderBlocking, rb2 = p2.renderBlocking;
-    html += metricRow('Render blocking requests', rb1.blocking, rb2.blocking);
-    html += metricRow('Potentially blocking requests',
-                      rb1.potentiallyBlocking, rb2.potentiallyBlocking);
-    html += metricRow('In body parser blocking requests',
-                      rb1.in_body_parser_blocking, rb2.in_body_parser_blocking);
-  }
-
-  if (p1.visualMetrics) {
-    // Only render rows where both HARs have the value.
-    const vmRows = [
-      ['First Visual Change', 'FirstVisualChange'],
-      ['Largest Image',       'LargestImage'],
-      ['Logo',                'Logo'],
-      ['Heading',             'Heading'],
-      ['Speed Index',         'SpeedIndex'],
-      ['Last Visual Change',  'LastVisualChange'],
-      ['Visual Readiness',    'VisualReadiness']
-    ];
-    let vmHtml = '';
-    vmRows.forEach(function (row) {
-      const label = row[0], key = row[1];
-      if (p1.visualMetrics[key] && p2.visualMetrics && p2.visualMetrics[key]) {
-        vmHtml += metricRow(label, p1.visualMetrics[key], p2.visualMetrics[key], formatTime);
-      }
+  const busy = each(d.sides, function (s) {
+    return each(s.longTasks, function (task) {
+      return '<span class="rendering-busy-bar rendering-busy-bar--' + s.key + '" data-x="' + pct(task.start) + '"' +
+        ' data-w="' + Math.max(((Math.min(task.start + task.duration, d.end) - task.start) / d.end) * 100, 0.4).toFixed(2) + '"' +
+        ' title="' + h(s.label + ': main thread busy ' + Math.round(task.duration) + ' ms') + '"></span>';
     });
-    if (vmHtml) html += section('Visual metrics', 'visual') + vmHtml;
-  }
+  });
+  const bands = each(d.bands, function (b) {
+    return '<span class="rendering-band" data-x="' + pct(b.from) + '" data-w="' + (((b.to - b.from) / d.end) * 100).toFixed(2) + '"' +
+      ' data-from="' + b.from + '" data-to="' + b.to + '"></span>';
+  });
+  const ticks = each(d.ticks, function (t) {
+    return '<span class="rendering-tick" data-x="' + pct(t) + '">' + (t / 1000) + 's</span>';
+  });
 
-  if (p1.googleWebVitals && p2.googleWebVitals) {
-    html += section('Core Web Vitals', 'cwv');
-    const gw1 = p1.googleWebVitals, gw2 = p2.googleWebVitals;
-    html += metricRow('First Contentful Paint',
-                      gw1.firstContentfulPaint, gw2.firstContentfulPaint, formatTime);
-    html += metricRow('Largest Contentful Paint',
-                      gw1.largestContentfulPaint, gw2.largestContentfulPaint, formatTime);
-    html += metricRow('Total Blocking Time',
-                      gw1.totalBlockingTime, gw2.totalBlockingTime, formatTime);
-    html += metricRow('Cumulative Layout Shift',
-                      gw1.cumulativeLayoutShift, gw2.cumulativeLayoutShift, fmtCLS);
-  }
+  return hud +
+    '<div class="rendering-timeline" id="timelineTrack" data-end="' + d.end + '">' +
+      '<div class="rendering-axis" id="timelineAxis" role="slider" tabindex="0" aria-label="Timeline position"' +
+        ' aria-valuemin="0" aria-valuemax="' + d.end + '" aria-valuenow="0">' + bands + '</div>' +
+      '<div class="rendering-axis-fill" id="timelineFill"></div>' +
+      (busy ? '<div class="rendering-busy">' + busy + '</div>' : '') +
+      '<div class="rendering-playhead" id="timelinePlayhead"></div>' +
+      flags + ticks +
+    '</div>' +
+    (busy ? '<p class="muted rendering-note">Red marks on the timeline are long tasks: the main thread was busy and the page could not paint or respond.</p>' : '');
+}
 
-  // Long-task block — sitespeed.io HARs that ran Lighthouse get
-  // these; older / WPT-style HARs don't, so the block stays silent.
-  let cpuHtml = '';
-  let cpuSectionEmitted = false;
-  function ensureCpuSection() {
-    if (!cpuSectionEmitted) {
-      html += section('CPU', 'cpu');
-      cpuSectionEmitted = true;
-    }
-  }
-  if (p1.cpu && p2.cpu && p1.cpu.longTasks && p2.cpu.longTasks) {
-    const lt1 = p1.cpu.longTasks, lt2 = p2.cpu.longTasks;
-    if (lt1.totalBlockingTime && lt2.totalBlockingTime) {
-      cpuHtml += metricRow('Total Blocking Time',
-                           lt1.totalBlockingTime, lt2.totalBlockingTime, formatTime);
-    }
-    if (lt1.maxPotentialFid && lt2.maxPotentialFid) {
-      cpuHtml += metricRow('Max Potential FID',
-                           lt1.maxPotentialFid, lt2.maxPotentialFid, formatTime);
-    }
-    if (lt1.tasks && lt2.tasks) {
-      cpuHtml += metricRow('Total CPU Long Tasks', lt1.tasks, lt2.tasks);
-    }
-    if (cpuHtml) {
-      ensureCpuSection();
-      html += cpuHtml;
-    }
-  }
-
-
-  // Sub-table for the CPU disclosure rows. The two HARs may report
-  // different sets of categories/events, so we union the names and
-  // render one row per name with HAR1 / HAR2 / Δ — same red-green
-  // pattern as the parent table, so a regression in scripting time is
-  // visible at the same glance as a regression in total bytes.
-  function cpuBreakdownTable(list1, list2, formatter, eventLabel) {
-    const map1 = {}, map2 = {};
-    (list1 || []).forEach(function (e) { map1[e.name] = e.value; });
-    (list2 || []).forEach(function (e) { map2[e.name] = e.value; });
-    const names = Object.keys(Object.assign({}, map1, map2)).sort();
-    let body = '';
-    names.forEach(function (name) {
-      const v1 = map1[name];
-      const v2 = map2[name];
-      body += '<tr>' +
-        '<td class="tabletext">' + h(name) + '</td>' +
-        '<td>' + (v1 == null ? '<span class="muted">—</span>' : h(formatter(v1))) + '</td>' +
-        '<td>' + (v2 == null ? '<span class="muted">—</span>' : h(formatter(v2))) + '</td>' +
-        diffCell(v1, v2, formatter) +
-        '</tr>';
-    });
-    return '<table class="cpuBreakdownTable"><thead><tr>' +
-             '<th scope="col">' + h(eventLabel) + '</th>' +
-             '<th scope="col">' + h(config.har1.label) + '</th>' +
-             '<th scope="col">' + h(config.har2.label) + '</th>' +
-             '<th scope="col" title="HAR2 minus HAR1">Δ</th>' +
-           '</tr></thead><tbody>' + body + '</tbody></table>';
-  }
-
-  function fmtCategoryValue(v) {
-    return typeof v === 'number' ? formatTime(v) : (v == null ? '' : String(v));
-  }
-  function fmtEventValue(v) {
-    return typeof v === 'number' ? v.toFixed(3) : (v == null ? '' : String(v));
-  }
-
-  if (d.cpuCategories1 && d.cpuCategories2) {
-    ensureCpuSection();
-    html += '<tr><td class="tabletext" colspan="4"> CPU time spent by category ' +
-              '<button type="button" data-action="toggle-row" data-rows="cpuCategoryInfo" class="submit submit-smaller" ' +
-                      'aria-label="Show CPU category breakdown">' +
-                '<i class="arrow right"></i></button></td></tr>';
-    html += '<tr class="userShowable cpuCategoryInfo"><td colspan="4" class="cpuBreakdownCell">' +
-              cpuBreakdownTable(d.cpuCategories1, d.cpuCategories2, fmtCategoryValue, 'Category') +
-            '</td></tr>';
-    html += '<tr><td class="tabletext" colspan="4">CPU Events ' +
-              '<button type="button" data-action="toggle-row" data-rows="cpuExtraInfo" class="submit submit-smaller" ' +
-                      'aria-label="Show CPU event breakdown">' +
-                '<i class="arrow right"></i></button></td></tr>';
-    html += '<tr class="userShowable cpuExtraInfo"><td colspan="4" class="cpuBreakdownCell">' +
-              cpuBreakdownTable(d.cpuEvents1, d.cpuEvents2, fmtEventValue, 'Event') +
-            '</td></tr>';
-  }
-
-  // Captures — final screenshot, video, link back to the per-run
-  // result page. Last group because the values are large media
-  // elements, not numbers; pushing them to the bottom keeps the
-  // scannable metric rows above contiguous. Screenshots and videos
-  // get a CSS-sized treatment via .pageXrayCapture so the regression
-  // spotter has room to actually see the difference.
-  let capturesHtml = '';
-  if (p1.meta.screenshot && p2.meta.screenshot) {
-    capturesHtml += '<tr><td class="tabletext">Screenshot</td>' +
-            '<td><button type="button" class="lightbox-trigger" aria-label="Open larger screenshot of ' + h(config.har1.label) + '">' +
-              '<img class="pageXrayCapture" src="' + h(p1.meta.screenshot) +
-              '" alt="Final screenshot of ' + h(config.har1.label) + '" loading="lazy"></button></td>' +
-            '<td><button type="button" class="lightbox-trigger" aria-label="Open larger screenshot of ' + h(config.har2.label) + '">' +
-              '<img class="pageXrayCapture" src="' + h(p2.meta.screenshot) +
-              '" alt="Final screenshot of ' + h(config.har2.label) + '" loading="lazy"></button></td>' +
-            emptyDiff + '</tr>';
-  }
-  if (p1.meta.video && p2.meta.video) {
-    capturesHtml += '<tr><td class="tabletext">Video</td>' +
-            '<td><video class="pageXrayCapture" controls preload="none" poster="' + h(p1.meta.screenshot) + '">' +
-              '<source src="' + h(p1.meta.video) + '" type="video/mp4"></video></td>' +
-            '<td><video class="pageXrayCapture" controls preload="none" poster="' + h(p2.meta.screenshot) + '">' +
-              '<source src="' + h(p2.meta.video) + '" type="video/mp4"></video></td>' +
-            emptyDiff + '</tr>';
-  }
-  if (p1.meta.result && p2.meta.result) {
-    capturesHtml += '<tr><td class="tabletext">Extra</td>' +
-            '<td><a href="' + h(p1.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td>' +
-            '<td><a href="' + h(p2.meta.result) + '" target="_blank" rel="noopener noreferrer">Result page</a></td>' +
-            emptyDiff + '</tr>';
-  }
-  if (capturesHtml) html += section('Captures', 'captures') + capturesHtml;
-
-  html += '</tbody></table></div>';
-  return html;
+//
+// capturesTemplate — final screenshots, videos and result pages.
+//
+function capturesTemplate(d) {
+  return '<h3 id="capturesHeader" class="card-title">Captures</h3><div class="captures">' + each(d.sides, function (s) {
+    const links = [];
+    if (s.video) links.push('<a href="' + h(s.video) + '" target="_blank" rel="noopener noreferrer">Video</a>');
+    if (s.result) links.push('<a href="' + h(s.result) + '" target="_blank" rel="noopener noreferrer">Result page</a>');
+    return '<figure class="capture"><figcaption><span class="har-dot har-dot--' + s.key + '"></span>' + h(s.label) + '</figcaption>' +
+      (s.screenshot
+        ? '<button type="button" class="lightbox-trigger" aria-label="Open larger screenshot of ' + h(s.label) + '">' +
+          '<img class="capture-screenshot" src="' + h(s.screenshot) + '" alt="Final screenshot of ' + h(s.label) + '" loading="lazy"></button>'
+        : '') +
+      (links.length ? '<p>' + links.join(' · ') + '</p>' : '') + '</figure>';
+  }) + '</div>';
 }
 
 //
@@ -448,6 +340,7 @@ function filmstripTemplate(d) {
     return '<button type="button" class="filmstrip-cell' + harkCls + ' lightbox-trigger" aria-label="Open ' + alt + '">' +
              badge +
              '<img src="' + h(f.img) + '" alt="' + alt + '" loading="lazy" decoding="async">' +
+             (typeof f.progress === 'number' ? '<span class="filmstrip-cell-pct">' + Math.round(f.progress) + '%</span>' : '') +
            '</button>';
   }
 
@@ -467,14 +360,19 @@ function filmstripTemplate(d) {
     const f2 = fs2[i];
     const time = (f1 && f1.time) || (f2 && f2.time) || '';
     const diffCls = divergenceClass(f1 && f1.progress, f2 && f2.progress);
-    columns += '<figure class="filmstrip-column' + diffCls + '">' +
+    const ms = (f1 && f1.ms) || (f2 && f2.ms) || 0;
+    // A dot on the time marks a column where either page changed.
+    const changed = i > 0 && ((f1 && fs1[i - 1] && f1.sourceMs !== fs1[i - 1].sourceMs) ||
+                              (f2 && fs2[i - 1] && f2.sourceMs !== fs2[i - 1].sourceMs));
+    columns += '<figure class="filmstrip-column' + diffCls + (changed ? ' filmstrip-column--changed' : '') + '" data-ms="' + ms + '">' +
                  cellHtml(f1, config.har1.label, time, 1) +
                  cellHtml(f2, config.har2.label, time, 2) +
                  '<figcaption class="filmstrip-time">' + h(time) + ' s</figcaption>' +
                '</figure>';
   }
 
-  return '<h3 id="filmstripHeader" class="card-title">Filmstrip</h3>' +
+  return '<div class="card-head"><h3 id="filmstripHeader" class="card-title">Filmstrip</h3>' +
+         '<label class="filmstrip-zoom">Zoom <input type="range" min="70" max="260" value="120" data-action="filmstrip-zoom" aria-label="Filmstrip frame size"></label></div>' +
          '<div class="filmstrip">' +
            '<div class="filmstrip-legend" aria-hidden="true">' +
              '<span class="filmstrip-legend-label filmstrip-legend-label--har1">' + h(config.har1.label) + '</span>' +
@@ -486,251 +384,23 @@ function filmstripTemplate(d) {
          '</div>';
 }
 
-//
-// thirdPartyTemplate
-//
-function thirdPartyTemplate(d) {
-  const p1 = d.p1, p2 = d.p2, config = d.config;
-  let html = '<h3 id="firstPartyHeader">First Party vs Third Party content</h3>';
-  if (p1.firstPartyRegEx === p2.firstPartyRegEx) {
-    html += '<p class="small">Using <b>' + h(p1.firstPartyRegEx) + '</b> as <i>--firstParty</i> parameter.</p>';
-  } else {
-    html += '<p class="small">Using <b>' + h(p1.firstPartyRegEx) + '</b> as <i>--firstParty</i> parameter for ' +
-            h(config.har1.label) + ' and <b>' + h(p2.firstPartyRegEx) + '</b> for ' + h(config.har2.label) + '.</p>';
-  }
-  html += '<div id="comment-firstParty" class="comment"></div>';
-  html += '<table><thead><tr>' +
-          '<th class="tabletext">Metric</th>' +
-          '<th> ' + h(config.har1.label) + '</th>' +
-          '<th> ' + h(config.har2.label) + '</th>' +
-          '</tr></thead><tbody>';
-
-  function pct(n, total) {
-    if (!n || !total || n <= 0) return 0;
-    return Math.round((n / total) * 100);
-  }
-
-  function expandableRow(label, toggleClass, p1Cell, p2Cell, contentTypes1, contentTypes2, cellFn) {
-    let row = '<tr><td class="tabletext">' + label + ' ' +
-                '<button type="button" data-action="toggle-row" data-rows="' + toggleClass + '" class="submit submit-smaller">' +
-                  '<i class="arrow right"></i></button></td>' +
-              '<td>' + p1Cell + '</td>' +
-              '<td>' + p2Cell + '</td></tr>';
-    row += each(contentTypes1, function (entry, key) {
-      return '<tr class="userShowable ' + toggleClass + '">' +
-               '<td class="tabletext">&nbsp;&nbsp;' + h(key) + '</td>' +
-               '<td>' + cellFn(entry) + '</td>' +
-               '<td>' + cellFn(contentTypes2 ? contentTypes2[key] : null) + '</td>' +
-             '</tr>';
-    });
-    return row;
-  }
-
-  // First-party block
-  html += expandableRow('First party requests', 'firstPartyRequests',
-    p1.firstParty.requests + ' (' + pct(p1.firstParty.requests, p1.requests) + '%)',
-    p2.firstParty.requests + ' (' + pct(p2.firstParty.requests, p2.requests) + '%)',
-    p1.firstParty.contentTypes, p2.firstParty.contentTypes,
-    function (entry) { return entry ? entry.requests : 0; }
-  );
-  html += expandableRow('First party transfer size', 'firstPartyTransferSize',
-    formatBytes(p1.firstParty.transferSize) + ' (' + pct(p1.firstParty.transferSize, p1.transferSize) + '%)',
-    formatBytes(p2.firstParty.transferSize) + ' (' + pct(p2.firstParty.transferSize, p2.transferSize) + '%)',
-    p1.firstParty.contentTypes, p2.firstParty.contentTypes,
-    function (entry) { return formatBytes(entry ? entry.transferSize : 0); }
-  );
-  html += expandableRow('First party content size', 'firstPartyContentSize',
-    formatBytes(p1.firstParty.contentSize) + ' (' + pct(p1.firstParty.contentSize, p1.contentSize) + '%)',
-    formatBytes(p2.firstParty.contentSize) + ' (' + pct(p2.firstParty.contentSize, p2.contentSize) + '%)',
-    p1.firstParty.contentTypes, p2.firstParty.contentTypes,
-    function (entry) { return formatBytes(entry ? entry.contentSize : 0); }
-  );
-  html += '<tr><td class="tabletext">First party cookies</td>' +
-          '<td>' + (p1.firstParty.cookies != null ? p1.firstParty.cookies : '') + '</td>' +
-          '<td></td></tr>';
-
-  // Third-party block
-  html += expandableRow('Third party requests', 'thirdPartyRequests',
-    p1.thirdParty.requests + ' (' + pct(p1.thirdParty.requests, p1.requests) + '%)',
-    p2.thirdParty.requests + ' (' + pct(p2.thirdParty.requests, p2.requests) + '%)',
-    p1.thirdParty.contentTypes, p2.thirdParty.contentTypes,
-    function (entry) { return entry ? entry.requests : 0; }
-  );
-  html += expandableRow('Third party transfer size', 'thirdPartyTransferSize',
-    formatBytes(p1.thirdParty.transferSize) + ' (' + pct(p1.thirdParty.transferSize, p1.transferSize) + '%)',
-    formatBytes(p2.thirdParty.transferSize) + ' (' + pct(p2.thirdParty.transferSize, p2.transferSize) + '%)',
-    p1.thirdParty.contentTypes, p2.thirdParty.contentTypes,
-    function (entry) { return formatBytes(entry ? entry.transferSize : 0); }
-  );
-  html += expandableRow('Third party content size', 'thirdPartyContentSize',
-    formatBytes(p1.thirdParty.contentSize) + ' (' + pct(p1.thirdParty.contentSize, p1.contentSize) + '%)',
-    formatBytes(p2.thirdParty.contentSize) + ' (' + pct(p2.thirdParty.contentSize, p2.contentSize) + '%)',
-    p1.thirdParty.contentTypes, p2.thirdParty.contentTypes,
-    function (entry) { return formatBytes(entry ? entry.contentSize : 0); }
-  );
-  html += '<tr><td class="tabletext">Third party cookies</td>' +
-          '<td>' + (p1.thirdParty.cookies != null ? p1.thirdParty.cookies : '') + '</td>' +
-          '<td></td></tr>';
-
-  html += '</tbody></table>';
-  return html;
-}
-
-//
-// resultHeaderTemplate
-//
-function resultHeaderTemplate(d) {
-  const p1 = d.p1, p2 = d.p2;
-  let html = '<div class="header-links">';
-  html += '<a href="#pageXrayContent">Metrics</a> - ';
-  if (d.filmstrip) {
-    html += '<a href="#filmstripHeader">Filmstrip</a> - ';
-  }
-  html += '<a href="#waterfallHeader">Waterfall</a> - ';
-  if (p1.visualMetrics && p1.visualMetrics.VisualProgress) {
-    html += '<a href="#visualProgressHeader">Visual Progress</a> - ';
-  }
-  if (p1.thirdParty && p1.thirdParty.contentTypes) {
-    html += '<a href="#firstPartyHeader">1st vs 3rd party</a> - ';
-  }
-  if (p1.url === p2.url) {
-    html += '<a href="#requestDiffHeader">Request diff</a> - ';
-  }
-  html += '<a href="#domainsHeader">Domains</a>';
-  html += '</div>';
-  return html;
-}
-
-//
-// domainsTemplate
-//
-function domainsTemplate(d) {
-  const config = d.config;
-  let html = '<h3 id="domainsHeader">Domains</h3>';
-  html += '<div id="comment-domains" class="comment"></div>';
-  html += '<div class="col-1-1"><table><thead><tr>' +
-          '<th class="tabletext">Domain</th>' +
-          '<th class="no-break">' + h(config.har1.label) + ' Request</th>' +
-          '<th class="no-break">' + h(config.har2.label) + ' Request</th>' +
-          '<th class="no-break">' + h(config.har1.label) + ' Size</th>' +
-          '<th class="no-break">' + h(config.har2.label) + ' Size</th>' +
-          '</tr></thead><tbody>';
-
-  html += each(d.domains, function (domain) {
-    const safeId = 'domainDetails' + domain.name;
-    let row = '<tr>' +
-              '<td class="tabletext">' + h(domain.name) + ' ' +
-                '<button type="button" data-action="toggle-row" data-rows="' + h(safeId) + '" class="submit submit-smaller">' +
-                  '<i class="arrow right"></i></button></td>' +
-              '<td class="no-break">' + (domain.firstPage ? domain.firstPage.requests : '') + '</td>' +
-              '<td class="no-break">' + (domain.secondPage ? domain.secondPage.requests : '') + '</td>' +
-              '<td class="no-break">' + (domain.firstPage ? formatBytes(domain.firstPage.transferSize) : '') + '</td>' +
-              '<td class="no-break">' + (domain.secondPage ? formatBytes(domain.secondPage.transferSize) : '') + '</td>' +
-              '</tr>';
-    row += '<tr class="userShowable ' + h(safeId) + '">' +
-           '<td colspan="2" class="tabletext">&nbsp;<b>Total time spent HAR 1</b><br/>' +
-           (domain.firstPage ? each(domain.firstPage.timings, function (val, key) {
-             return '&nbsp;&nbsp;' + h(key) + ' : ' + val.toFixed(0) + ' <br/>';
-           }) : '') +
-           '</td>' +
-           '<td colspan="3" class="tabletext">&nbsp;<b>Total time spent HAR 2</b><br/>' +
-           (domain.secondPage ? each(domain.secondPage.timings, function (val, key) {
-             return '&nbsp;&nbsp;' + h(key) + ' : ' + val.toFixed(0) + ' <br/>';
-           }) : '') +
-           '</td></tr>';
-    return row;
-  });
-
-  html += '</tbody></table></div>';
-  return html;
-}
-
-//
-// requestDiffTemplate
-//
-function requestDiffTemplate(d) {
-  if (!d.requestDiff) return '';
-  let html = '<h3 id="requestDiffHeader">Request/response transfer size difference (larger than 1 KB)</h3>';
-  html += '<div id="comment-requestDiff" class="comment"></div>';
-
-  if (!d.requestDiff.length) {
-    html += '<p>There are no difference in size of the requests/responses.</p>';
-    return html;
-  }
-
-  const t = d.total;
-
-  html += '<div class="col-1-1">';
-  html += '<table class="requestDiffTable"><thead><tr>' +
-          '<th class="tabletext">URL</th>' +
-          '<th class="tabletext">' + h(d.config.har1.label) + '</th>' +
-          '<th class="tabletext">' + h(d.config.har2.label) + '</th>' +
-          '<th class="tabletext">Diff</th>' +
-          '</tr></thead><tbody>';
-
-  html += each(d.requestDiff, function (r) {
-    let diffCell;
-    if (r.har1 !== undefined && r.har2 !== undefined) {
-      if (r.diff < 0) {
-        diffCell = '<td class="tabletext green">-' + formatBytes(-r.diff) + '</td>';
-      } else {
-        diffCell = '<td class="tabletext red">+' + formatBytes(r.diff) + '</td>';
-      }
-    } else if (r.har1 !== undefined) {
-      diffCell = '<td class="tabletext green">Removed</td>';
-    } else {
-      diffCell = '<td class="tabletext red">New</td>';
-    }
-    return '<tr>' +
-           '<td class="tabletext"><a href="' + h(r.url) + '">' + h(formatURL(r.url)) + '</a></td>' +
-           '<td class="tabletext">' + formatBytes(r.har1) + '</td>' +
-           '<td class="tabletext">' + formatBytes(r.har2) + '</td>' +
-           diffCell +
-           '</tr>';
-  });
-
-  html += '<tr><td class="tabletext"><b>Total</b></td>' +
-          '<td class="tabletext"><b>' + formatBytes(t.har1) + '</b></td>' +
-          '<td class="tabletext"><b>' + formatBytes(t.har2) + '</b></td>' +
-          (t.diff < 0
-            ? '<td class="tabletext green"><b>-' + formatBytes(-t.diff) + '</b></td>'
-            : '<td class="tabletext red"><b>+' + formatBytes(t.diff) + '</b></td>') +
-          '</tr>';
-
-  html += '</tbody></table>';
-
-  // Summary table
-  html += '<table><thead><tr>' +
-          '<th class="tabletext">Summary of request/response difference</th>' +
-          '<th>Size</th>' +
-          '</tr></thead><tbody>' +
-          '<tr><td class="tabletext">New (' + t.new + ')</td><td class="red">' + formatBytes(t.newBytes) + '</td></tr>' +
-          '<tr><td class="tabletext">Removed (' + t.removed + ')</td><td class="green">-' + formatBytes(t.removedBytes) + '</td></tr>' +
-          '<tr><td class="tabletext">Increased (' + t.increased + ')</td><td class="red">' + formatBytes(t.increasedBytes) + '</td></tr>' +
-          '<tr><td class="tabletext">Decreased (' + t.decreased + ')</td><td class="green">-' + formatBytes(-t.decreasedBytes) + '</td></tr>' +
-          '<tr><td class="tabletext"><b>Total</b></td>' +
-          (t.diff < 0
-            ? '<td class="green"><b>-' + formatBytes(-t.diff) + '</b></td>'
-            : '<td class="red"><b>+' + formatBytes(t.diff) + '</b></td>') +
-          '</tr></tbody></table>';
-
-  html += '</div>';
-  return html;
-}
-
 const TEMPLATES = {
-  visualProgressTemplate: visualProgressTemplate,
-  pageXrayTemplate: pageXrayTemplate,
-  filmstripTemplate: filmstripTemplate,
-  thirdPartyTemplate: thirdPartyTemplate,
   resultHeaderTemplate: resultHeaderTemplate,
-  domainsTemplate: domainsTemplate,
-  requestDiffTemplate: requestDiffTemplate
+  summaryTemplate: summaryTemplate,
+  metricsTableTemplate: metricsTableTemplate,
+  requestsTemplate: requestsTemplate,
+  timelineMediaTemplate: timelineMediaTemplate,
+  timelineTrackTemplate: timelineTrackTemplate,
+  capturesTemplate: capturesTemplate,
+  filmstripTemplate: filmstripTemplate
 };
 
 function parseTemplate(templateId, data, divId) {
   const renderer = TEMPLATES[templateId];
   if (!renderer) return;
   const target = document.getElementById(divId);
-  if (target) target.innerHTML = renderer(data);
+  if (target) {
+    target.innerHTML = renderer(data);
+    applyPositions(target);
+  }
 }

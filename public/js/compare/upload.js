@@ -152,9 +152,13 @@ function createUpload(id) {
         const url1 = changeHar1 ? undefined : prev.har1 && prev.har1.url;
         const url2 = changeHar1 ? (prev.har2 && prev.har2.url) : undefined;
 
+        // The drawings on the HAR that stays are kept.
+        const drawings1 = changeHar1 ? undefined : prev.har1 && prev.har1.drawings;
+        const drawings2 = changeHar1 ? prev.har2 && prev.har2.drawings : undefined;
+
         generate({
-          har1: { har: har1, run: run1, label: label1, url: url1 },
-          har2: { har: har2, run: run2, label: label2, url: url2 },
+          har1: { har: har1, run: run1, label: label1, url: url1, drawings: drawings1 },
+          har2: { har: har2, run: run2, label: label2, url: url2, drawings: drawings2 },
           stripVersion: stripVersion,
           title: prev.title,
           firstParty: prev.firstParty,

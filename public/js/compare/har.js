@@ -1,4 +1,5 @@
-/* exported getLastTiming, getAllDomains, getTotalDiff, getUniqueRequests */
+/* global median */
+/* exported getLastTiming, requestSizes, compareRequests */
 
 /**
  * Helper functions to get things out of the HAR
@@ -37,110 +38,32 @@ function getLastTiming(har, run) {
   return doneTime;
 }
 
-function getAllDomains(firstPage, secondPage) {
-  const domainMap = {};
-
-  for (let name of Object.keys(firstPage.domains)) {
-    let domain = domainMap[name] || {};
-    domain.firstPage = firstPage.domains[name];
-    domainMap[name] = domain;
+// Median transfer size of each URL across the given runs (0-based page
+// indexes), and how many of the runs requested it.
+function requestSizes(har, runs, stripVersion) {
+  const perRun = runs.map(run => getURLs(har, run, stripVersion));
+  const sizes = {};
+  for (const url of new Set(perRun.flatMap(Object.keys))) {
+    const values = perRun.filter(urls => url in urls).map(urls => urls[url]);
+    sizes[url] = { size: median(values), seen: values.length, runs: runs.length };
   }
-  for (let name of Object.keys(secondPage.domains)) {
-    let domain = domainMap[name] || {};
-    domain.secondPage = secondPage.domains[name];
-    domainMap[name] = domain;
-  }
-
-  const allDomains = [];
-
-  for (let name of Object.keys(domainMap)) {
-    const domain = domainMap[name];
-    domain.name = name;
-    allDomains.push(domain);
-  }
-
-  return allDomains;
+  return sizes;
 }
 
-function getTotalDiff(requestDiff) {
-  const total = {
-    har1: 0,
-    har2: 0,
-    diff: 0,
-    new: 0,
-    newBytes: 0,
-    removed: 0,
-    removedBytes: 0,
-    increased: 0,
-    increasedBytes: 0,
-    decreased: 0,
-    decreasedBytes: 0
-  };
-  for (let diff of requestDiff) {
-    if (diff.har1) total.har1 += diff.har1;
-    if (diff.har2) total.har2 += diff.har2;
-    if (diff.diff) total.diff += diff.diff;
-
-    // is new!
-    if (diff.har1 === undefined) {
-      total.new += 1;
-      total.newBytes += diff.har2;
-    } else if (diff.har2 === undefined) {
-      // is removed
-      total.removed += 1;
-      total.removedBytes += diff.har1;
-    } else if (diff.diff < 0) {
-      // decrease!
-      total.decreased += 1;
-      total.decreasedBytes += diff.diff;
-    } else {
-      // must be increase
-      total.increased += 1;
-      total.increasedBytes += diff.diff;
-    }
+// The URLs whose size differs between two requestSizes() results.
+// Use `in` for presence checks because a URL whose transfer size is
+// unknown is stored as 0 — truthy checks would mis-classify those as
+// removed/added.
+function compareRequests(sizes1, sizes2) {
+  const changes = [];
+  for (const url of new Set(Object.keys(sizes1).concat(Object.keys(sizes2)))) {
+    const a = url in sizes1 ? sizes1[url] : undefined;
+    const b = url in sizes2 ? sizes2[url] : undefined;
+    const diff = (b ? b.size : 0) - (a ? a.size : 0);
+    const kind = !a ? 'new' : !b ? 'removed' : diff > 0 ? 'increased' : diff < 0 ? 'decreased' : 'same';
+    if (kind !== 'same') changes.push({ url, a, b, diff, kind });
   }
-  return total;
-}
-
-function getUniqueRequests(har1, run1, har2, run2, options) {
-  const urls1 = getURLs(har1, run1, options.stripVersion);
-  const urls2 = getURLs(har2, run2, options.stripVersion);
-  const all = [];
-  const minDiffInBytes = 1000;
-  // Use `in` for presence checks because a URL whose transfer size is
-  // unknown is stored as 0 — truthy checks would mis-classify those as
-  // removed/added.
-  for (let url of Object.keys(urls1)) {
-    if (url in urls2) {
-      const delta = urls2[url] - urls1[url];
-      if (delta < minDiffInBytes && delta > -minDiffInBytes) {
-        // no meaningful diff, skip
-        continue;
-      }
-      all.push({
-        url: url,
-        har1: urls1[url],
-        har2: urls2[url],
-        diff: delta
-      });
-    } else {
-      all.push({
-        url: url,
-        diff: -urls1[url],
-        har1: urls1[url]
-      });
-    }
-  }
-  for (let url of Object.keys(urls2)) {
-    if (!(url in urls1)) {
-      all.push({
-        url: url,
-        diff: urls2[url],
-        har2: urls2[url]
-      });
-    }
-  }
-  return all;
+  return changes;
 }
 
 function getURLs(har, run, stripVersion) {

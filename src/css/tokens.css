@@ -37,6 +37,15 @@
   --color-info-bg:        var(--color-blue-tint);
   --color-info-border:    #bae6fd;
 
+  /* The two HAR files. Blue and orange differ in hue and lightness;
+     the ink shades pass 4.5:1 for text on white. */
+  --color-har1:           var(--color-blue);
+  --color-har1-ink:       var(--color-blue-dark);
+  --color-har2:           #f97316;
+  --color-har2-ink:       #c2410c;
+  /* Drawings on the waterfall: not a HAR color. */
+  --color-draw:           #dc2626;
+
   /* Typography — system stack, no web fonts */
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
                Roboto, "Helvetica Neue", Arial, sans-serif;

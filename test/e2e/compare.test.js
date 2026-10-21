@@ -74,11 +74,14 @@ after(async () => {
 const har = name => `${base}har/browsertime-${name}-wikipedia.har.gz`;
 const $ = css => driver.findElement(By.css(css));
 const waitFor = css => driver.wait(until.elementLocated(By.css(css)), 15000);
-const browserCell = () =>
-  driver.executeScript(() => [...document.querySelectorAll('.pageXrayTable tr')]
-    .find(tr => tr.textContent.startsWith('Browser')).cells[1].textContent);
-const display = rowClass =>
-  driver.executeScript(c => getComputedStyle(document.getElementsByClassName(c)[0]).display, rowClass);
+// Scroll to the middle first so the sticky header never covers the target.
+async function click(css) {
+  const el = await $(css);
+  await driver.executeScript(e => e.scrollIntoView({ block: 'center' }), el);
+  await el.click();
+}
+const text = css => driver.executeScript(c => document.querySelector(c).textContent, css);
+const tableRows = () => driver.executeScript(() => document.querySelectorAll('.metricsTable tbody tr').length);
 
 test('the start page asks for a URL', async () => {
   await driver.get(base);
@@ -90,9 +93,9 @@ test('the start page asks for a URL', async () => {
 test('pressing Enter in the form compares two HAR files', async () => {
   await $('#harurl').sendKeys(har('chrome'));
   await $('#harurl2').sendKeys(har('firefox'), Key.ENTER);
-  await waitFor('.pageXrayTable');
+  await waitFor('.metricsTable');
   assert.equal(await driver.getCurrentUrl(), base);
-  assert.match(await browserCell(), /Chrome/);
+  assert.match(await text('#summaryContent'), /Chrome/);
 });
 
 test('every header link points to a section', async () => {
@@ -108,33 +111,116 @@ test('the waterfalls render', async () => {
   await waitFor('#har2 canvas');
 });
 
-test('Switch swaps the HAR files', async () => {
-  await $('button[data-action=switch]').click();
-  assert.match(await browserCell(), /Firefox/);
+test('two HAR files with five runs each are compared by their medians', async () => {
+  assert.match(await text('.segmented [aria-pressed="true"]'), /All runs/);
+  assert.match(await text('.metricsTable thead'), /HAR1 median/);
+  assert.equal(await $('#allMetricsToggle').getAttribute('aria-pressed'), 'false');
+});
+
+test('the timeline axis moves every cursor', async () => {
+  await driver.wait(async () => (await $('#har1 .wf-cursor').getAttribute('style')).includes('left'), 5000);
+  const before = await $('#har1 .wf-cursor').getCssValue('left');
+  const axis = await $('#timelineAxis');
+  await driver.executeScript(el => el.scrollIntoView({ block: 'center' }), axis);
+  await axis.sendKeys(Key.HOME);
+  assert.equal(await text('#timelineTime'), '0.000 s');
+  assert.notEqual(await $('#har1 .wf-cursor').getCssValue('left'), before);
+  assert.equal(await driver.executeScript(() => document.querySelectorAll('.rendering-chip.is-passed').length), 0);
+  await axis.sendKeys(Key.END);
+  assert.equal(await driver.executeScript(() =>
+    document.querySelectorAll('.rendering-chip:not(.is-passed)').length), 0);
+});
+
+test('the timeline shades where the two runs render differently', async () => {
+  assert.ok(await driver.executeScript(() => document.querySelectorAll('.rendering-band').length) > 0);
+  assert.ok(await driver.executeScript(() => document.querySelectorAll('#visualProgress .vp-band').length) > 0);
+});
+
+test('the speed buttons change the playback speed', async () => {
+  await click('[data-action="timeline-speed"][data-speed="0.5"]');
+  assert.equal(await $('[data-action="timeline-speed"][data-speed="0.5"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(await $('[data-action="timeline-speed"][data-speed="1"]').getAttribute('aria-pressed'), 'false');
+  await click('[data-action="timeline-speed"][data-speed="1"]');
+});
+
+test('pointing at a metric card highlights its row', async () => {
+  const card = await $('.metric-card');
+  await driver.executeScript(el => el.scrollIntoView({ block: 'center' }), card);
+  await driver.actions().move({ origin: card }).perform();
+  const metric = await card.getAttribute('data-metric');
+  assert.ok(await driver.executeScript(m =>
+    [...document.querySelectorAll('.metricsTable tr.is-linked')].some(tr => tr.dataset.metric === m), metric), metric);
+});
+
+test('clicking a metric card shows and flashes its row', async () => {
+  const card = await $('.metric-card');
+  const metric = await card.getAttribute('data-metric');
+  await card.click();
+  await driver.wait(() => driver.executeScript(m => {
+    const row = [...document.querySelectorAll('.metricsTable tr')].find(tr => tr.dataset.metric === m);
+    const r = row && row.getBoundingClientRect();
+    return row && row.classList.contains('metric-flash') && r.top >= 0 && r.bottom <= window.innerHeight;
+  }, metric), 5000);
+});
+
+test('Play runs the timeline and Pause stops it', async () => {
+  await click('#timelinePlay');
+  await driver.wait(async () => (await text('#timelineTime')) !== '0.00 s', 5000);
+  await click('#timelinePlay');
+  assert.equal(await $('#timelinePlay').getAttribute('aria-pressed'), 'false');
+});
+
+test('a run dot compares that run in single runs mode', async () => {
+  // Dots of runs with the same value overlap; click one that is on top.
+  const dot = await driver.executeScript(() => [...document.querySelectorAll('.metricsTable .run-dot--2')].find(d => {
+    d.scrollIntoView({ block: 'center' });
+    const r = d.getBoundingClientRect();
+    return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === d;
+  }));
+  await dot.click();
+  await driver.wait(async () => (await text('.segmented [aria-pressed="true"]')) === 'Single runs', 5000);
+  assert.match(await text('.metricsTable thead'), /HAR2 run \d/);
 });
 
 test('the run select changes the run', async () => {
-  await $('#run1Option option[value="2"]').click();
+  await click('#run1Option option[value="2"]');
   await driver.wait(async () => (await $('#run1Option').getAttribute('value')) === '2', 5000);
+  assert.match(await text('.metricsTable thead'), /HAR1 run 2/);
 });
 
-test('Only differences hides unchanged rows', async () => {
-  await $('#diffOnlyToggle').click();
-  assert.match(await $('.pageXrayTable').getAttribute('class'), /pageXrayTable--diff-only/);
-  assert.equal(await $('#diffOnlyToggle').getAttribute('aria-pressed'), 'true');
+test('unchanged metrics are folded and can be shown', async () => {
+  const folded = await tableRows();
+  await click('[data-action="toggle-section"]');
+  const oneOpen = await tableRows();
+  assert.ok(oneOpen > folded);
+  await click('#allMetricsToggle');
+  assert.equal(await $('#allMetricsToggle').getAttribute('aria-pressed'), 'true');
+  assert.ok(await tableRows() > oneOpen);
+  await click('#allMetricsToggle');
 });
 
-for (const section of ['#domainsContent', '#thirdPartyContent']) {
-  test(`rows in ${section} expand and collapse`, async () => {
-    const button = await $(`${section} button[data-action=toggle-row]`);
-    const rows = await button.getAttribute('data-rows');
-    await driver.executeScript(el => el.scrollIntoView({ block: 'center' }), button);
-    await button.click();
-    assert.equal(await display(rows), 'table-row');
-    await button.click();
-    assert.equal(await display(rows), 'none');
-  });
-}
+test('the search finds a metric', async () => {
+  const search = await $('#metricSearch');
+  await driver.executeScript(el => el.scrollIntoView({ block: 'center' }), search);
+  await search.sendKeys('speed index');
+  await driver.wait(async () => (await tableRows()) <= 3, 5000);
+  assert.match(await text('.metricsTable tbody'), /Speed Index/);
+  await search.clear();
+  await search.sendKeys(Key.BACK_SPACE);
+});
+
+test('the request filters show one kind of change', async () => {
+  await click('[data-action="request-filter"][data-filter="decreased"]');
+  assert.equal(await $('[data-action="request-filter"][data-filter="decreased"]').getAttribute('aria-pressed'), 'true');
+  const changes = await driver.executeScript(() =>
+    [...document.querySelectorAll('.requestsTable .request-change')].map(td => td.textContent));
+  assert.ok(changes.every(c => c.startsWith('−')), changes.join());
+});
+
+test('Swap swaps the HAR files', async () => {
+  await click('button[data-action=switch]');
+  await driver.wait(async () => (await text('.har-chip b')) === 'HAR2', 5000);
+});
 
 test('the blend slider fades in HAR2', async () => {
   const slider = await $('#harBlendSlider');
@@ -144,26 +230,104 @@ test('the blend slider fades in HAR2', async () => {
 });
 
 test('Side by side shows both waterfalls next to each other', async () => {
-  await $('#waterfallLayoutToggle').click();
+  await click('#waterfallLayoutToggle');
   assert.match(await $('.harwrapper').getAttribute('class'), /harwrapper--side-by-side/);
 });
 
-test('Upload names the new HAR after its file', async () => {
+// Pixels drawn on the drawing layer of a waterfall.
+const drawnPixels = key => driver.executeScript(k => {
+  const c = document.querySelector('#' + k + ' .wf-draw');
+  const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  let n = 0;
+  for (let i = 3; i < data.length; i += 4) if (data[i]) n++;
+  return n;
+}, key);
+
+async function drag(css, from, to) {
+  const el = await $(css);
+  await driver.executeScript(e => e.scrollIntoView({ block: 'center' }), el);
+  await driver.actions()
+    .move({ origin: el, x: from[0], y: from[1] }).press()
+    .move({ origin: el, x: to[0], y: to[1], duration: 100 })
+    .release().perform();
+}
+
+test('a circle drawn on a waterfall can be undone', async () => {
+  await click('[data-action=draw-tool][data-tool=circle]');
+  assert.equal(await $('#drawHint').isDisplayed(), true);
+  await drag('#har1 .wf-draw', [-60, -40], [60, 0]);
+  assert.ok(await drawnPixels('har1') > 100);
+  await click('[data-action=draw-undo]');
+  assert.equal(await drawnPixels('har1'), 0);
+});
+
+// The top of the drawn pixels on the drawing layer of a waterfall.
+const drawnTop = key => driver.executeScript(k => {
+  const c = document.querySelector('#' + k + ' .wf-draw');
+  const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  for (let i = 3; i < data.length; i += 4) if (data[i]) return Math.floor((i - 3) / 4 / c.width);
+  return -1;
+}, key);
+
+test('a drawing can be moved and the move undone', async () => {
+  // Esc first: clicking the tool that is on turns it off.
+  await driver.actions().sendKeys(Key.ESCAPE).perform();
+  await click('[data-action=draw-tool][data-tool=circle]');
+  await drag('#har1 .wf-draw', [-60, -40], [60, 0]);
+  const top = await drawnTop('har1');
+  // Grab the left side of the circle outline and move it down.
+  await drag('#har1 .wf-draw', [-60, -20], [-60, 80]);
+  assert.ok(Math.abs(await drawnTop('har1') - top - 100) <= 3);
+  await click('[data-action=draw-undo]');
+  assert.equal(await drawnTop('har1'), top);
+  await click('[data-action=draw-undo]');
+  assert.equal(await drawnPixels('har1'), 0);
+});
+
+test('text can be added to a waterfall', async () => {
+  await click('[data-action=draw-tool][data-tool=text]');
+  const layer = await $('#har2 .wf-draw');
+  await driver.actions().move({ origin: layer, x: 0, y: -40 }).click().perform();
+  const input = await waitFor('#har2 .wf-draw-input');
+  await input.sendKeys('slow font', Key.ENTER);
+  assert.ok(await drawnPixels('har2') > 100);
+  await click('[data-action=draw-clear]');
+  assert.equal(await drawnPixels('har2'), 0);
+});
+
+test('a drawing follows its HAR when the files are swapped', async () => {
+  await click('[data-action=draw-tool][data-tool=line]');
+  await drag('#har1 .wf-draw', [-80, -30], [40, 10]);
+  await driver.actions().sendKeys(Key.ESCAPE).perform();
+  assert.equal(await $('#drawHint').isDisplayed(), false);
+  await click('button[data-action=switch]');
+  await driver.wait(async () => await drawnPixels('har2') > 50, 15000);
+  assert.equal(await drawnPixels('har1'), 0);
+});
+
+test('Save as PNG downloads the waterfalls with the drawings', async () => {
+  await driver.executeScript(() => {
+    window.savedPng = null;
+    HTMLAnchorElement.prototype.click = function () { window.savedPng = this.download; };
+  });
+  await click('[data-action=draw-save]');
+  await driver.wait(() => driver.executeScript(() => window.savedPng), 5000);
+  assert.equal(await driver.executeScript(() => window.savedPng), 'compare-waterfall.png');
+});
+
+test('Replace names the new HAR after its file', async () => {
   await $('#har2upload').sendKeys(join(root, 'test/har/browsertime-firefox-wikipedia.har.gz'));
-  await driver.wait(async () =>
-    (await $('.tableXrayHar2Metric').getText()).includes('browsertime-firefox'), 15000);
+  await driver.wait(async () => (await text('#summaryContent')).includes('browsertime-firefox'), 15000);
 });
 
 test('Upload again shows the start page', async () => {
-  const button = await $('button[data-action=upload-again]');
-  await driver.executeScript(el => el.scrollIntoView({ block: 'center' }), button);
-  await button.click();
+  await click('button[data-action=upload-again]');
   assert.equal(await $('#choosehars').isDisplayed(), true);
 });
 
 test('a share link loads the comparison', async () => {
   await driver.get(`${base}?har1=${har('chrome')}&har2=${har('firefox')}`);
-  await waitFor('.pageXrayTable');
+  await waitFor('.metricsTable');
 });
 
 test('the browser logged no errors or CSP violations', async () => {
