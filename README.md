@@ -123,11 +123,14 @@ Run the dev server:
 npm run develop
 ```
 
-Lint and run the tests (CI runs both on every PR):
+Lint and run the tests (CI runs all of them on every PR):
 ```
 npm run lint
 npm test
+npm run build && npm run test:e2e
 ```
+
+The browser tests use [Selenium](https://www.selenium.dev/documentation/webdriver/) and Chrome. Selenium Manager finds or downloads Chrome and chromedriver. To use a local install instead, set `CHROME_BIN` and `CHROMEDRIVER`.
 
 Send us a PR / create an issue. If you have a big change coming up, please discuss it with us in an issue first.
 
