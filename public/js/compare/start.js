@@ -1,4 +1,4 @@
-/* global createMainDropZone, showLoading, loadHARsFromConfig, loadFilesFromGist, loadFilesFromConfig, loadFromPaste, compareFromForm, errorMessage, showUpload, toggleWaterfallLayout, blendWaterfalls, regenerate, setCompareMode, pickRun, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin, toggleTimelinePlay, scrubTimeline, showMetric, linkMetric, setTimelineSpeed, stepTimelineFrame, jumpTimeline, setDrawTool, undoDrawing, clearDrawings, saveDrawingPng */
+/* global createMainDropZone, showLoading, loadHARsFromConfig, loadFilesFromGist, loadFilesFromConfig, loadFromPaste, compareFromForm, errorMessage, showUpload, toggleWaterfallLayout, blendWaterfalls, regenerate, setCompareMode, pickRun, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin, toggleTimelinePlay, scrubTimeline, showMetric, linkMetric, setTimelineSpeed, stepTimelineFrame, jumpTimeline, setDrawTool, undoDrawing, clearDrawings, saveDrawingPng, replaceMissingFrame */
 
 // Start-up code for the page. It lives in a file, not in index.html,
 // because the Content-Security-Policy blocks inline scripts.
@@ -127,6 +127,11 @@ for (const [type, selector] of Object.entries(actionElements)) {
     actions[el.dataset.action](el);
   });
 }
+
+// Image errors do not bubble, so listen in the capture phase.
+document.addEventListener('error', e => {
+  if (e.target instanceof HTMLImageElement) replaceMissingFrame(e.target);
+}, true);
 
 // Pointing at (or tabbing to) a metric highlights it everywhere.
 for (const [type, on] of [['mouseover', true], ['mouseout', false], ['focusin', true], ['focusout', false]]) {
