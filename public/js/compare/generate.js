@@ -46,7 +46,7 @@ function addWaterfall(har, selectedPage, waterfallDivId, maxTime) {
   if (!outputHolder) return Promise.resolve();
   return compareWaterfall.render(har, outputHolder, {
     endTimeMs: maxTime,
-    runIndex: selectedPage
+    runIndex: Number(selectedPage)
   });
 }
 

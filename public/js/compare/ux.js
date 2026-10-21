@@ -105,10 +105,10 @@ function formatBytes(bytes) {
   const KB = 1024;
   const MB = 1024 * 1024;
 
-  if (!bytes || bytes < 0 || bytes === 'N/A') {
+  if (bytes == null || bytes < 0 || bytes === 'N/A') {
     return 'N/A';
   } else if (bytes === 0) {
-    return '0 b';
+    return '0 B';
   } else if (bytes < KB) {
     return Number(bytes) + ' B';
   } else if (bytes < MB) {

@@ -701,7 +701,7 @@ function requestDiffTemplate(d) {
     let diffCell;
     if (r.har1 && r.har2) {
       if (r.diff < 0) {
-        diffCell = '<td class="tabletext green">' + formatBytes(r.diff) + '</td>';
+        diffCell = '<td class="tabletext green">-' + formatBytes(-r.diff) + '</td>';
       } else {
         diffCell = '<td class="tabletext red">+' + formatBytes(r.diff) + '</td>';
       }
@@ -722,7 +722,7 @@ function requestDiffTemplate(d) {
           '<td class="tabletext"><b>' + formatBytes(t.har1) + '</b></td>' +
           '<td class="tabletext"><b>' + formatBytes(t.har2) + '</b></td>' +
           (t.diff < 0
-            ? '<td class="tabletext green"><b>' + formatBytes(t.diff) + '</b></td>'
+            ? '<td class="tabletext green"><b>-' + formatBytes(-t.diff) + '</b></td>'
             : '<td class="tabletext red"><b>+' + formatBytes(t.diff) + '</b></td>') +
           '</tr>';
 
@@ -736,10 +736,10 @@ function requestDiffTemplate(d) {
           '<tr><td class="tabletext">New (' + t.new + ')</td><td class="red">' + formatBytes(t.newBytes) + '</td></tr>' +
           '<tr><td class="tabletext">Removed (' + t.removed + ')</td><td class="green">-' + formatBytes(t.removedBytes) + '</td></tr>' +
           '<tr><td class="tabletext">Increased (' + t.increased + ')</td><td class="red">' + formatBytes(t.increasedBytes) + '</td></tr>' +
-          '<tr><td class="tabletext">Decreased (' + t.decreased + ')</td><td class="green">' + formatBytes(t.decreasedBytes) + '</td></tr>' +
+          '<tr><td class="tabletext">Decreased (' + t.decreased + ')</td><td class="green">-' + formatBytes(-t.decreasedBytes) + '</td></tr>' +
           '<tr><td class="tabletext"><b>Total</b></td>' +
           (t.diff < 0
-            ? '<td class="green"><b>' + formatBytes(t.diff) + '</b></td>'
+            ? '<td class="green"><b>-' + formatBytes(-t.diff) + '</b></td>'
             : '<td class="red"><b>+' + formatBytes(t.diff) + '</b></td>') +
           '</tr></tbody></table>';
 
