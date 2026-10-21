@@ -1,5 +1,5 @@
 /* global generateVisualProgress, prefersReducedMotion, parseTemplate */
-/* exported initTimeline, setTimelineTime, scrubTimeline, toggleTimelinePlay, stopTimeline, addTimelineWaterfall, divergenceBands, setTimelineSpeed, stepTimelineFrame, jumpTimeline */
+/* exported initTimeline, setTimelineTime, scrubTimeline, toggleTimelinePlay, stopTimeline, addTimelineWaterfall, divergenceBands, setTimelineSpeed, stepTimelineFrame, jumpTimeline, replaceMissingFrame */
 
 // The shared time cursor. The visual progress chart, the two videos (or
 // filmstrip frames), the milestone timeline, the filmstrip and the
@@ -15,7 +15,9 @@ const timeline = {
   sides: {},
   columns: [],
   current: null,
-  waterfalls: {}
+  waterfalls: {},
+  // Frame images that did not load.
+  missingFrames: new Set()
 };
 
 // Time ranges where the visual progress of the two runs differs by
@@ -38,6 +40,36 @@ function divergenceBands(vp1, vp2, maxTime, threshold = 20) {
     else bands.push({ from: t, to: end });
   });
   return bands;
+}
+
+// The image of the frame at ms. When that image did not load, the frame
+// nearest in time that did (the earlier one on a tie): the frame before
+// a missing first visual change is often still blank.
+function frameAt(key, ms) {
+  const side = timeline.sides[key];
+  const frames = (side && side.frames) || [];
+  if (!frames.length) return null;
+  const wanted = lastAtOrBefore(frames, ms, f => f.ms);
+  if (!timeline.missingFrames.has(wanted.img)) return wanted.img;
+  const timeOf = f => (f.sourceMs === undefined ? f.ms : f.sourceMs);
+  let nearest = null;
+  for (const f of frames) {
+    if (timeline.missingFrames.has(f.img)) continue;
+    if (!nearest || Math.abs(timeOf(f) - timeOf(wanted)) < Math.abs(timeOf(nearest) - timeOf(wanted))) nearest = f;
+  }
+  return nearest && nearest.img;
+}
+
+// A frame image did not load. Some sitespeed.io runs have VisualProgress
+// times with no image on disk. Show the nearest frame instead.
+function replaceMissingFrame(img) {
+  const cell = img.closest('.filmstrip-cell');
+  if (!img.classList.contains('timeline-frame') && !cell) return;
+  timeline.missingFrames.add(img.getAttribute('src'));
+  const key = cell ? (cell.classList.contains('filmstrip-cell--har2') ? '2' : '1') : img.dataset.side;
+  const column = img.closest('.filmstrip-column');
+  const replacement = frameAt(key, column ? Number(column.dataset.ms) : timeline.t);
+  if (replacement && replacement !== img.getAttribute('src')) img.setAttribute('src', replacement);
 }
 
 function lastAtOrBefore(list, t, getTime) {
@@ -154,10 +186,8 @@ function setTimelineTime(t, seekVideos) {
       progress.textContent = lastAtOrBefore(vp, ms, v => v.time).value + '% rendered';
     }
     const frame = document.querySelector('.timeline-frame[data-side="' + key + '"]');
-    if (frame && side.frames && side.frames.length) {
-      const img = lastAtOrBefore(side.frames, ms, f => f.ms).img;
-      if (frame.getAttribute('src') !== img) frame.setAttribute('src', img);
-    }
+    const img = frameAt(key, ms);
+    if (frame && img && frame.getAttribute('src') !== img) frame.setAttribute('src', img);
     const video = document.querySelector('.timeline-video[data-side="' + key + '"]');
     if (video && seekVideos && Math.abs(video.currentTime - ms / 1000) > 0.04) {
       video.currentTime = ms / 1000;
