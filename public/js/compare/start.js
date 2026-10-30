@@ -1,4 +1,4 @@
-/* global createMainDropZone, showLoading, loadHARsFromConfig, loadFilesFromGist, loadFilesFromConfig, loadFromPaste, compareFromForm, errorMessage, showUpload, toggleWaterfallLayout, blendWaterfalls, regenerate, setCompareMode, pickRun, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin, toggleTimelinePlay, scrubTimeline, showMetric, linkMetric, setTimelineSpeed, stepTimelineFrame, jumpTimeline, setDrawTool, undoDrawing, clearDrawings, saveDrawingPng, replaceMissingFrame */
+/* global createMainDropZone, showLoading, loadHARsFromConfig, loadFilesFromGist, loadFilesFromConfig, loadFromPaste, compareFromForm, errorMessage, showUpload, toggleWaterfallLayout, blendWaterfalls, regenerate, setCompareMode, pickRun, setHarLabel, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin, toggleTimelinePlay, scrubTimeline, showMetric, linkMetric, setTimelineSpeed, stepTimelineFrame, jumpTimeline, setDrawTool, undoDrawing, clearDrawings, saveDrawingPng, replaceMissingFrame */
 
 // Start-up code for the page. It lives in a file, not in index.html,
 // because the Content-Security-Policy blocks inline scripts.
@@ -93,6 +93,7 @@ const actions = {
   'change-run': () => regenerate(),
   'compare-mode': el => setCompareMode(el.dataset.mode),
   'pick-run': el => pickRun(Number(el.dataset.side), Number(el.dataset.run)),
+  'har-label': el => setHarLabel(Number(el.dataset.side), el.value),
   'toggle-all-metrics': () => toggleAllMetrics(),
   'toggle-section': el => toggleMetricSection(el.dataset.section),
   'metric-search': el => setMetricsQuery(el.value),
@@ -116,7 +117,7 @@ const actionElements = {
   submit: 'form[data-action]',
   click: 'button[data-action]',
   change: 'select[data-action]',
-  input: 'input[data-action]'
+  input: 'input[data-action]:not([data-action="har-label"])'
 };
 
 for (const [type, selector] of Object.entries(actionElements)) {
@@ -127,6 +128,12 @@ for (const [type, selector] of Object.entries(actionElements)) {
     actions[el.dataset.action](el);
   });
 }
+
+document.addEventListener('change', e => {
+  const el = e.target instanceof Element && e.target.closest('input[data-action="har-label"]');
+  if (!el) return;
+  actions[el.dataset.action](el);
+});
 
 // Image errors do not bubble, so listen in the capture phase.
 document.addEventListener('error', e => {

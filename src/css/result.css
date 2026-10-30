@@ -156,6 +156,23 @@
   border-radius: var(--radius-pill);
   font-size: 0.9rem;
 }
+.har-chip-label {
+  font: inherit;
+  font-weight: 700;
+  width: auto;
+  min-width: 3.5ch;
+  max-width: 18ch;
+  padding: 0 2px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed currentColor;
+  border-radius: 0;
+}
+.har-chip-label:focus {
+  outline: 2px solid var(--color-focus, Highlight);
+  outline-offset: 2px;
+}
 
 .mode-bar {
   display: flex;

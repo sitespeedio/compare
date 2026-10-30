@@ -241,7 +241,7 @@ test('the request filters show one kind of change', async () => {
 
 test('Swap swaps the HAR files', async () => {
   await click('button[data-action=switch]');
-  await driver.wait(async () => (await text('.har-chip b')) === 'HAR2', 5000);
+  await driver.wait(async () => (await $('.har-chip-label').getAttribute('value')) === 'HAR2', 5000);
 });
 
 test('the blend slider fades in HAR2', async () => {
