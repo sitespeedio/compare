@@ -31,6 +31,23 @@ function run(n, px) {
   return { run: n, page: { pageTimings: {} }, px: { meta: {}, ...px } };
 }
 
+test('har chips use an editable label field', () => {
+  const context = loadScripts(['templates']);
+  const html = context.summaryTemplate({
+    url: 'example.com',
+    details: '',
+    sides: [
+      { key: 1, label: 'Before', when: '1 Jan', runs: '1 run' },
+      { key: 2, label: 'After', when: '2 Jan', runs: '1 run' }
+    ],
+    modeBar: false,
+    verdict: { cls: 'same', tag: 'x', title: 't', text: 't', items: [] },
+    cards: []
+  });
+  assert.match(html, /data-action="har-label" data-side="1" value="Before"/);
+  assert.match(html, /class="har-chip-label har-name har-name--2"[^>]*value="After"/);
+});
+
 test('the metrics table shows Core Web Vitals with a Δ', () => {
   const context = loadScripts(['stats', 'ux', 'metrics', 'templates']);
   const runs1 = [run(1, { googleWebVitals: { firstContentfulPaint: 800, largestContentfulPaint: 1500, totalBlockingTime: 40, cumulativeLayoutShift: 0.05641193152186011 } })];

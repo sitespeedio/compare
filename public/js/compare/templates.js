@@ -80,7 +80,8 @@ function summaryTemplate(d) {
     '<p class="muted">' + h(d.details) + '</p></div>' +
     '<div class="har-chips">' + each(d.sides, function (s) {
       return '<span class="har-chip"><span class="har-dot har-dot--' + s.key + '"></span>' +
-        '<b>' + h(s.label) + '</b> ' + h(s.when) + ' · ' + h(s.runs) +
+        '<input type="text" class="har-chip-label har-name har-name--' + s.key + '" data-action="har-label" data-side="' + s.key + '"' +
+        ' value="' + h(s.label) + '" aria-label="Label for HAR ' + s.key + '"> ' + h(s.when) + ' · ' + h(s.runs) +
         '<input type="file" id="har' + s.key + 'upload" class="inputfile"/>' +
         '<label for="har' + s.key + 'upload" class="har-chip-upload">Replace</label></span>';
     }) + '</div></div>';

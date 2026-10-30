@@ -1,5 +1,5 @@
 /* global formatTime, getLastTiming, removeAndHide, createUpload, hideUpload, parseTemplate, formatDate, formatBytes, getFilmstrip, compareWaterfall, renderShareControls, blendWaterfalls, applyWaterfallLayoutPreference, buildRuns, canCompareAllRuns, medianRun, isOutlierRun, compareMetrics, MIN_EFFECT, ADJUST_MIN_RUNS, requestSizes, compareRequests, initTimeline, addTimelineWaterfall, stopTimeline, prefersReducedMotion, addDrawingLayer */
-/* exported generate, regenerate, buildRequestView, linkMetric, showMetric, setCompareMode, pickRun, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin */
+/* exported generate, regenerate, buildRequestView, linkMetric, showMetric, setCompareMode, pickRun, setHarLabel, setMetricsQuery, toggleAllMetrics, toggleMetricSection, setRequestFilter, setRequestSort, setRequestMin */
 
 // What the result page shows right now.
 const view = {
@@ -78,6 +78,19 @@ function pickRun(side, run) {
   if (side === 1) view.run1 = run;
   else view.run2 = run;
   render();
+}
+
+// Rename a HAR everywhere on the result page (tables, timeline, share bundle).
+function setHarLabel(side, label) {
+  const config = view.config;
+  if (!config) return;
+  const har = side === 1 ? config.har1 : config.har2;
+  const text = String(label || '').trim() || (side === 1 ? 'HAR1' : 'HAR2');
+  if (har.label === text) return;
+  har.label = text;
+  window.har = config;
+  render();
+  if (typeof renderShareControls === 'function') renderShareControls();
 }
 
 /**
